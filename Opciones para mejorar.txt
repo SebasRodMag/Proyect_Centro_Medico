@@ -1,0 +1,12 @@
+Opciones para mejorar:
+	Opciones para justificar ausencias tanto médicos como clientes. Ausencias del mismo dia.
+	
+El contrato se renueva automáticamente. Lo haría el administrador a petición del cliente.
+
+SoftDelete para los registros
+
+
+Mejoras:
+email recordatorio a cada trabajador
+
+
