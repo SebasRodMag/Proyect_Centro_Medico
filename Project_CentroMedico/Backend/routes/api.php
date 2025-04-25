@@ -66,4 +66,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('usuarios/{user}', [UsersController::class, 'show']);
     Route::put('usuarios/{user}', [UsersController::class, 'update']);
     // Route::delete('usuarios/{user}', [UsersController::class, 'destroy']); // Considerar con cuidado
+
+    // Rutas que solo los administradores pueden acceder
+    Route::middleware('rutaMiddleware:administrador')->group(function () {
+        Route::post('/clientes', [ClienteController::class, 'store']);
+        // ... otras rutas de administrador
+    });
+
+    // Rutas que solo los médicos pueden acceder
+    Route::middleware('rutaMiddleware:medico')->group(function () {
+        Route::put('/citas/{cita}', [CitaController::class, 'update']);
+        // ... otras rutas de médico
+    });
+
 });

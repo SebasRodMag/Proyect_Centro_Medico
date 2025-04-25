@@ -521,6 +521,7 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     );
 
     public static $classMap = array (
+        'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\CitasController' => __DIR__ . '/../..' . '/app/Http/Controllers/CitasController.php',
         'App\\Http\\Controllers\\ClientesController' => __DIR__ . '/../..' . '/app/Http/Controllers/ClientesController.php',
         'App\\Http\\Controllers\\ContratosController' => __DIR__ . '/../..' . '/app/Http/Controllers/ContratosController.php',
@@ -528,6 +529,8 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'App\\Http\\Controllers\\MedicosController' => __DIR__ . '/../..' . '/app/Http/Controllers/MedicosController.php',
         'App\\Http\\Controllers\\PacientesController' => __DIR__ . '/../..' . '/app/Http/Controllers/PacientesController.php',
         'App\\Http\\Controllers\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/UsersController.php',
+        'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
+        'App\\Http\\Middleware\\Middleware' => __DIR__ . '/../..' . '/app/Http/Middleware/Middleware.php',
         'App\\Models\\Cita' => __DIR__ . '/../..' . '/app/Models/Cita.php',
         'App\\Models\\Cliente' => __DIR__ . '/../..' . '/app/Models/Cliente.php',
         'App\\Models\\Contrato' => __DIR__ . '/../..' . '/app/Models/Contrato.php',
