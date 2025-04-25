@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',
     'App\\Http\\Controllers\\CitasController' => $baseDir . '/app/Http/Controllers/CitasController.php',
     'App\\Http\\Controllers\\ClientesController' => $baseDir . '/app/Http/Controllers/ClientesController.php',
     'App\\Http\\Controllers\\ContratosController' => $baseDir . '/app/Http/Controllers/ContratosController.php',
@@ -13,6 +14,7 @@ return array(
     'App\\Http\\Controllers\\MedicosController' => $baseDir . '/app/Http/Controllers/MedicosController.php',
     'App\\Http\\Controllers\\PacientesController' => $baseDir . '/app/Http/Controllers/PacientesController.php',
     'App\\Http\\Controllers\\UsersController' => $baseDir . '/app/Http/Controllers/UsersController.php',
+    'App\\Http\\Middleware\\Middleware' => $baseDir . '/app/Http/Middleware/Middleware.php',
     'App\\Models\\Cita' => $baseDir . '/app/Models/Cita.php',
     'App\\Models\\Cliente' => $baseDir . '/app/Models/Cliente.php',
     'App\\Models\\Contrato' => $baseDir . '/app/Models/Contrato.php',
