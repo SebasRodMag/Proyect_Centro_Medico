@@ -2,12 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-=======
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\PacientesController;
@@ -19,7 +18,7 @@ use App\Http\Controllers\CitasController;
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
+    // Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -68,4 +67,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('usuarios/{user}', [UsersController::class, 'update']);
     // Route::delete('usuarios/{user}', [UsersController::class, 'destroy']); // Considerar con cuidado
 });
->>>>>>> 77e883b7004d776921c66ce5af6027764473af93
