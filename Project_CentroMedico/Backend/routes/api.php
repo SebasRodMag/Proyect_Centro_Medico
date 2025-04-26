@@ -68,21 +68,25 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::delete('usuarios/{user}', [UsersController::class, 'destroy']); // Considerar con cuidado
 
     // Rutas que solo los administradores pueden acceder
-    Route::middleware('rutaMiddleware:administrador')->group(function () {
-        Route::post('/clientes', [ClienteController::class, 'store']);
+    Route::middleware('roleMiddleware:administrador')->group(function () {
+        Route::post('/clientes', [ClientesController::class, 'store']);
     });
 
     // Rutas que solo los médicos pueden acceder
-    Route::middleware('rutaMiddleware:medico')->group(function () {
-        Route::put('/citas/{cita}', [CitaController::class, 'update']);
+    Route::middleware('roleMiddleware:medico')->group(function () {
+        Route::put('/citas/{cita}', [CitasController::class, 'update']);
     });
 
     // Rutas que solo los clientes pueden acceder
-    Route::middleware('rutaMiddleware:cliente')->group(function () {
+    Route::middleware('roleMiddleware:cliente')->group(function () {
         // Rutas para que los clientes consulten sus citas (habría que darle más lógica aquí)
         // Route::get('/mis-citas', [CitaController::class, 'misCitas']);
     });
 
     // Rutas que requieren autenticación pero no un rol específico (podrían ser accedidas por todos los roles autenticados)
-    Route::get('/clientes', [ClienteController::class, 'index']);
+    Route::get('/clientes', [ClientesController::class, 'index']);
+    // Ruta de prueba para comprobar error al resolver el middleware
+    Route::get('/test', function () {
+        return 'Prueba de ruta';
+    })->middleware('testMiddleware');
 });
