@@ -55,7 +55,16 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "clear-all": [
+        "php artisan route:clear",
+        "php artisan config:clear",
+        "php artisan cache:clear",
+        "php artisan view:clear",
+        "php artisan optimize:clear",
+        "composer dump-autoload"
         ]
+        
     },
     "extra": {
         "laravel": {
