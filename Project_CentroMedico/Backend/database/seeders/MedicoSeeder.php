@@ -48,7 +48,7 @@ class MedicoSeeder extends Seeder
                 ]);
 
                 DB::table('medicos')->insert([
-                    'user_id' => $userId,
+                    'id' => $userId,
                     'nombre' => $faker->firstName,
                     'apellidos' => $faker->lastName . ' ' . $faker->lastName,
                     'dni' => $faker->unique()->dni,
