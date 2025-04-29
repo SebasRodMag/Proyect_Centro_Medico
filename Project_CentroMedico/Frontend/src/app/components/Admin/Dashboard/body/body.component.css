@@ -1,15 +1,7 @@
 .body{
     display: flex;
-    height: 100%;
+    height: auto;
     width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: start;
 }
-
-.body:first-child{
-    min-width: 20%;
-    max-height: 80vh;
-}
-.body:nth-child(2){ 
-    max-width: 80%;
-} 
