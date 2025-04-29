@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('dni')->unique();
             $table->date('fecha_inicio');
             $table->date('fecha_fin')->nullable();
-            $table->foreignId('user_id')->
+            $table->foreignId('id_user')->
                 constrained('users')
                 ->onDelete('cascade');
             $table->timestamps();

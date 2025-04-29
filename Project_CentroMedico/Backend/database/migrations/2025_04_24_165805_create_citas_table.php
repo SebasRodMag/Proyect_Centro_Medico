@@ -22,11 +22,11 @@ return new class extends Migration
             $table->foreignId('id_contrato')
                 ->constrained('contratos')
                 ->onDelete('cascade');
-            $table->dateTime('fecha_hora_cita');
+            $table->date('fecha_hora_cita');
             $table->enum('estado', ['pendiente', 'realizado', 'cancelado'])
             ->default('pendiente');
-            $table->dateTime('fecha_hora_inicio')->nullable();
-            $table->dateTime('fecha_hora_fin')->nullable();
+            $table->date('fecha_hora_inicio')->nullable();
+            $table->date('fecha_hora_fin')->nullable();
             $table->string('observaciones')->nullable();
             $table->timestamps();
         });

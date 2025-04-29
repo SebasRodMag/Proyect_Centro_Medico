@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class RoleMiddleware
+class Middleware
 {
     /**
      * Handle an incoming request.
@@ -21,7 +21,7 @@ class RoleMiddleware
     {
         // 1. Verificar si el usuario está autenticado
         if (!Auth::check()) {
-            return response()->json(['message' => 'No autenticado.'], 401); // No autorizado
+            return response()->json(['message' => 'No autenticado.'], 401); // Unauthorized
         }
 
         // 2. Obtener el rol del usuario autenticado
@@ -33,6 +33,6 @@ class RoleMiddleware
         }
 
         // 4. Si el rol no coincide, denegar el acceso
-        return response()->json(['message' => 'Acceso no autorizado para el rol: ' . $user->rol], 403); // Acceso prohibido
+        return response()->json(['message' => 'Acceso no autorizado para el rol: ' . $user->rol], 403); // Forbidden
     }
 }
