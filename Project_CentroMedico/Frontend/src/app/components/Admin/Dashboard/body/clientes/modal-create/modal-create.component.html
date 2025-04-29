@@ -1,0 +1,94 @@
+<div class="modal-backdrop" *ngIf="isVisible">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>REGISTRAR CLIENTE</h2>
+            <i class="bi bi-x-circle close-button" (click)="close()"></i>
+        </div>
+        <div>
+            
+            <form action="">
+                <div id="contenedor-principal">
+                    <div id="columnas">
+                        <div id="primer-contenedor">
+                            <div>
+                                <label for="Razón social">Razón social:</label>
+                                <input
+                                    type="text"
+                                    name="razon-social"
+                                    id="razon-social"
+                                />
+                            </div>
+                            <div>
+                                <label for="CIF">CIF:</label>
+                                <input type="text" name="cif" id="cif" />
+                            </div>
+                            <div>
+                                <label for="Dirección">Dirección:</label>
+                                <input
+                                    type="text"
+                                    name="direccion"
+                                    id="direccion"
+                                />
+                            </div>
+                            <div>
+                                <label for="Municipio">Municipio:</label>
+                                <input
+                                    type="text"
+                                    name="municipio"
+                                    id="municipio"
+                                />
+                            </div>
+                            <div>
+                                <label for="Provincia">Provincia:</label>
+                                <input
+                                    type="text"
+                                    name="provincia"
+                                    id="provincia"
+                                />
+                            </div>
+                            <div>
+                                <label for="Razón social">Razón social:</label>
+                                <input
+                                    type="text"
+                                    name="razon-social"
+                                    id="razon-social"
+                                />
+                            </div>
+                        </div>
+                        <div id="segundo-contenedor">
+                            <div>
+                                <label for="Fecha inicio">Fecha inicio:</label>
+                                <input
+                                    type="date"
+                                    name="fecha-inicio"
+                                    id="fecha-inicio"
+                                />
+                            </div>
+                            <div>
+                                <label for="Fecha fin">Fecha fin:</label>
+                                <input
+                                    type="date"
+                                    name="fecha-fin"
+                                    id="fecha-fin"
+                                />
+                            </div>
+                            <div>
+                                <label for="Nº de reconocimientos"
+                                    >Nº de reconocimientos:</label
+                                >
+                                <input
+                                    type="number"
+                                    name="reconocimientos"
+                                    id="reconocimientos"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="boton-registrar">
+                        <button type="submit" id="registrar">Registrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
