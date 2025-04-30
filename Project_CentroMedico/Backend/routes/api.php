@@ -93,4 +93,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/test', function () {
         return response()->json(['message' => 'Rol autorizado']);
     })->middleware('auth:sanctum', 'role:administrador');
+
+    /**
+     * Para proteger las rutas por ROlES
+     * 
+     * Route::middleware(['role:admin'])->group(function () {
+     *  Rutas accesibles solo por usuarios con el rol 'admin'
+     * });
+     * 
+     * Rutas accecibles por permisos:
+     * 
+     * Route::middleware(['permission:edit articles'])->group(function () {
+     *  Rutas accesibles solo por usuarios con el permiso 'edit articles'
+     * });
+     * 
+     * 
+     * Rutas accesibles por Roles y permisos:
+     * 
+     * Route::middleware(['role_or_permission:admin|edit articles'])->group(function () {
+     *  Rutas accesibles por usuarios con el rol 'admin' o el permiso 'edit articles'
+     * });
+     * 
+     * 
+     * Dentro de los controladores, se puede verificar los permisos:
+     * 
+     * if (auth()->user()->can('edit articles')) {
+     *  El usuario tiene el permiso 'edit articles'
+     * }
+     */
 });
