@@ -42,13 +42,13 @@ class MedicoSeeder extends Seeder
                 $userId = DB::table('users')->insertGetId([
                     'email' => $email,
                     'password' => Hash::make('password123'),
-                    'rol' => 'medico',
+                    'role' => 'medico',
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
 
                 DB::table('medicos')->insert([
-                    'id' => $userId,
+                    'id_user' => $userId,
                     'nombre' => $faker->firstName,
                     'apellidos' => $faker->lastName . ' ' . $faker->lastName,
                     'dni' => $faker->unique()->dni,

@@ -17,7 +17,7 @@ class ClienteSeeder extends Seeder
         $faker = Faker::create('es_ES');
 
         // Obtener IDs de usuarios con el rol 'cliente'
-        $clienteUsersIds = DB::table('users')->where('rol', 'cliente')->pluck('id')->toArray();
+        $clienteUsersIds = DB::table('users')->where('role', 'cliente')->pluck('id')->toArray();
 
         if (empty($clienteUsersIds)) {
             $this->command->warn('No hay usuarios con rol "cliente" disponibles para crear clientes.');

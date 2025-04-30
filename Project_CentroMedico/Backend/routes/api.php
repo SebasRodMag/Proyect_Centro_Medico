@@ -78,7 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     //Rutas que solo los médicos pueden acceder
-    Route::middleware('role:medico')->group(function () {
+    Route::middleware(['role:medico'])->group(function () {
         Route::get('medicos/{medico}/citas', [MedicosController::class, 'citas']);
         Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
     });
@@ -91,6 +91,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Ruta de prueba para comprobar error al resolver el middleware
     Route::get('/test', function () {
-        return 'Prueba de ruta';
-    })->middleware('testMiddleware');
+        return response()->json(['message' => 'Rol autorizado']);
+    })->middleware('auth:sanctum', 'role:administrador');
 });

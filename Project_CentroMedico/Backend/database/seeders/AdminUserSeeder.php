@@ -20,7 +20,7 @@ class AdminUserSeeder extends Seeder
         DB::table('users')->insert([
             'email' => 'admin1@example.com',
             'password' => Hash::make('password1'), 
-            'rol' => 'admin', // Tiene que coincidir con los valores del ENUM ['admin', 'medico', 'cliente', 'paciente']
+            'role' => 'admin', // Tiene que coincidir con los valores del ENUM ['admin', 'medico', 'cliente', 'paciente']
             'created_at' => Carbon::now(), //Carbon crea instancias de fecha y hora
             'updated_at' => Carbon::now(),
         ]);
@@ -29,7 +29,7 @@ class AdminUserSeeder extends Seeder
         DB::table('users')->insert([
             'email' => 'admin2@example.com',
             'password' => Hash::make('password2'),
-            'rol' => 'admin',
+            'role' => 'admin',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
