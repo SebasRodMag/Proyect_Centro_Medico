@@ -27,7 +27,6 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'password',
-        'rol',
 
     ];
 
@@ -65,5 +64,10 @@ class User extends Authenticatable
     public function medico()
     {
         return $this->hasOne(Medico::class, 'id_usuario');
+    }
+
+    public static function idsByRole(string $role): array
+    {
+        return User::role($role)->pluck('id')->toArray();
     }
 }

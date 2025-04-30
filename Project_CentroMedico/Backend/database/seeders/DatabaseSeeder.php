@@ -23,13 +23,13 @@ class DatabaseSeeder extends Seeder
         //]);
 
         $this->call([
+            RolesSeeder::class,
             UserSeeder::class,
             ClienteSeeder::class, // ClienteSeeder debe ejecute antes que el ContratoSeeder
             PacienteSeeder::class,
             MedicoSeeder::class,
             ContratoSeeder::class, // Los contratos dependen de los clientes
             CitaSeeder::class,     // Las citas dependen de pacientes, médicos y contratos
-            AdminUserSeeder::class, // Crea un usuarios administrador específicamente
         ]);
     }
 }

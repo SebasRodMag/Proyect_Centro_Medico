@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
+use App\Models\User;
 
 class ClienteSeeder extends Seeder
 {
@@ -16,8 +17,9 @@ class ClienteSeeder extends Seeder
     {
         $faker = Faker::create('es_ES');
 
-        // Obtener IDs de usuarios con el rol 'cliente'
-        $clienteUsersIds = DB::table('users')->where('role', 'cliente')->pluck('id')->toArray();
+        // Obtiene el ID del rol "cliente"
+        $clienteUsersIds = User::role('Cliente')->pluck('id')->toArray();
+
 
         if (empty($clienteUsersIds)) {
             $this->command->warn('No hay usuarios con rol "cliente" disponibles para crear clientes.');
@@ -25,7 +27,7 @@ class ClienteSeeder extends Seeder
         }
 
         foreach ($clienteUsersIds as $userId) {
-            $cif = $this->generarCif(); // Usamos nuestra función para generar un CIF
+            $cif = $this->generarCif(); // Usamos la función para generar un CIF
 
             DB::table('clientes')->insert([
                 'id_usuario' => $userId,
@@ -49,10 +51,12 @@ class ClienteSeeder extends Seeder
      */
     private function generarCif(): string
     {
-        $Letra = 'ABCDEFGHIJKLMNOPQRSW';
-        $numero = str_pad(strval(rand(1000000, 9999999)), 7, '0', STR_PAD_LEFT);
-        $controlLetra = $Letra[rand(0, strlen($Letra) - 1)];
-        return substr($Letra, rand(0, strlen($Letra) - 1), 1) . $numero . $controlLetra; 
+        $letras = 'ABCDEFGHJKLMNPQRSW';
+        $inicio = $letras[rand(0, strlen($letras) - 1)];
+        $numero = str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+        $control = $letras[rand(0, strlen($letras) - 1)];
+
+        return $inicio . $numero . $control;
     }
 
 }

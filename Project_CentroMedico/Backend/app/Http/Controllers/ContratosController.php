@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contrato;
+use App\Models\Citas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -81,4 +82,32 @@ class ContratosController extends Controller
         $contratos = Contrato::onlyTrashed()->get();
         return response()->json($contratos, 200);
     }
+
+    //Función para obtener las citas de un contrato
+
+    public function citas($id_contrato)
+    {
+        // Buscar el contrato por su id
+        $contrato = Contrato::find($id_contrato);
+
+        // Si no se encuentra el contrato, retornar un mensaje de error
+        if (!$contrato) {
+            return response()->json(['error' => 'Contrato no encontrado'], 404);
+        }
+
+        // Obtener las citas asociadas a este contrato (pasadas y futuras)
+        $citas = $contrato->citas;
+
+        // Si no tiene citas, retornar un mensaje indicando que no tiene citas
+        if ($citas->isEmpty()) {
+            return response()->json(['message' => 'Este contrato no tiene citas asociadas.'], 200);
+        }
+
+        // Retornar los datos del contrato junto con las citas asociadas
+        return response()->json([
+            'contrato' => $contrato,
+            'citas' => $citas
+        ], 200);
+    }
+
 }
