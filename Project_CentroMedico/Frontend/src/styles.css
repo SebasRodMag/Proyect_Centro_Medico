@@ -9,7 +9,9 @@ p, label{
     font-size: 14px;
 }
 
-button, i{
+button{
+    cursor: pointer;
+    button, i{
     cursor: pointer;
 }
 

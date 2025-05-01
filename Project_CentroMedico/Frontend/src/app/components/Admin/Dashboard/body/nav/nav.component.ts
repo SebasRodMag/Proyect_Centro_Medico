@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+@Component({
+  selector: 'app-nav',
+  imports: [],
 import { CommonModule } from '@angular/common';
 
 @Component({

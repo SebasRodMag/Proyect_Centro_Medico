@@ -1,5 +1,9 @@
 .nav{
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -13,6 +17,10 @@
 }
 
 button{
+    min-width: 250px;
+    max-width: 250px;
+    margin: 10px;
+    padding: 10px 10px 10px 10px;
     margin: 10px;
     padding: 5px;
     border-radius: 5px;
@@ -23,6 +31,24 @@ button{
     text-transform: uppercase;
     border: 0;
     cursor: pointer;
+}
+
+.nav div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#logout{
+    background-color: #FF0000;
+    opacity: 0.5;
+    color: white;
+    border-radius: 15px;
+    width: 265px;
+    height: 55px;
+    text-align: center;
 }
 
 i{
