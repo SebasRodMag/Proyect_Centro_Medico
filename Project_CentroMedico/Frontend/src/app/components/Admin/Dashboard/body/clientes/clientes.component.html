@@ -3,6 +3,10 @@
         <div>
             <button>Registrar cliente</button>
         </div>
+            <button (click)="modal.open()">Registrar cliente</button>
+        </div>
+        <app-modal-create #modal>
+        </app-modal-create>
         <div id="contenedor-busqueda">
             <input type="text" placeholder="Búsqueda...">
             <i class="bi bi-search" id="icono-search"></i>
@@ -13,6 +17,9 @@
         <input type="text" id="razon-social" placeholder="">
         <label for="Municipio">Municipio:</label>
         <input type="text" id="municipio" placeholder="">
+        <input type="text" id="razon-social">
+        <label for="Municipio">Municipio:</label>
+        <input type="text" id="municipio">
     </div>
     <table id="tabla-clientes">
         <thead>
@@ -25,6 +32,9 @@
             <th>F. Inicio</th>
             <th>F. Fin</th>
             <th>Reconocimientos restantes</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Reconocimientos Rest.</th>
             <th>Acciones</th>
         </thead>
         <tbody>
