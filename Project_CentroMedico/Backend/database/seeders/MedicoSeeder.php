@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
 
 class MedicoSeeder extends Seeder
 {
@@ -36,19 +39,18 @@ class MedicoSeeder extends Seeder
         //Se hace de esta forma, por un error en al implementar el seeder y dar conflicto con los correos repetidos
         foreach ($emails as $email) {
             // Verificar si el usuario ya existe
-            $user = DB::table('users')->where('email', $email)->first();
+            $user = User::where('email', $email)->first();
 
             if (!$user) {
-                $userId = DB::table('users')->insertGetId([
+                $user = User::create([
                     'email' => $email,
                     'password' => Hash::make('password123'),
-                    'role' => 'medico',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
                 ]);
-
+            
+                $user->assignRole('Medico');
+            
                 DB::table('medicos')->insert([
-                    'id_user' => $userId,
+                    'id_user' => $user->id,
                     'nombre' => $faker->firstName,
                     'apellidos' => $faker->lastName . ' ' . $faker->lastName,
                     'dni' => $faker->unique()->dni,

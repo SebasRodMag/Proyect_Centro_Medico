@@ -1,0 +1,22 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+*{
+    margin: 0;
+}
+p, label{
+    font-size: 14px;
+}
+
+button{
+    cursor: pointer;
+    button, i{
+    cursor: pointer;
+}
+
+button:hover{
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+    scale: 1.05;
+    transition: all 0.2s ease-in-out;
+}

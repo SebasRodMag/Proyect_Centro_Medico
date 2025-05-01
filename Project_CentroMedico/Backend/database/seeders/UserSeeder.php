@@ -5,7 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -17,37 +18,46 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crear el usuario administrador (si no lo hiciste en AdminUserSeeder)
-        DB::table('users')->insert([
+        // Asegura que los roles existan
+        $clienteRole = Role::firstOrCreate(['name' => 'Cliente']);
+        $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
+        $medicoRole = Role::firstOrCreate(['name' => 'Médico']);
+        $pacienteRole = Role::firstOrCreate(['name' => 'Paciente']);
+
+
+
+        // Crear el usuario administrador
+        $admin = User::create([
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
-            'role' => 'admin',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
         ]);
+        $admin->assignRole($adminRole);
 
-        // Crear algunos usuarios médicos
+        // Crear usuarios médicos
         for ($i = 1; $i <= 3; $i++) {
-            DB::table('users')->insert([
-                'email' => 'medico' . $i . '@example.com',
+            $medico = User::create([
+                'email' => "medico{$i}@example.com",
                 'password' => Hash::make('password123'),
-                'role' => 'medico',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
             ]);
+            $medico->assignRole($medicoRole);
         }
 
-        // Crear algunos usuarios cliente (para asociarlos a los clientes)
+        // Crear usuarios clientes
         for ($i = 1; $i <= 5; $i++) {
-            DB::table('users')->insert([
-                'email' => 'cliente' . $i . '@example.com',
+            $cliente = User::create([
+                'email' => "cliente{$i}@example.com",
                 'password' => Hash::make('password123'),
-                'role' => 'cliente',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
             ]);
+            $cliente->assignRole($clienteRole);
         }
 
-        // Puedes crear más usuarios con diferentes roles si es necesario
+        // Crear usuarios pacientes
+        for ($i = 1; $i <= 5; $i++) {
+            $paciente = User::create([
+                'email' => "paciente{$i}@example.com",
+                'password' => Hash::make('password123'),
+            ]);
+            $paciente->assignRole($pacienteRole);
+        }
     }
 }
