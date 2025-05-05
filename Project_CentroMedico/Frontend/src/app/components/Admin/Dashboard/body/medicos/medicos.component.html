@@ -1,7 +1,7 @@
-<div class="container-usuarios">
-    <div class="header-usuarios">
+<div class="container-medicos">
+    <div class="header-medicos">
         <div>
-            <button (click)="modal.open()">Registrar usuario</button>
+            <button (click)="modal.open()">Registrar cliente</button>
         </div>
         <app-modal-create #modal>
         </app-modal-create>
@@ -10,11 +10,13 @@
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
-    <table id="tabla-usuarios">
+    <table id="tabla-medicos">
         <thead>
             <th><strong>Id</strong></th>
-            <th>Email</th>
-            <th><strong>Rol</strong></th>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Fecha Inicio</th>
+            <th>fecha Fin</th>
             <th>Acciones</th>
         </thead>
         <tbody>
@@ -23,14 +25,20 @@
                 <td></td>
                 <td></td>
                 <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
