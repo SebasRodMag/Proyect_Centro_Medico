@@ -2,11 +2,9 @@
     <div class="header-clientes">
         <div>
             <button>Registrar cliente</button>
-        </div>
             <button (click)="modal.open()">Registrar cliente</button>
         </div>
-        <app-modal-create #modal>
-        </app-modal-create>
+        <app-modal-create #modal></app-modal-create>
         <div id="contenedor-busqueda">
             <input type="text" placeholder="Búsqueda...">
             <i class="bi bi-search" id="icono-search"></i>
