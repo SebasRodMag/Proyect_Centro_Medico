@@ -11,8 +11,4 @@ import { ModalCreateComponent } from '../usuarios/modal-create/modal-create.comp
 })
 export class PacientesComponent {
 
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes
