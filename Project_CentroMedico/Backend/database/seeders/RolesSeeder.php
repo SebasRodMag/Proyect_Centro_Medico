@@ -15,7 +15,7 @@ class RolesSeeder extends Seeder
     public function run(): void
     {
         // Se limpian los roles y permisos en caché
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // Se crean los roles
         Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);

@@ -5,46 +5,51 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
     public function store(Request $request){
-        $request->validate([
+        $validated = $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|string|in:admin,medico,cliente,paciente',
         ]);
 
-        $user = new User();
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->rol = $request->rol;
-        $user->save();
-
-        return response()->json(['message' => 'Usuario creado con éxito'], 201);
+        $user = User::create([
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+        return response()->json(['message' => 'Usuario registrado con éxito', 'user' => $user], 201);
     }
 
+
+    public function assignRole(Request $request, $id){
+        $user = User::findOrFail($id);
+        $role = Role::where('name', $request->role)->first();
+        if (!$role) {
+            return response()->json(['message' => 'Rol no encontrado'], 404);
+        }
+        $user->assignRole($role);
+        return response()->json(['message' => 'Rol asignado con éxito'], 200);
+    }
     public function update(Request $request, $id){
         $request->validate([
             'email' => 'string|email|max:255|unique:users,email,'.$id,
-            'password' => 'string|min:8|confirmed', //Habrá que crear dos inputs, uno para la contraseña y otro para la confirmación de la misma
+            'password' => 'string|min:8|confirmed',
             'rol' => 'string|in:admin,medico,cliente,paciente',
         ]);
-
         $user = User::findOrFail($id);
         if($request->has('email')){
             $user->email = $request->email;
         }
         if($request->has('password')){
             $user->password = Hash::make($request->password);
-        }
-        if($request->has('rol')){
-            $user->rol = $request->rol;
-        }
+        }    
         $user->save();
-
+    
         return response()->json(['message' => 'Usuario actualizado con éxito'], 200);
     }
+    
 
     // public function destroy($id){
     //     $user = User::findOrFail($id);
