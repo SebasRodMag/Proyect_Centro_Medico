@@ -1,7 +1,6 @@
 <div class="container-clientes">
     <div class="header-clientes">
         <div>
-            <button>Registrar cliente</button>
             <button (click)="modal.open()">Registrar cliente</button>
         </div>
         <app-modal-create #modal></app-modal-create>
@@ -11,13 +10,10 @@
         </div>
     </div>
     <div id="contenedor-filtros">
-        <label for="Razon Social">Razón Social:</label>
+        <label for="razon-social">Razón Social:</label>
         <input type="text" id="razon-social" placeholder="">
-        <label for="Municipio">Municipio:</label>
+        <label for="municipio">Municipio:</label>
         <input type="text" id="municipio" placeholder="">
-        <input type="text" id="razon-social">
-        <label for="Municipio">Municipio:</label>
-        <input type="text" id="municipio">
     </div>
     <table id="tabla-clientes">
         <thead>
@@ -30,9 +26,6 @@
             <th>F. Inicio</th>
             <th>F. Fin</th>
             <th>Reconocimientos restantes</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Fin</th>
-            <th>Reconocimientos Rest.</th>
             <th>Acciones</th>
         </thead>
         <tbody>
