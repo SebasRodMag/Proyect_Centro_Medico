@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalCreateComponent } from './modal-create/modal-create.component';
+import { ModalCreateComponent } from '../usuarios/modal-create/modal-create.component';
 
 @Component({
   selector: 'app-clientes',
