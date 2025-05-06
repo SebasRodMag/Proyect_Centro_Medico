@@ -3,18 +3,17 @@
         <div>
             <button (click)="modal.open()">Crear cita</button>
         </div>
-        <app-modal-create #modal>
-        </app-modal-create>
+        <app-modal-create #modal></app-modal-create>
         <div id="contenedor-busqueda">
-            <input type="text" placeholder="Búsqueda...">
+            <input type="text" placeholder="Búsqueda..." />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
-        <div id="contenedor-filtros">
-            <label for="fecha-desde">Fecha desde:</label>
-            <input type="text" id="fecha-desde" placeholder="" />
-            <label for="fecha-hasta">Fecha hasta:</label>
-            <input type="text" id="fecha-hasta" placeholder="" />
-        </div>
+    </div>
+    <div id="contenedor-filtros">
+        <label for="fecha-desde">Fecha desde:</label>
+        <input type="text" id="fecha-desde" placeholder="" />
+        <label for="fecha-hasta">Fecha hasta:</label>
+        <input type="text" id="fecha-hasta" placeholder="" />
     </div>
     <table id="tabla-citas">
         <thead>
