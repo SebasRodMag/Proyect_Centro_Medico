@@ -12,13 +12,11 @@ class UsersController extends Controller
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|string|in:admin,medico,cliente,paciente',
         ]);
 
         $user = new User();
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->rol = $request->rol;
         $user->save();
 
         return response()->json(['message' => 'Usuario creado con éxito'], 201);
@@ -28,7 +26,6 @@ class UsersController extends Controller
         $request->validate([
             'email' => 'string|email|max:255|unique:users,email,'.$id,
             'password' => 'string|min:8|confirmed', //Habrá que crear dos inputs, uno para la contraseña y otro para la confirmación de la misma
-            'rol' => 'string|in:admin,medico,cliente,paciente',
         ]);
 
         $user = User::findOrFail($id);
