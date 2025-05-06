@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // src/app/app.component.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -14,6 +15,8 @@ import { NavComponent } from './components/Admin/Dashboard/body/nav/nav.componen
 })
 export class AppComponent {}
 =======
+=======
+>>>>>>> Stashed changes
 import { Component } from '@angular/core';
 
 @Component({
@@ -25,4 +28,7 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'frontend';
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

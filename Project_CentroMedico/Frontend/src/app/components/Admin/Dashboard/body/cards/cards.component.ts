@@ -9,7 +9,11 @@ import { Component } from '@angular/core';
 export class CardsComponent {
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
 =======
 }
 >>>>>>> Stashed changes
