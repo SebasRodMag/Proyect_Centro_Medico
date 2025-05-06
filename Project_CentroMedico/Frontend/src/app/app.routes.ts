@@ -34,9 +34,19 @@ export const routes: Routes = [
         import('./components/Admin/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
     },
     {
+        path: 'usuarios',
+        loadComponent: () =>
+        import('./components/Admin/Dashboard/body/usuarios/usuarios.component').then((m) => m.UsuariosComponent),
+    },
+    {
         path: 'cards',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/cards/cards.component').then((m) => m.CardsComponent),
+    },
+    {
+        path: 'logout',
+        loadComponent: () =>
+        import('./components/login/login.component').then((m) => m.LoginComponent),
     },
     {
         path: '**',
