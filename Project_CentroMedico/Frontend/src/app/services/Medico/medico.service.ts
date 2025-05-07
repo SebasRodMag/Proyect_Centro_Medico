@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 interface Medico {
+    id: number;
     nombre: string;
     apellidos: string;
 }
@@ -11,11 +12,11 @@ interface Medico {
     providedIn: 'root',
 })
 export class MedicoService {
-    private apiUrl = '/api/medicos/perfil'; // Ajusta la URL base de tu API de Laravel
+    private apiUrlBase = '/api'; // URL base de la API de Laravel
 
     constructor(private http: HttpClient) {}
 
     getMedicoLogueado(): Observable<Medico> {
-        return this.http.get<Medico>(`${this.apiUrl}/medicoLogueado`);
+        return this.http.get<Medico>(`${this.apiUrlBase}/medicos/perfil`);
     }
 }

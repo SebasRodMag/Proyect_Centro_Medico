@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { MedicoService } from '../../services/Medico/medico.service';
 import { CitaService } from '../../services/Cita/cita.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 interface Medico {
+  id: number;
   nombre: string;
   apellidos: string;
 }
@@ -19,7 +22,7 @@ interface Cita {
 @Component({
   selector: 'app-medico',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, FormsModule],
   providers: [MedicoService, CitaService],
   templateUrl: './medico.component.html',
   styleUrls: ['./medico.component.css'],
@@ -29,22 +32,22 @@ export class MedicoComponent implements OnInit {
   citas: Cita[] = [];
   paginaActual = 1;
   citasPorPagina = 10;
-  //Obtener el total de citas desde la API
   totalCitas = 0;
   fechaActual: Date = new Date();
-  medicoId = 1; // TODO: Obtener el ID del médico logueado dinámicamente
+  medicoId: number | null = null;
 
   constructor(private medicoService: MedicoService, private citaService: CitaService) {}
 
   ngOnInit(): void {
     this.obtenerMedicoLogueado();
-    this.obtenerCitasPaginadas();
   }
 
   obtenerMedicoLogueado(): void {
     this.medicoService.getMedicoLogueado().subscribe(
       (medico) => {
         this.medico = medico;
+        this.medicoId = medico.id;
+        this.obtenerCitasPaginadas(); // Carga inicial con la página 1 y sin fecha (todas las citas paginadas)
       },
       (error) => {
         console.error('Error al obtener el médico logueado:', error);
@@ -52,46 +55,33 @@ export class MedicoComponent implements OnInit {
     );
   }
 
-  obtenerCitasPaginadas(): void {
-    this.citaService.getCitasPorMedico(this.medicoId, this.paginaActual, this.citasPorPagina).subscribe(
-      (citas) => {
-        this.citas = citas;
-        // TODO: Obtener el total de citas desde la respuesta de la API
-        // this.totalCitas = response.total;
-      },
-      (error) => {
-        console.error('Error al obtener las citas:', error);
-      }
-    );
+  obtenerCitasPaginadas(pagina: number = this.paginaActual, fecha?: string): void {
+    if (this.medicoId) {
+      this.citaService.getCitasPorMedico(this.medicoId, pagina, this.citasPorPagina, fecha).subscribe(
+        (response) => {
+          this.citas = response.data;
+          this.totalCitas = response.total;
+          this.paginaActual = pagina; // Actualiza la página actual
+        },
+        (error) => {
+          console.error('Error al obtener las citas:', error);
+        }
+      );
+    }
   }
 
   cambiarPagina(pagina: number): void {
-    this.paginaActual = pagina;
-    this.obtenerCitasPaginadas();
+    this.obtenerCitasPaginadas(pagina);
   }
 
   avanzarDia(): void {
     this.fechaActual.setDate(this.fechaActual.getDate() + 1);
-    this.obtenerCitasPorDia();
+    this.obtenerCitasPaginadas(1, this.formatearFecha(this.fechaActual)); // Resetear a la página 1 al cambiar de día
   }
 
   retrocederDia(): void {
     this.fechaActual.setDate(this.fechaActual.getDate() - 1);
-    this.obtenerCitasPorDia();
-  }
-
-  obtenerCitasPorDia(): void {
-    const fechaFormateada = this.formatearFecha(this.fechaActual);
-    this.citaService.getCitasPorDia(fechaFormateada).subscribe(
-      (citas) => {
-        this.citas = citas;
-        this.totalCitas = citas.length; // En este caso, el total es el número de citas del día
-        this.paginaActual = 1; // Resetear la página al cambiar de día
-      },
-      (error) => {
-        console.error('Error al obtener las citas por día:', error);
-      }
-    );
+    this.obtenerCitasPaginadas(1, this.formatearFecha(this.fechaActual)); // Resetear a la página 1 al cambiar de día
   }
 
   formatearFecha(fecha: Date): string {
