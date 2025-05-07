@@ -29,6 +29,10 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita creada con éxito'], 201);
     }
 
+    public function horarios(){
+        
+    }
+
     public function update(Request $request, $id){
         $request->validate([
             'fecha_hora_cita' => 'date',

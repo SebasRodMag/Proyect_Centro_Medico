@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModalCreateComponent } from '../usuarios/modal-create/modal-create.component';
+import { ModalCreateComponent } from './modal-create/modal-create.component';
 
 @Component({
     selector: 'app-medicos',

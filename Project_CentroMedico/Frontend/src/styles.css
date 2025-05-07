@@ -9,9 +9,7 @@ p, label{
     font-size: 14px;
 }
 
-button{
-    cursor: pointer;
-    button, i{
+button, i{
     cursor: pointer;
 }
 
@@ -19,4 +17,14 @@ button:hover{
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
     scale: 1.05;
     transition: all 0.2s ease-in-out;
+}
+
+#boton-registrar button{
+    width: 100%;
+    padding: 10px 35px 10px 35px;
+    background-color: #009975;
+    border: 0;
+    border-radius: 5px;
+    color: white;
+
 }
