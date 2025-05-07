@@ -12,7 +12,7 @@ export class PacientesComponent implements OnInit {
     clienteId!: string;
 
     constructor(
-        private clienteService: ClienteService, // Asegúrate de que el servicio esté bien importado
+        private clienteService: ClienteService,
         private route: ActivatedRoute
     ) {}
 
