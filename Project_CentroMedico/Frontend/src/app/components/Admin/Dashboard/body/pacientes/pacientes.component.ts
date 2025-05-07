@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PacienteService } from '../../../../../services/
-
-'; // Asegúrate de importar el servicio de pacientes correctamente
+import { ClienteService } from '../../../../../services/cliente.service'; // Asegúrate de importar el servicio de pacientes correctamente
 
 @Component({
     selector: 'app-pacientes',
@@ -14,7 +12,7 @@ export class PacientesComponent implements OnInit {
     clienteId!: string;
 
     constructor(
-        private pacienteService: PacienteService, // Asegúrate de que el servicio esté bien importado
+        private clienteService: ClienteService, // Asegúrate de que el servicio esté bien importado
         private route: ActivatedRoute
     ) {}
 
@@ -24,7 +22,7 @@ export class PacientesComponent implements OnInit {
         console.log('Cliente ID:', this.clienteId);
 
         // Obtener los pacientes del cliente con el servicio
-        this.pacienteService.getPacientesDelCliente(this.clienteId).subscribe(
+        this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(
             (data: any[]) => {
                 this.pacientes = data; // Asignar los pacientes a la propiedad 'pacientes'
             },
