@@ -91,6 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::get('/citas', [CitaController::class, 'Citas']);
     });
 
+    Route::post('/login', [AuthController::class, 'login']);
+
     //Ruta de prueba para comprobar error al resolver el middleware
     Route::get('/test', function () {
         return response()->json(['message' => 'Rol autorizado']);

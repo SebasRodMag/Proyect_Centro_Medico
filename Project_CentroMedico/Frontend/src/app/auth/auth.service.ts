@@ -21,7 +21,7 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api'; // Ajusta según tu backend
+  private apiUrl = 'http://localhost:8000/api/auth'; // Ajusta según tu backend
 
   constructor(private http: HttpClient, private router: Router) {}
 

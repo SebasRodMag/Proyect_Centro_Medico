@@ -4,7 +4,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { MedicoComponent } from './components/medico/medico.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
     {
         path: 'home',
         loadComponent: () =>
