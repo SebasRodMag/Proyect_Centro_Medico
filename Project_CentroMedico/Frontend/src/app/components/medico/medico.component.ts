@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MedicoService } from '../../services/Medico/medico.service';
 import { CitaService } from '../../services/Cita/cita.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 interface Medico {
@@ -19,10 +18,15 @@ interface Cita {
   estado: string;
 }
 
+interface CitasResponse {
+  data: Cita[];
+  total: number;
+}
+
 @Component({
   selector: 'app-medico',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   providers: [MedicoService, CitaService],
   templateUrl: './medico.component.html',
   styleUrls: ['./medico.component.css'],
@@ -43,45 +47,54 @@ export class MedicoComponent implements OnInit {
   }
 
   obtenerMedicoLogueado(): void {
-    this.medicoService.getMedicoLogueado().subscribe(
-      (medico) => {
+    this.medicoService.getMedicoLogueado().subscribe({
+      next: (medico) => {
         this.medico = medico;
         this.medicoId = medico.id;
-        this.obtenerCitasPaginadas(); // Carga inicial con la página 1 y sin fecha (todas las citas paginadas)
+        this.actualizarCitas(this.fechaActual); // Llamada inicial
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al obtener el médico logueado:', error);
-      }
-    );
+      },
+    });
   }
 
-  obtenerCitasPaginadas(pagina: number = this.paginaActual, fecha?: string): void {
+  actualizarCitas(fecha?: Date, pagina: number = 1): void {
     if (this.medicoId) {
-      this.citaService.getCitasPorMedico(this.medicoId, pagina, this.citasPorPagina, fecha).subscribe(
-        (response) => {
-          this.citas = response.data;
-          this.totalCitas = response.total;
-          this.paginaActual = pagina; // Actualiza la página actual
-        },
-        (error) => {
-          console.error('Error al obtener las citas:', error);
-        }
-      );
+      const fechaStr = fecha ? this.formatearFecha(fecha) : undefined;
+
+      this.citaService
+        .getCitasPorMedico(this.medicoId, pagina, this.citasPorPagina, fechaStr)
+        .subscribe({
+          next: (response: CitasResponse) => {
+            this.citas = response.data;
+            this.totalCitas = response.total;
+            this.paginaActual = pagina;
+          },
+          error: (error) => {
+            console.error('Error al obtener las citas:', error);
+          },
+        });
     }
   }
 
+  
   cambiarPagina(pagina: number): void {
-    this.obtenerCitasPaginadas(pagina);
+    this.actualizarCitas(this.fechaActual, pagina);
   }
 
   avanzarDia(): void {
-    this.fechaActual.setDate(this.fechaActual.getDate() + 1);
-    this.obtenerCitasPaginadas(1, this.formatearFecha(this.fechaActual)); // Resetear a la página 1 al cambiar de día
+    const nuevaFecha = new Date(this.fechaActual);
+    nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+    this.fechaActual = nuevaFecha;
+    this.actualizarCitas(this.fechaActual, 1);
   }
 
   retrocederDia(): void {
-    this.fechaActual.setDate(this.fechaActual.getDate() - 1);
-    this.obtenerCitasPaginadas(1, this.formatearFecha(this.fechaActual)); // Resetear a la página 1 al cambiar de día
+    const nuevaFecha = new Date(this.fechaActual);
+    nuevaFecha.setDate(nuevaFecha.getDate() - 1);
+    this.fechaActual = nuevaFecha;
+    this.actualizarCitas(this.fechaActual, 1);
   }
 
   formatearFecha(fecha: Date): string {

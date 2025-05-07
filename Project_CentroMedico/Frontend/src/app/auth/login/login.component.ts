@@ -1,41 +1,47 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../auth/auth.service';
-import { Router, RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CommonModule], // Importa ReactiveFormsModule y RouterLink
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+export class LoginComponent {
+  loginForm!: FormGroup;
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit(): void {
-    this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', Validators.required),
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
     });
   }
 
-  onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe(
-        (response) => {
-          // Redirigir al usuario a la vista médico o a la página principal
-          this.router.navigate(['/medicos/perfil']); // Ejemplo de redirección
-        },
-        (error) => {
-          this.errorMessage = 'Credenciales inválidas. Por favor, inténtalo de nuevo.';
-          console.error('Error de login:', error);
-        }
-      );
-    }
+  ngOnInit(): void {
+    // Inicializamos el formulario con validaciones
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]], // Validación de email
+      password: ['', Validators.required] // Validación de contraseña
+    });
+  }
+
+  // Método para enviar el formulario
+  onSubmit() {
+    if (this.loginForm.invalid) return;
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: () => {
+        // Redirección ya se maneja en AuthService
+      },
+      error: () => {
+        this.errorMessage = 'Credenciales incorrectas';
+      }
+    });
   }
 }

@@ -1,67 +1,70 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+
+interface User {
+  id: number;
+  email: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  rol: string; // Este es el rol que obtienes de la respuesta
+}
 
 interface AuthResponse {
   token: string;
-  user: any; // Puedes crear una interfaz User si ya no la tienes
+  user: User;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = '/api/auth';
-  private loggedIn = new BehaviorSubject<boolean>(false);
-  private authToken = new BehaviorSubject<string | null>(null);
-  private currentUser = new BehaviorSubject<any>(null);
+  private apiUrl = 'http://localhost:8000/api'; // Ajusta según tu backend
 
-  constructor(private http: HttpClient) {
-    // Comprobar si hay un token en el localStorage al iniciar la aplicación
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      this.authToken.next(token);
-      this.loggedIn.next(true);
-      // Aquí podrías también intentar obtener la información del usuario si la guardaste
-    }
-  }
+  constructor(private http: HttpClient, private router: Router) {}
 
-  get isLoggedIn(): Observable<boolean> {
-    return this.loggedIn.asObservable();
-  }
-
-  get token(): Observable<string | null> {
-    return this.authToken.asObservable();
-  }
-
-  get user(): Observable<any> {
-    return this.currentUser.asObservable();
-  }
-
-  login(credentials: any): Observable<AuthResponse> {
+  login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      map((response) => {
-        this.authToken.next(response.token);
-        this.currentUser.next(response.user);
-        this.loggedIn.next(true);
-        localStorage.setItem('auth_token', response.token);
-        // Opcional: Guardar también la información del usuario en localStorage o sessionStorage
-        return response;
+      tap((res) => {
+        // Almacenar token y rol en localStorage
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('rol', res.user.rol);
+
+        // Redirigir al usuario según su rol
+        this.redirectUser(res.user.rol);
       })
     );
   }
 
-  logout(): void {
-    // No es necesario hacer una petición al backend para invalidar el token con Sanctum en el frontend
-    this.authToken.next(null);
-    this.currentUser.next(null);
-    this.loggedIn.next(false);
-    localStorage.removeItem('auth_token');
-    // Opcional: Eliminar también la información del usuario guardada
+  redirectUser(rol: string) {
+    switch (rol) {
+      case 'Administrador':
+        this.router.navigate(['/admin/dashboard']);
+        break;
+      case 'Medico':
+        this.router.navigate(['/medico/dashboard']);
+        break;
+      case 'Cliente':
+        this.router.navigate(['/cliente/dashboard']);
+        break;
+      default:
+        this.router.navigate(['/login']);
+        break;
+    }
   }
 
-  getToken(): string | null {
-    return this.authToken.value;
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
+  getRol(): string {
+    return localStorage.getItem('rol') || '';
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
   }
 }

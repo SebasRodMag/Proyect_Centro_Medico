@@ -20,20 +20,19 @@ export const routes: Routes = [
         loadComponent: () =>
         import('./components/medico/medico.component').then((m) => m.MedicoComponent),
     },
-    {
-        path: 'clientes',
-        loadComponent: () =>
-        import('./components/Admin/Dashboard/body/clientes/clientes.component').then((m) => m.ClientesComponent),
-    },
+    // Rutas para el cliente, Falta crear el controlador y el servicio
+/*   {
+        path: 'cliente',
+        loadComponent: () => import('./components/clinete/cliente.component').then(m => m.ClienteComponent),
+    }, */
     {
         path: 'citas',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
     },
     {
-        path: 'medicos',
-        loadComponent: () =>
-        import('./components/Admin/Dashboard/body/medicos/medicos.component').then((m) => m.MedicosComponent),
+        path: 'medico',
+        loadComponent: () => import('./components/medico/medico.component').then(m => m.MedicoComponent),
     },
     {
         path: 'pacientes',
@@ -59,4 +58,10 @@ export const routes: Routes = [
         path: '**',
         redirectTo: 'home',
     },
+
+    // Rutas para el administrador, Falta crear el controlador y el servicio
+    /* {
+        path: 'admin',
+        loadComponent: () => import('./components/Admin/Dashboard/body/').then(m => m.AdminComponent),
+    }, */
 ];
