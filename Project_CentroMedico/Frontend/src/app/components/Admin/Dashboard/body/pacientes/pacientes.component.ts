@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClienteService } from '../../../../../services/cliente.service'; // Asegúrate de importar el servicio de pacientes correctamente
+import { ModalCreateComponent } from './modal-create/modal-create.component';
 
 @Component({
     selector: 'app-pacientes',
     templateUrl: './pacientes.component.html',
+    imports: [ModalCreateComponent],
     styleUrls: ['./pacientes.component.css'],
 })
 export class PacientesComponent implements OnInit {

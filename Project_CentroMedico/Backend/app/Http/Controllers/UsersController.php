@@ -22,6 +22,13 @@ class UsersController extends Controller
         return response()->json(['message' => 'Usuario creado con éxito'], 201);
     }
 
+    public function assign(Request $request, $id){
+        $user = User::findOrFail($id);
+        $user->assignRole($request->rol);
+        $user->save();
+
+        return response()->json(['message' => 'Rol asignado con éxito'], 200);
+    }
     public function update(Request $request, $id){
         $request->validate([
             'email' => 'string|email|max:255|unique:users,email,'.$id,
