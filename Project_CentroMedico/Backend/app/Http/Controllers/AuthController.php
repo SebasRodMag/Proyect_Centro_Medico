@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -41,5 +42,17 @@ class AuthController extends Controller
         });
 
         return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function me()
+    {
+        $user = Auth::user();
+        $role = $user->getRoleNames();
+        return response()->json(
+            [
+                'user' => $user,
+                'role' => $role,
+            ]
+        );
     }
 }

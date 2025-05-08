@@ -18,20 +18,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Asegura que los roles existan
-        $clienteRole = Role::firstOrCreate(['name' => 'Cliente']);
-        $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
-        $medicoRole = Role::firstOrCreate(['name' => 'Médico']);
-        $pacienteRole = Role::firstOrCreate(['name' => 'Paciente']);
-
-
 
         // Crear el usuario administrador
         $admin = User::create([
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
         ]);
-        $admin->assignRole($adminRole);
+        $admin->assignRole("Administrador");
 
         // Crear usuarios médicos
         for ($i = 1; $i <= 3; $i++) {
@@ -39,7 +32,6 @@ class UserSeeder extends Seeder
                 'email' => "medico{$i}@example.com",
                 'password' => Hash::make('password123'),
             ]);
-            $medico->assignRole($medicoRole);
         }
 
         // Crear usuarios clientes
@@ -48,7 +40,6 @@ class UserSeeder extends Seeder
                 'email' => "cliente{$i}@example.com",
                 'password' => Hash::make('password123'),
             ]);
-            $cliente->assignRole($clienteRole);
         }
 
         // Crear usuarios pacientes
@@ -57,7 +48,6 @@ class UserSeeder extends Seeder
                 'email' => "paciente{$i}@example.com",
                 'password' => Hash::make('password123'),
             ]);
-            $paciente->assignRole($pacienteRole);
         }
     }
 }
