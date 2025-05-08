@@ -12,6 +12,7 @@ class ClientesController extends Controller
 {
     public function store(Request $request){
         $request->validate([
+            
             'razon_social' => 'required|string|max:255',
             'cif' => 'required|string|min:9|max:9|unique:clientes',
             'direccion' => 'required|string|max:255',

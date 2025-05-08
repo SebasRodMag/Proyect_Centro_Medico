@@ -3,7 +3,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 100vh; /* Para que el contenedor ocupe toda la altura de la pantalla */
         padding: 20px; /* Añadimos un poco de espacio alrededor */
     }
     
@@ -13,7 +12,7 @@
     }
     
     form {
-        width: 100%; /* El formulario ocupa todo el ancho de su contenedor */
+        width: auto; /* El formulario ocupa todo el ancho de su contenedor */
         max-width: 400px; /* Limitamos el ancho máximo del formulario */
         padding: 20px;
         border: 1px solid #ccc; /* Un borde sutil */
