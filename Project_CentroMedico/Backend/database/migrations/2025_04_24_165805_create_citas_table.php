@@ -29,7 +29,7 @@ return new class extends Migration
             $table->date('fecha_hora_fin')->nullable();
             $table->string('observaciones')->nullable();
             $table->timestamps();
-            $table->softDelete();
+            $table->softDeletes();
         });
     }
 
