@@ -167,8 +167,8 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\framework/cache/data',
-        'lock_path' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\framework/cache/data',
+        'path' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\framework/cache/data',
+        'lock_path' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -251,7 +251,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\database\\database.sqlite',
+        'database' => 'database/database.sqlite',
         'prefix' => '',
         'foreign_key_constraints' => true,
         'busy_timeout' => NULL,
@@ -264,7 +264,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'laravel',
+        'database' => 'database/database.sqlite',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -284,7 +284,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'laravel',
+        'database' => 'database/database.sqlite',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -304,7 +304,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '5432',
-        'database' => 'laravel',
+        'database' => 'database/database.sqlite',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -319,7 +319,7 @@
         'url' => NULL,
         'host' => 'localhost',
         'port' => '1433',
-        'database' => 'laravel',
+        'database' => 'database/database.sqlite',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -369,7 +369,7 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\app/private',
+        'root' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\app/private',
         'serve' => true,
         'throw' => false,
         'report' => false,
@@ -377,7 +377,7 @@
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\app/public',
+        'root' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -399,7 +399,7 @@
     ),
     'links' => 
     array (
-      'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\public\\storage' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\app/public',
+      'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\public\\storage' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\app/public',
     ),
   ),
   'logging' => 
@@ -424,14 +424,14 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\logs/laravel.log',
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -496,7 +496,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -574,7 +574,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\resources\\views/vendor/mail',
+        0 => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -735,7 +735,7 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\framework/sessions',
+    'files' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -834,9 +834,9 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\resources\\views',
+      0 => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\resources\\views',
     ),
-    'compiled' => 'C:\\Practicas\\Proyecto Centro Medico\\Proyect Centro Medico\\Project_CentroMedico\\Backend\\storage\\framework\\views',
+    'compiled' => 'C:\\Users\\brand\\Desktop\\FCT\\Proyecto_CentroMedico\\Project_CentroMedico\\Backend\\storage\\framework\\views',
   ),
   'tinker' => 
   array (
