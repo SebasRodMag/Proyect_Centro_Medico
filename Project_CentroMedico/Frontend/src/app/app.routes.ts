@@ -1,5 +1,6 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { PacientesComponent } from './components/Admin/Dashboard/body/pacientes/pacientes.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -48,6 +49,11 @@ export const routes: Routes = [
         loadComponent: () =>
         import('./components/login/login.component').then((m) => m.LoginComponent),
     },
+    {
+        path: 'clientes/:id/pacientes', 
+        loadComponent: () =>
+        import('./components/Admin/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
+    },    
     {
         path: '**',
         redirectTo: 'home',
