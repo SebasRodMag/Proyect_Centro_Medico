@@ -1,9 +1,8 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { PacientesComponent } from './components/Admin/Dashboard/body/pacientes/pacientes.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
     {
         path: 'home',
         loadComponent: () =>
@@ -12,22 +11,26 @@ export const routes: Routes = [
     {
         path: 'login',
         loadComponent: () =>
-        import('./components/login/login.component').then((m) => m.LoginComponent),
+        import('./auth/login/login.component').then((m) => m.LoginComponent),
     },
     {
-        path: 'clientes',
+        path: 'medicos/perfil',
         loadComponent: () =>
-        import('./components/Admin/Dashboard/body/clientes/clientes.component').then((m) => m.ClientesComponent),
+        import('./components/medico/medico.component').then((m) => m.MedicoComponent),
     },
+    // Rutas para el cliente, Falta crear el controlador y el servicio
+/*   {
+        path: 'cliente',
+        loadComponent: () => import('./components/clinete/cliente.component').then(m => m.ClienteComponent),
+    }, */
     {
         path: 'citas',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
     },
     {
-        path: 'medicos',
-        loadComponent: () =>
-        import('./components/Admin/Dashboard/body/medicos/medicos.component').then((m) => m.MedicosComponent),
+        path: 'medico',
+        loadComponent: () => import('./components/medico/medico.component').then(m => m.MedicoComponent),
     },
     {
         path: 'pacientes',
@@ -47,7 +50,7 @@ export const routes: Routes = [
     {
         path: 'logout',
         loadComponent: () =>
-        import('./components/login/login.component').then((m) => m.LoginComponent),
+        import('./auth/login/login.component').then((m) => m.LoginComponent),
     },
     {
         path: 'clientes/:id/pacientes', 
@@ -58,4 +61,10 @@ export const routes: Routes = [
         path: '**',
         redirectTo: 'home',
     },
+
+    // Rutas para el administrador, Falta crear el controlador y el servicio
+    /* {
+        path: 'admin',
+        loadComponent: () => import('./components/Admin/Dashboard/body/').then(m => m.AdminComponent),
+    }, */
 ];

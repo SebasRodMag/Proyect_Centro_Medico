@@ -98,4 +98,48 @@ class CitasController extends Controller
         $citas = Cita::whereBetween('fecha_hora_cita', [$fecha_inicio, $fecha_fin])->get();
         return response()->json($citas, 200);
     }
+
+    // Función para mostrar las citas que tiene el medico logueado paginada de a 10
+    public function citasPorMedico(Request $request, $medicoId)
+    {
+        $pageSize = $request->query('pageSize', 10);
+        $page = $request->query('page', 1);
+        $fecha = $request->query('fecha'); // Obtiene el parámetro de fecha si existe
+
+        $query = Cita::where('id_medico', $medicoId)->with('paciente');
+
+        if ($fecha) {
+            $query->whereDate('fecha_hora_cita', $fecha);
+        }
+
+        $citas = $query->paginate($pageSize, ['*'], 'page', $page);
+
+        return response()->json([
+            'total' => $citas->total(),
+            'data' => $citas->items(),
+        ], 200);
+    }
+
+    //implementar la función para mostrar las citas de un médico
+    public function citasPorDia($fecha){
+        $citas = Cita::whereDate('fecha_hora_cita', $fecha)->get();
+        return response()->json($citas, 200);
+    }
+    //implementar la función para mostrar las citas de un médico
+    public function citasPorDiaMedico($id_medico, $fecha){
+        $citas = Cita::where('id_medico', $id_medico)->whereDate('fecha_hora_cita', $fecha)->get();
+        return response()->json($citas, 200);
+    }
+
+    //implementar la función para mostrar las citas de un paciente
+    public function citasPorDiaPaciente($id_paciente, $fecha){
+        $citas = Cita::where('id_paciente', $id_paciente)->whereDate('fecha_hora_cita', $fecha)->get();
+        return response()->json($citas, 200);
+    }
+
+    //implementar la función para mostrar las citas de un cliente
+    public function citasPorDiaCliente($id_cliente, $fecha){
+        $citas = Cita::where('id_cliente', $id_cliente)->whereDate('fecha_hora_cita', $fecha)->get();
+        return response()->json($citas, 200);
+    }
 }

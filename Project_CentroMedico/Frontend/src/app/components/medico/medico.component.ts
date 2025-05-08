@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { MedicoService } from '../../services/Medico/medico.service';
 import { CitaService } from '../../services/Cita/cita.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface Medico {
+  id: number;
   nombre: string;
   apellidos: string;
 }
@@ -16,10 +18,15 @@ interface Cita {
   estado: string;
 }
 
+interface CitasResponse {
+  data: Cita[];
+  total: number;
+}
+
 @Component({
   selector: 'app-medico',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   providers: [MedicoService, CitaService],
   templateUrl: './medico.component.html',
   styleUrls: ['./medico.component.css'],
@@ -29,69 +36,65 @@ export class MedicoComponent implements OnInit {
   citas: Cita[] = [];
   paginaActual = 1;
   citasPorPagina = 10;
-  //Obtener el total de citas desde la API
   totalCitas = 0;
   fechaActual: Date = new Date();
-  medicoId = 1; // TODO: Obtener el ID del médico logueado dinámicamente
+  medicoId: number | null = null;
 
   constructor(private medicoService: MedicoService, private citaService: CitaService) {}
 
   ngOnInit(): void {
     this.obtenerMedicoLogueado();
-    this.obtenerCitasPaginadas();
   }
 
   obtenerMedicoLogueado(): void {
-    this.medicoService.getMedicoLogueado().subscribe(
-      (medico) => {
+    this.medicoService.getMedicoLogueado().subscribe({
+      next: (medico) => {
         this.medico = medico;
+        this.medicoId = medico.id;
+        this.actualizarCitas(this.fechaActual); // Llamada inicial
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al obtener el médico logueado:', error);
-      }
-    );
-  }
-
-  obtenerCitasPaginadas(): void {
-    this.citaService.getCitasPorMedico(this.medicoId, this.paginaActual, this.citasPorPagina).subscribe(
-      (citas) => {
-        this.citas = citas;
-        // TODO: Obtener el total de citas desde la respuesta de la API
-        // this.totalCitas = response.total;
       },
-      (error) => {
-        console.error('Error al obtener las citas:', error);
-      }
-    );
+    });
   }
 
+  actualizarCitas(fecha?: Date, pagina: number = 1): void {
+    if (this.medicoId) {
+      const fechaStr = fecha ? this.formatearFecha(fecha) : undefined;
+
+      this.citaService
+        .getCitasPorMedico(this.medicoId, pagina, this.citasPorPagina, fechaStr)
+        .subscribe({
+          next: (response: CitasResponse) => {
+            this.citas = response.data;
+            this.totalCitas = response.total;
+            this.paginaActual = pagina;
+          },
+          error: (error) => {
+            console.error('Error al obtener las citas:', error);
+          },
+        });
+    }
+  }
+
+  
   cambiarPagina(pagina: number): void {
-    this.paginaActual = pagina;
-    this.obtenerCitasPaginadas();
+    this.actualizarCitas(this.fechaActual, pagina);
   }
 
   avanzarDia(): void {
-    this.fechaActual.setDate(this.fechaActual.getDate() + 1);
-    this.obtenerCitasPorDia();
+    const nuevaFecha = new Date(this.fechaActual);
+    nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+    this.fechaActual = nuevaFecha;
+    this.actualizarCitas(this.fechaActual, 1);
   }
 
   retrocederDia(): void {
-    this.fechaActual.setDate(this.fechaActual.getDate() - 1);
-    this.obtenerCitasPorDia();
-  }
-
-  obtenerCitasPorDia(): void {
-    const fechaFormateada = this.formatearFecha(this.fechaActual);
-    this.citaService.getCitasPorDia(fechaFormateada).subscribe(
-      (citas) => {
-        this.citas = citas;
-        this.totalCitas = citas.length; // En este caso, el total es el número de citas del día
-        this.paginaActual = 1; // Resetear la página al cambiar de día
-      },
-      (error) => {
-        console.error('Error al obtener las citas por día:', error);
-      }
-    );
+    const nuevaFecha = new Date(this.fechaActual);
+    nuevaFecha.setDate(nuevaFecha.getDate() - 1);
+    this.fechaActual = nuevaFecha;
+    this.actualizarCitas(this.fechaActual, 1);
   }
 
   formatearFecha(fecha: Date): string {

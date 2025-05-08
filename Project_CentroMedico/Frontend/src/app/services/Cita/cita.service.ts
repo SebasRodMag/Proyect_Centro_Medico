@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
+
+interface CitaResponse {
+  total: number;
+  data: Cita[];
+}
 interface Cita {
   id: number;
   fecha_hora_cita: string;
@@ -14,19 +20,25 @@ interface Cita {
   providedIn: 'root',
 })
 export class CitaService {
-  private apiUrl(medicoId: number): string {
-    return `/api/medicos/${medicoId}/citas`; // Ajusta la URL base de tu API de Laravel
-  }
+  private apiUrlBase = '/api'; // La URL se completa dentro de cada método que necesite el medicoId
 
   constructor(private http: HttpClient) {}
 
-  getCitasPorMedico(medicoId: number, page: number = 1, pageSize: number = 10): Observable<Cita[]> {
-    const params = new HttpParams()
+  getCitasPorMedico(medicoId: number, page: number = 1, pageSize: number = 10, fecha?: string): Observable<CitaResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
       .set('pageSize', pageSize.toString());
-    return this.http.get<Cita[]>(this.apiUrl(medicoId), { params });
+
+    if (fecha) {
+      params = params.set('fecha', fecha);
+    }
+
+    const apiUrl = `${this.apiUrlBase}/medicos/${medicoId}/citas`;
+    return this.http.get<CitaResponse>(apiUrl, { params });
   }
 
+  // Obtenemos todas las citas de un día
   getCitasPorDia(fecha: string): Observable<Cita[]> {
-    return this.http.get<Cita[]>(`${this.apiUrl}/citas/dia/${fecha}`);
+    return this.http.get<Cita[]>(`${this.apiUrlBase}/citas/dia/${fecha}`);
   }
 }
