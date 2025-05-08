@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgSelectComponent } from '@ng-select/ng-select';
+import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
+
+declare var $: any;
 
 @Component({
     selector: 'app-modal-create',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, NgSelectModule],
     templateUrl: './modal-create.component.html',
     styleUrl: './modal-create.component.css',
 })
@@ -15,11 +17,14 @@ export class ModalCreateComponent {
     @Output() closed = new EventEmitter<void>();
 
     open() {
-        this.isVisible = true;
+        this.isVisible = true; // aumentar el delay puede ayudar
     }
 
     close() {
         this.isVisible = false;
         this.closed.emit();
     }
+
+    selectedPacientes: string[] = [];
+    pacientes = ['Mustard', 'Ketchup', 'Relish'];
 }
