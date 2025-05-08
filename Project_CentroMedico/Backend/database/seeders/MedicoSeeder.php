@@ -47,7 +47,7 @@ class MedicoSeeder extends Seeder
                     'password' => Hash::make('password123'),
                 ]);
             
-                $user->assignRole('Medico');
+                // $user->assignRole('Medico', 'sanctum');
             
                 DB::table('medicos')->insert([
                     'id_user' => $user->id,
