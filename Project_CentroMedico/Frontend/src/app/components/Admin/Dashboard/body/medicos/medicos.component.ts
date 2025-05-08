@@ -8,7 +8,7 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
         CommonModule, ModalCreateComponent
     ],
     templateUrl: './medicos.component.html',
-    styleUrl: './medicos.component.css'
+    styleUrls: ['./medicos.component.css']
 })
 export class MedicosComponent {
 

@@ -1,0 +1,76 @@
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh; /* Para que el contenedor ocupe toda la altura de la pantalla */
+        padding: 20px; /* Añadimos un poco de espacio alrededor */
+    }
+    
+    h2 {
+        margin-bottom: 20px; /* Espacio debajo del título */
+        text-align: center; /* Centramos el título */
+    }
+    
+    form {
+        width: 100%; /* El formulario ocupa todo el ancho de su contenedor */
+        max-width: 400px; /* Limitamos el ancho máximo del formulario */
+        padding: 20px;
+        border: 1px solid #ccc; /* Un borde sutil */
+        border-radius: 8px; /* Bordes redondeados */
+        background-color: #f9f9f9; /* Un fondo claro para el formulario */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Una sombra suave */
+    }
+    
+    .form-group {
+        margin-bottom: 15px; /* Espacio entre los grupos de formulario */
+    }
+    
+    label {
+        display: block; /* La etiqueta ocupa toda la línea */
+        margin-bottom: 5px;
+        font-weight: bold; /* Resaltamos la etiqueta */
+        color: #333; /* Color del texto de la etiqueta */
+    }
+    
+    .form-control {
+        width: 100%; /* El input ocupa todo el ancho de su contenedor .form-group */
+        padding: 10px;
+        border: 1px solid #ddd; /* Borde más claro */
+        border-radius: 4px;
+        box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #2A9D8F; /* Color de borde al enfocar */
+        box-shadow: 0 0 5px rgba(42, 157, 143, 0.5); /* Sombra al enfocar */
+    }
+    
+    .error-message {
+        color: red;
+        font-size: 0.9em;
+        margin-top: 0.3rem;
+    }
+    
+    .btn-primary {
+        background-color: #2A9D8F;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%; /* El botón ocupa todo el ancho del formulario */
+        transition: background-color 0.3s ease; /* Transición suave para el hover */
+    }
+    
+    .btn-primary:hover {
+        background-color: #248478; /* Un tono más oscuro al pasar el ratón */
+    }
+    
+    .btn-primary:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }

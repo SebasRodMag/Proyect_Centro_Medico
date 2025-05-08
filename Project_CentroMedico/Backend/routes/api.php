@@ -24,7 +24,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    //Rutas que solo los Administradores pueden acceder
+    //Rutas que solo los administradores pueden acceder
     Route::middleware(['role:Administrador'])->group(function () {
         //clientes
         Route::get('clientes', [ClientesController::class, 'index']);
@@ -33,10 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('medicos', [MedicosController::class, 'store']);
         Route::get('medicos/{medico}', [MedicosController::class, 'show']);
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
+        
         Route::post('citas', [CitasController::class, 'store']);
         Route::get('usuarios', [UsersController::class, 'index']);
-        Route::post('usuarios', [UsersController::class, 'store']);
-        Route::post('usuarios/assign/{id}', [UsersController::class, 'assignRole']);
         Route::get('usuarios/{user}', [UsersController::class, 'show']);
         Route::put('usuarios/{user}', [UsersController::class, 'update']);
         //Route::delete('usuarios/{user}', [UsersController::class, 'destroy']);
@@ -55,7 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('pacientes', [PacientesController::class, 'store']);
     });
 
-    //Rutas que solo los Administradores y clientes pueden acceder
+    //Rutas que solo los administradores y clientes pueden acceder
     Route::middleware(['role:Administrador,cliente'])->group(function () {
         Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::put('clientes/{cliente}', [ClientesController::class, 'update']);
@@ -66,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
     });
     
-    //Rutas que solo los Administradores y médicos pueden acceder
+    //Rutas que solo los administradores y médicos pueden acceder
     Route::middleware(['role:Administrador,medico'])->group(function () {
         Route::get('citas', [CitasController::class, 'index']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
@@ -74,53 +73,29 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
 
-    //Ruta que solo los Administradores, los médicos, los clientes y pacientes pueden acceder
+    //Ruta que solo los administradores, los médicos, los clientes y pacientes pueden acceder
     Route::middleware(['role:Administrador,medico,cliente,paciente'])->group(function () {
         Route::get('pacientes/{paciente}', [PacientesController::class, 'show']);
     });
 
     //Rutas que solo los médicos pueden acceder
-    Route::middleware(['role:Medico'])->group(function () {
-        Route::get('medicos/{medico}/citas', [MedicosController::class, 'citas']);
+    Route::middleware(['role:Medico'])->group(function (){
+        Route::get('medicos/{medico}/citas', [MedicosController::class, 'citasPorMedico']);
         Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
+        Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
+        Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
     });
-
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {
         // Rutas para que los clientes consulten sus citas (habría que darle más lógica aquí)
         // Route::get('/citas', [CitaController::class, 'Citas']);
     });
 
+    Route::post('/login', [AuthController::class, 'login']);
+
     //Ruta de prueba para comprobar error al resolver el middleware
     Route::get('/test', function () {
         return response()->json(['message' => 'Rol autorizado']);
-    })->middleware('auth:sanctum', 'role:Administrador');
+    })->middleware('auth:sanctum', 'role:administrador');
 
-    /**
-     * Para proteger las rutas por ROlES
-     * 
-     * Route::middleware(['role:admin'])->group(function () {
-     *  Rutas accesibles solo por usuarios con el rol 'admin'
-     * });
-     * 
-     * Rutas accecibles por permisos:
-     * 
-     * Route::middleware(['permission:edit articles'])->group(function () {
-     *  Rutas accesibles solo por usuarios con el permiso 'edit articles'
-     * });
-     * 
-     * 
-     * Rutas accesibles por Roles y permisos:
-     * 
-     * Route::middleware(['role_or_permission:admin|edit articles'])->group(function () {
-     *  Rutas accesibles por usuarios con el rol 'admin' o el permiso 'edit articles'
-     * });
-     * 
-     * 
-     * Dentro de los controladores, se puede verificar los permisos:
-     * 
-     * if (auth()->user()->can('edit articles')) {
-     *  El usuario tiene el permiso 'edit articles'
-     * }
-     */
 });

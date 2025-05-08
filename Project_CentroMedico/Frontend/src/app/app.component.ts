@@ -1,15 +1,23 @@
-
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Routes, RouterModule } from '@angular/router';
+import { LoginComponent } from './auth/login/login.component';
+import { MedicoComponent } from './components/medico/medico.component';
 import { HeaderComponent } from './components/Admin/Dashboard/header/header.component';
 import { BodyComponent } from './components/Admin/Dashboard/body/body.component';
-import { LoginComponent } from './components/login/login.component';
+
+const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirigir a login por defecto
+  { path: 'login', component: LoginComponent },
+  { path: 'medico', component: MedicoComponent },
+  // Otras rutas que necesites agregar
+];
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, BodyComponent, LoginComponent],
+  standalone: true,
+  imports: [RouterOutlet, HeaderComponent, BodyComponent], // Aquí se configura RouterModule con rutas
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title = 'Frontend';
