@@ -25,22 +25,24 @@ class UsersController extends Controller
     }
 
     public function assign(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+{
+    $user = User::findOrFail($id);
 
-        // Verificar si el rol existe
-        $rol = Role::findByName($request->rol);
+    // Verificar si el rol existe con el guard adecuado
+    $rol = Role::findByName($request->rol, 'web'); // o 'sanctum' si es necesario
 
-        if (!$rol) {
-            return response()->json(['message' => 'El rol no existe.'], 404);
-        }
-
-        // Asignar el rol al usuario
-        $user->assignRole($rol);
-        $user->save();
-
-        return response()->json(['message' => 'Rol asignado con éxito'], 200);
+    if (!$rol) {
+        return response()->json(['message' => 'El rol no existe.'], 404);
     }
+
+    // Asignar el rol al usuario con el guard adecuado
+    $user->assignRole($rol->name); // El guard se usará automáticamente desde el rol
+
+    $user->save();
+
+    return response()->json(['message' => 'Rol asignado con éxito'], 200);
+}
+
 
     public function update(Request $request, $id)
     {
