@@ -14,17 +14,19 @@ class CitasController extends Controller
             // 'fecha_hora_fin' => 'required|date|after:fecha_hora_inicio',
             'id_paciente' => 'required|integer|exists:pacientes,id',
             'id_medico' => 'required|integer|exists:medicos,id',
-            'id_contrato' => 'required|integer|exists:users,id',
+            'id_contrato' => 'required|integer|exists:contratos,id',
         ]);
 
         $cita = new Cita();
 
-        $cita->fecha_hora_cita = $request->fecha_hora_cita;
         // $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
         // $cita->fecha_hora_fin = $request->fecha_hora_fin;
         $cita->id_paciente = $request->id_paciente;
         $cita->id_medico = $request->id_medico;
         $cita->id_contrato = $request->id_contrato;
+        $cita->fecha_hora_cita = $request->fecha_hora_cita;
+        $cita->estado = $request->estado ?? 'pendiente';
+        $cita->observaciones = $request->observaciones ?? null;
         $cita->save();
         return response()->json(['message' => 'Cita creada con éxito'], 201);
     }

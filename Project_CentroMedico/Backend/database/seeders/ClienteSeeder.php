@@ -42,7 +42,7 @@ class ClienteSeeder extends Seeder
                 ]);
             
                 // Asignar el rol de Cliente
-                $user->assignRole('Cliente');
+                // $user->assignRole('Cliente', 'sanctum');
             
                 DB::table('clientes')->insert([
                     'id_usuario' => $user->id,

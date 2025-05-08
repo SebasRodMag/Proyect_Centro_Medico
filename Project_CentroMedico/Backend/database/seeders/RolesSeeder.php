@@ -18,9 +18,9 @@ class RolesSeeder extends Seeder
         app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // Se crean los roles
-        Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);
-        Role::firstOrCreate(['name' => 'Medico', 'guard_name' => 'web']);
-        Role::firstOrCreate(['name' => 'Paciente', 'guard_name' => 'web']);
-        Role::firstOrCreate(['name' => 'Cliente', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'sanctum']);
+        Role::firstOrCreate(['name' => 'Medico', 'guard_name' => 'sanctum']);
+        Role::firstOrCreate(['name' => 'Paciente', 'guard_name' => 'sanctum']);
+        Role::firstOrCreate(['name' => 'Cliente', 'guard_name' => 'sanctum']);
     }
 }
