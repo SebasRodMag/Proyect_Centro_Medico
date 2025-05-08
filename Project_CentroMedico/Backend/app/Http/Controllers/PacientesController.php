@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paciente;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PacientesController extends Controller
 {
@@ -15,11 +17,19 @@ class PacientesController extends Controller
             'dni' => 'required|string|min:9|max:9',
             'fecha_nacimiento' => 'required|date',
             'email' => 'required|email|max:255|unique:pacientes,email',
+            'password' => 'required|string|min:8|max:255',
             // 'telefono' => 'required|string|max:15',
             // 'direccion' => 'required|string|max:255',
             'id_cliente' => 'required|integer|exists:clientes,id',
-            'id_usuario' => 'required|integer|exists:users,id',
+            // 'id_usuario' => 'required|integer|exists:users,id',
         ]);
+        $user = new User();
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->assignRole('Paciente');
+        $user->save();
+        
+
         $paciente = new Paciente();
         $paciente->nombre = $request->nombre;
         $paciente->apellidos = $request->apellidos;
@@ -27,7 +37,7 @@ class PacientesController extends Controller
         $paciente->fecha_nacimiento = $request->fecha_nacimiento;
         $paciente->email = $request->email;
         $paciente->id_cliente = $request->id_cliente;
-        $paciente->id_usuario = $request->id_usuario;
+        $paciente->id_usuario = $user->id;
         return response()->json(['message' => 'Paciente creado con éxito'], 201);
     }
 

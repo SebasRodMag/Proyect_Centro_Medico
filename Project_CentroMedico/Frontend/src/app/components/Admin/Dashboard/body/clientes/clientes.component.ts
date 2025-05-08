@@ -12,7 +12,12 @@ import { ClienteService } from '../../../../../services/cliente.service';
     styleUrls: ['./clientes.component.css'],
 })
 export class ClientesComponent {
-    clientes: any[] = [];
+    clientes: any[] = [
+        {
+            id: 1,
+            razon_social: 'Pepe SL',
+        }
+    ];
 
     constructor(private clienteService: ClienteService) {}
 

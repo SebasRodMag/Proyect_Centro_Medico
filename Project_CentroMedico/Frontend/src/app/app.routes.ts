@@ -29,8 +29,8 @@ export const routes: Routes = [
         import('./components/Admin/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
     },
     {
-        path: 'medico',
-        loadComponent: () => import('./components/medico/medico.component').then(m => m.MedicoComponent),
+        path: 'medicos',
+        loadComponent: () => import('./components/Admin/Dashboard/body/medicos/medicos.component').then(m => m.MedicosComponent),
     },
     {
         path: 'pacientes',
@@ -51,6 +51,11 @@ export const routes: Routes = [
         path: 'logout',
         loadComponent: () =>
         import('./auth/login/login.component').then((m) => m.LoginComponent),
+    },
+    {
+        path: 'clientes',
+        loadComponent: () =>
+        import('./components/Admin/Dashboard/body/clientes/clientes.component').then((m) => m.ClientesComponent),
     },
     {
         path: 'clientes/:id/pacientes', 

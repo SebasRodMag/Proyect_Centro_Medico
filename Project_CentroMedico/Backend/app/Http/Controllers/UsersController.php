@@ -29,7 +29,7 @@ class UsersController extends Controller
     $user = User::findOrFail($id);
 
     // Verificar si el rol existe con el guard adecuado
-    $rol = Role::findByName($request->rol, 'sanctum'); // o 'sanctum' si es necesario
+    $rol = Role::findByName($request->rol, 'sanctum');//Es necesario que sea sanctum ya que la API está protegida por Sanctum
 
     if (!$rol) {
         return response()->json(['message' => 'El rol no existe.'], 404);
