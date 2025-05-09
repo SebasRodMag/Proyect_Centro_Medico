@@ -44,7 +44,7 @@ export class AuthService {
         this.router.navigate(['/admin/dashboard']);
         break;
       case 'Medico':
-        this.router.navigate(['/medico/dashboard']);
+        this.router.navigate(['/medico']);
         break;
       case 'Cliente':
         this.router.navigate(['/cliente/dashboard']);

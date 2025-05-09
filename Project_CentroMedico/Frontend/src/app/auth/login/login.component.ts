@@ -33,13 +33,15 @@ export class LoginComponent {
 
   // Método para enviar el formulario
   onSubmit() {
+    console.log('Formulario enviado');
     if (this.loginForm.invalid) return;
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        // Redirección ya se maneja en AuthService
+        console.log('Inicio de sesión exitoso');
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error en login:', err);
         this.errorMessage = 'Credenciales incorrectas';
       }
     });
