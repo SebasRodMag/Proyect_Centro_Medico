@@ -29,8 +29,8 @@ export const routes: Routes = [
         import('./components/Admin/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
     },
     {
-        path: 'medicos',
-        loadComponent: () => import('./components/Admin/Dashboard/body/medicos/medicos.component').then(m => m.MedicosComponent),
+        path: 'medico/dashboard',
+        loadComponent: () => import('./components/medico/medico.component').then(m => m.MedicoComponent),
     },
     {
         path: 'pacientes',
