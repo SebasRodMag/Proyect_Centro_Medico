@@ -8,9 +8,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class AuthController extends Controller
 {
+    use HasApiTokens, HasRoles;
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();
@@ -20,6 +22,26 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+        $rol = $user->getRoleNames()->first();
+
+        // Asignar nombre según rol
+        switch ($rol) {
+            case 'Paciente':
+                $name = optional($user->paciente)->nombre ?? 'Paciente sin nombre';
+                break;
+            case 'Cliente':
+                $name = optional($user->cliente)->razon_social ?? 'Cliente sin nombre';
+                break;
+            case 'Medico':
+                $name = optional($user->medico)->nombre ?? 'Médico sin nombre';
+                break;
+            case 'Administrador':
+                $name = 'Administrador';
+                break;
+            default:
+                $name = 'Nombre no disponible';
+                break;
+        }
 
         return response()->json([
             'token' => $token,
@@ -30,8 +52,9 @@ class AuthController extends Controller
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
                 'deleted_at' => $user->deleted_at,
-                'rol' => $user->getRoleNames()->first(),
-            ] 
+                'rol' => $rol,
+                'name' => $name,
+            ]
         ], 200);
     }
 
@@ -47,12 +70,9 @@ class AuthController extends Controller
     public function me()
     {
         $user = Auth::user();
-        $role = $user->getRoleNames();
-        return response()->json(
-            [
-                'user' => $user,
-                'role' => $role,
-            ]
-        );
+        
+        return response()->json([
+            'user' => $user,
+        ]);
     }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MedicoService } from '../../services/Medico/medico.service';
-import { CitaService } from '../../services/Cita/cita.service';
+import { MedicoService } from '../../services/Medico-Service/medico.service';
+import { CitaService } from '../../services/Cita-Service/cita.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -41,23 +41,26 @@ export class MedicoComponent implements OnInit {
   medicoId: number | null = null;
 
   constructor(private medicoService: MedicoService, private citaService: CitaService) {}
-
   ngOnInit(): void {
-    this.obtenerMedicoLogueado();
+    throw new Error('Method not implemented.');
   }
 
-  obtenerMedicoLogueado(): void {
-    this.medicoService.getMedicoLogueado().subscribe({
-      next: (medico) => {
-        this.medico = medico;
-        this.medicoId = medico.id;
-        this.actualizarCitas(this.fechaActual); // Llamada inicial
-      },
-      error: (error) => {
-        console.error('Error al obtener el médico logueado:', error);
-      },
-    });
-  }
+  // ngOnInit(): void {
+  //   this.obtenerMedicoLogueado();
+  // }
+
+  // obtenerMedicoLogueado(): void {
+  //   this.medicoService.getMedicoLogueado().subscribe({
+  //     next: (medico) => {
+  //       this.medico = medico;
+  //       this.medicoId = medico.id;
+  //       this.actualizarCitas(this.fechaActual); // Llamada inicial
+  //     },
+  //     error: (error) => {
+  //       console.error('Error al obtener el médico logueado:', error);
+  //     },
+  //   });
+  // }
 
   actualizarCitas(fecha?: Date, pagina: number = 1): void {
     if (this.medicoId) {

@@ -32,6 +32,7 @@ class UserSeeder extends Seeder
                 'email' => "medico{$i}@example.com",
                 'password' => Hash::make('password123'),
             ]);
+            $medico->assignRole("Medico");
         }
 
         // Crear usuarios clientes
@@ -40,6 +41,7 @@ class UserSeeder extends Seeder
                 'email' => "cliente{$i}@example.com",
                 'password' => Hash::make('password123'),
             ]);
+            $cliente->assignRole("Cliente");
         }
 
         // Crear usuarios pacientes
@@ -48,6 +50,7 @@ class UserSeeder extends Seeder
                 'email' => "paciente{$i}@example.com",
                 'password' => Hash::make('password123'),
             ]);
+            $paciente->assignRole("Paciente");
         }
     }
 }
