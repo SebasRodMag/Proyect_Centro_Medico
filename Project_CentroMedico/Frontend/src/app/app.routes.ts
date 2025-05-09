@@ -1,12 +1,13 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { RoleGuard } from './auth/role.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
     {
         path: 'home',
         loadComponent: () =>
-        import('./components/home/home.component').then((m) => m.HomeComponent),
+        import('./components/Admin/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
     },
     {
         path: 'login',
@@ -31,7 +32,19 @@ export const routes: Routes = [
     {
         path: 'medico/dashboard',
         loadComponent: () => import('./components/medico/medico.component').then(m => m.MedicoComponent),
+        canActivate: [RoleGuard],
+        data: {
+            expectedRole: 'Medico',
+        },
     },
+    {
+        path: 'admin/dashboard',
+        loadComponent: () => import('./components/Admin/Dashboard/body/home/home.component').then(m => m.HomeComponent),
+    },
+    /* {
+        path: 'Cliente/dashboard',
+        loadComponent: () => import('./components/cliente/cliente.component').then(m => m.ClienteComponent),
+    }, */
     {
         path: 'pacientes',
         loadComponent: () =>
