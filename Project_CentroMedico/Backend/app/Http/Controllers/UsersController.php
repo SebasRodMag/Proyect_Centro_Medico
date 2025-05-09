@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
@@ -22,20 +24,39 @@ class UsersController extends Controller
         return response()->json(['message' => 'Usuario creado con éxito'], 201);
     }
 
-    public function update(Request $request, $id){
+    public function assign(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Verificar si el rol existe
+        $rol = Role::findByName($request->rol);
+
+        if (!$rol) {
+            return response()->json(['message' => 'El rol no existe.'], 404);
+        }
+
+        // Asignar el rol al usuario
+        $user->assignRole($rol);
+        $user->save();
+
+        return response()->json(['message' => 'Rol asignado con éxito'], 200);
+    }
+
+    public function update(Request $request, $id)
+    {
         $request->validate([
-            'email' => 'string|email|max:255|unique:users,email,'.$id,
+            'email' => 'string|email|max:255|unique:users,email,' . $id,
             'password' => 'string|min:8|confirmed', //Habrá que crear dos inputs, uno para la contraseña y otro para la confirmación de la misma
         ]);
 
         $user = User::findOrFail($id);
-        if($request->has('email')){
+        if ($request->has('email')) {
             $user->email = $request->email;
         }
-        if($request->has('password')){
+        if ($request->has('password')) {
             $user->password = Hash::make($request->password);
         }
-        if($request->has('rol')){
+        if ($request->has('rol')) {
             $user->rol = $request->rol;
         }
         $user->save();
@@ -50,24 +71,28 @@ class UsersController extends Controller
     //     return response()->json(['message' => 'Usuario eliminado con éxito'], 200);
     // }
 
-    public function index(){
+    public function index()
+    {
         $users = User::all();
         return response()->json($users, 200);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $user = User::findOrFail($id);
         return response()->json($user, 200);
     }
 
     //Función para mostrar todos los usuarios, incluyendo los eliminados
-    public function showAllUsers(){
+    public function showAllUsers()
+    {
         $users = User::withTrashed()->get();
         return response()->json($users, 200);
     }
 
     //Función para mostrar los usuarios eliminados
-    public function showTrashedUsers(){
+    public function showTrashedUsers()
+    {
         $trashedUsers = User::onlyTrashed()->get();
         return response()->json($trashedUsers, 200);
     }

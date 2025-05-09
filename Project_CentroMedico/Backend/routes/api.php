@@ -36,8 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
         
         Route::post('citas', [CitasController::class, 'store']);
         Route::get('usuarios', [UsersController::class, 'index']);
+        Route::post('usuarios', [UsersController::class, 'store']);
         Route::get('usuarios/{user}', [UsersController::class, 'show']);
         Route::put('usuarios/{user}', [UsersController::class, 'update']);
+        Route::post('usuarios/assign/{id}', [UsersController::class, 'assign']);
         //Route::delete('usuarios/{user}', [UsersController::class, 'destroy']);
         //Route::delete('medicos/{medico}', [MedicosController::class, 'destroy']);
         //Route::delete('clientes/{cliente}', [ClientesController::class, 'destroy']);
