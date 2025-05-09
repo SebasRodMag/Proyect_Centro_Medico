@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ModalCreateComponent } from './modal-create/modal-create.component';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ClienteService } from '../../../../../services/cliente.service';
+import { ClienteService } from '../../../../../services/Cliente-Service/cliente.service';
 
 @Component({
     selector: 'app-clientes',
@@ -12,20 +12,17 @@ import { ClienteService } from '../../../../../services/cliente.service';
     styleUrls: ['./clientes.component.css'],
 })
 export class ClientesComponent {
-    clientes: any[] = [
-        {
-            id: 1,
-            razon_social: 'Pepe SL',
-        }
-    ];
+    clientes: any[] = [];
 
     constructor(private clienteService: ClienteService) {}
 
     ngOnInit() {
-        this.clienteService.getClientes().subscribe((data) => {
-            this.clientes = data;
-        },
-      (error) => 
-        console.error('Error al obtener los clientes', error));
+        this.clienteService.getClientes().subscribe(
+            (data) => {
+                console.log('Clientes: ', data);
+                this.clientes = data;
+            },
+            (error) => console.error('Error al obtener los clientes', error)
+        );
     }
 }

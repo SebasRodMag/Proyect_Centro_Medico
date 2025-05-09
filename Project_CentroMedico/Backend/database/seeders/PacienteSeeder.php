@@ -6,20 +6,14 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
+use App\Models\User;
 
 class PacienteSeeder extends Seeder
 {
-/**
- * 
- * Para tener pacientes, primero hay que tener clientes.
- * Este seeder asume que ya existen clientes en la base de datos.
- * Si no hay clientes, se mostrará un mensaje de advertencia.
- */
     public function run(): void
     {
         $faker = Faker::create('es_ES');
 
-        // Obtiene algunos IDs de clientes existentes
         $clientesIds = DB::table('clientes')->pluck('id')->toArray();
 
         if (empty($clientesIds)) {
@@ -27,8 +21,12 @@ class PacienteSeeder extends Seeder
             return;
         }
 
-        for ($i = 0; $i < 10; $i++) {
+        // Obtener todos los usuarios con rol Paciente
+        $pacientes = User::role('Paciente')->get();
+
+        foreach ($pacientes as $user) {
             DB::table('pacientes')->insert([
+                'id_usuario' => $user->id,
                 'id_cliente' => $faker->randomElement($clientesIds),
                 'nombre' => $faker->firstName,
                 'apellidos' => $faker->lastName . ' ' . $faker->lastName,

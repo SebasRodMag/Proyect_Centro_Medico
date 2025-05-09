@@ -9,7 +9,7 @@ declare var $: any;
     selector: 'app-modal-create',
     imports: [CommonModule, FormsModule, NgSelectModule],
     templateUrl: './modal-create.component.html',
-    styleUrl: './modal-create.component.css',
+    styleUrl: '../../../../../../../styles.css',
 })
 export class ModalCreateComponent {
     isVisible = false;

@@ -40,8 +40,6 @@ class CitaSeeder extends Seeder
                 'id_contrato' => $faker->randomElement($contratosIds),
                 'fecha_hora_cita' => $fechaHoraCita,
                 'estado' => $faker->randomElement(['pendiente', 'realizado', 'cancelado']),
-                'fecha_hora_inicio' => $fechaHoraInicio,
-                'fecha_hora_fin' => $fechaHoraFin,
                 'observaciones' => $faker->sentence(10),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

@@ -40,6 +40,7 @@ class MedicoSeeder extends Seeder
         foreach ($emails as $email) {
             // Verificar si el usuario ya existe
             $user = User::where('email', $email)->first();
+            $medicos = User::Role('Medico')->get();
 
             if (!$user) {
                 $user = User::create([
@@ -48,9 +49,10 @@ class MedicoSeeder extends Seeder
                 ]);
             
                 // $user->assignRole('Medico', 'sanctum');
+
             
                 DB::table('medicos')->insert([
-                    'id_user' => $user->id,
+                    'id_usuario' => $user->id,
                     'nombre' => $faker->firstName,
                     'apellidos' => $faker->lastName . ' ' . $faker->lastName,
                     'dni' => $faker->unique()->dni,

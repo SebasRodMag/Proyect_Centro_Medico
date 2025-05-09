@@ -6,7 +6,7 @@ export const routes: Routes = [
     {
         path: 'home',
         loadComponent: () =>
-        import('./components/home/home.component').then((m) => m.HomeComponent),
+        import('./components/Admin/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
     },
     {
         path: 'login',
@@ -61,7 +61,12 @@ export const routes: Routes = [
         path: 'clientes/:id/pacientes', 
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
-    },    
+    },
+    {
+        path: 'clientes/:id/contratos', 
+        loadComponent: () =>
+        import('./components/Admin/Dashboard/body/contratos/contratos.component').then((m) => m.ContratosComponent),
+    },
     {
         path: '**',
         redirectTo: 'home',

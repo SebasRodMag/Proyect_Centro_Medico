@@ -76,20 +76,19 @@
 #tabla-clientes th{
     background-color: #376AA8;
     color: white;
+    padding: 10px;
 }
 
 #tabla-clientes th,td{
     font-size: 12px;
     text-align: center;
-    padding: 10px;
 }
 
 #tabla-clientes tr:nth-child(odd){
     background-color: #fff;
 }
 #tabla-clientes tr:nth-child(even){
-    background-color: #376AA8;
-    opacity: 0.25;
+    background-color: #376aa845;
 }
 
 #tabla-clientes th:last-child,td:last-child{

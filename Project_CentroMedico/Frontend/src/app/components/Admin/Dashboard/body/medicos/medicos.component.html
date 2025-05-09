@@ -20,29 +20,16 @@
             <th>Acciones</th>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr *ngFor="let medico of medicos">
+                <td>{{ medico.id }}</td>
+                <td>{{ medico.apellidos+', '+medico.nombre}}</td>
+                <td>{{ medico.dni }}</td>
+                <td>{{ medico.fecha_inicio | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ medico.fecha_fin | date: 'dd/MM/yyyy' }}</td>
+                <td>
+                    <button id="edit-button">Editar</button>
+                    <button id="delete-button">Eliminar</button>
+                </td>
             </tr>
         </tbody>
     </table>

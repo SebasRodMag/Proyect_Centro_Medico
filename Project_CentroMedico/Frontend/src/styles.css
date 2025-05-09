@@ -28,3 +28,21 @@ button:hover{
     color: white;
 
 }
+
+#edit-button{
+    background-color: #e0b227;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 5px 10px 5px 10px;
+    margin-left: 10px;
+}
+
+#delete-button{
+    background-color: #ff3737;
+    color: rgba(0, 0, 0, 0.7);
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 5px 10px 5px 10px;
+    margin-left: 10px;
+}
+

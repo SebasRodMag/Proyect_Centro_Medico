@@ -10,10 +10,10 @@
         <button id="usuarios" type="button" routerLink="/usuarios" routerLinkActive="active-link"><i class="bi bi-person-badge-fill"></i>Usuarios</button>
     </div>
     <div class="title">
-        <p>Bienvenido...
-            <!-- poner el nombre del usuario -->
+        <p>Bienvenido,
+            {{ userName}}
         </p>
         <p>Almería, {{ fechaActual | date: 'dd/MM/yyyy' }} {{horaActual}}</p>
-        <button id="logout" routerLink="/logout">Cerrar Sesión</button>
+        <button id="logout" (click)="logout()">Cerrar Sesión</button>
     </div>
 </div>
