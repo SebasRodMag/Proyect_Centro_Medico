@@ -25,10 +25,9 @@ return new class extends Migration
             $table->date('fecha_hora_cita');
             $table->enum('estado', ['pendiente', 'realizado', 'cancelado'])
             ->default('pendiente');
-            $table->date('fecha_hora_inicio')->nullable();
-            $table->date('fecha_hora_fin')->nullable();
             $table->string('observaciones')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

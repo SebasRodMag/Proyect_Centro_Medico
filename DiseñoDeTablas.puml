@@ -1,0 +1,103 @@
+@startuml Gestión Citas Médicas
+title Diagrama ER - Sistema Gestión Citas Médicas a 30/04/2025
+
+' === ENTIDADES PRINCIPALES ===
+entity Users {
+  * id : integer <<PK>>
+    --
+    name : string
+    email : string
+    password : string
+    rol : string
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity Clientes {
+  * id : integer <<PK>>
+    --
+    nombre : string
+    email : string
+    telefono : string
+    id_user : integer <<FK>>
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity Contratos {
+  * id : integer <<PK>>
+    --
+    id_cliente : integer <<FK>>
+    descripcion : string
+    fecha_inicio : date
+    fecha_fin : date
+    created_at : datetime
+    updated_at : datetime
+    }
+
+    entity Medicos {
+    * id : integer <<PK>>
+    --
+    id_user : integer <<FK>>
+    especialidad : string
+    created_at : datetime
+    updated_at : datetime
+    }
+
+    entity Pacientes {
+    * id : integer <<PK>>
+    --
+    nombre : string
+    email : string
+    id_cliente : integer <<FK>>
+    created_at : datetime
+    updated_at : datetime
+    }
+
+    entity Citas {
+    * id : integer <<PK>>
+    --
+    id_contrato : integer <<FK>>
+    id_paciente : integer <<FK>>
+    id_medico : integer <<FK>>
+    fecha : datetime
+    realizada : boolean
+    observaciones : text
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity Permission {
+  * id : integer <<PK>>
+    --
+    name : string
+    description : string
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity personal_access_tokens {
+  * id : integer <<PK>>
+    --
+    tokenable_type : string
+    tokenable_id : integer
+    name : string
+    token : string
+    abilities : text
+    last_used_at : datetime
+    created_at : datetime
+    updated_at : datetime
+}
+
+' === RELACIONES ENTRE TABLAS ===
+Users ||--o{ Clientes : "puede ser"
+Users ||--o{ Medicos : "puede ser"
+Clientes ||--o{ Contratos : "firma"
+Clientes ||--o{ Pacientes : "gestiona"
+Contratos ||--o{ Citas : "incluye"
+Medicos ||--o{ Citas : "atiende"
+Pacientes ||--o{ Citas : "recibe"
+Users ||--o{ personal_access_tokens : "usa"
+Users ||--o{ Permission : "asigna rol"
+
+@enduml

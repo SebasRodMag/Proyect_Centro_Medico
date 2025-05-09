@@ -1,0 +1,31 @@
+import { Component } from '@angular/core';
+import { ModalCreateComponent } from './modal-create/modal-create.component';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ClienteService } from '../../../../../services/cliente.service';
+
+@Component({
+    selector: 'app-clientes',
+    standalone: true,
+    imports: [ModalCreateComponent, RouterLink, CommonModule],
+    templateUrl: './clientes.component.html',
+    styleUrls: ['./clientes.component.css'],
+})
+export class ClientesComponent {
+    clientes: any[] = [
+        {
+            id: 1,
+            razon_social: 'Pepe SL',
+        }
+    ];
+
+    constructor(private clienteService: ClienteService) {}
+
+    ngOnInit() {
+        this.clienteService.getClientes().subscribe((data) => {
+            this.clientes = data;
+        },
+      (error) => 
+        console.error('Error al obtener los clientes', error));
+    }
+}

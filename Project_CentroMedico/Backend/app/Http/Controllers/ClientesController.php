@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\Contrato;
+use App\Models\Paciente;
+use App\Models\Cita;
 use Illuminate\Http\Request;
 
 class ClientesController extends Controller
 {
     public function store(Request $request){
         $request->validate([
+            
             'razon_social' => 'required|string|max:255',
             'cif' => 'required|string|min:9|max:9|unique:clientes',
             'direccion' => 'required|string|max:255',
@@ -104,5 +108,89 @@ class ClientesController extends Controller
     public function searchByMunicipio($municipio){
         $clientes = Cliente::where('municipio', 'LIKE', '%'.$municipio.'%')->get();
         return response()->json($clientes, 200);
+    }
+
+    //Funcion para buscar contratos por cliente
+    public function contratos($id)
+    {
+        // 1. Verificar si el cliente existe
+        $cliente = Cliente::find($id);
+
+        if (!$cliente) {
+            return response()->json([
+                'message' => 'Cliente no encontrado'
+            ], 404);
+        }
+
+        // 2. Obtener contratos del cliente, incluyendo eliminados
+        $contratos = Contrato::withTrashed()
+            ->where('id_cliente', $id)
+            ->orderByDesc('fecha_inicio')
+            ->paginate(10);
+
+        // 3. Devolver los detalles del cliente y los contratos, aunque esté vacío
+        return response()->json([
+            'cliente' => $cliente,  // Información del cliente
+            'message' => $contratos->isEmpty() ? 'El cliente no tiene contratos' : 'Contratos recuperados con éxito',
+            'data' => $contratos
+        ], 200);
+    }
+
+    //Función para buscar pacientes por cliente
+    public function pacientes($id_cliente)
+    {
+        // Buscar al cliente por su id
+        $cliente = Cliente::find($id_cliente);
+
+        // Si no se encuentra el cliente, retornar un mensaje de error
+        if (!$cliente) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        // Obtener los pacientes asociados a este cliente
+        $pacientes = $cliente->pacientes;
+
+        // Si no tiene pacientes, retornar un mensaje indicando que no tiene pacientes
+        if ($pacientes->isEmpty()) {
+            return response()->json(['message' => 'Este cliente no tiene pacientes asociados.'], 200);
+        }
+
+        // Retornar la lista de pacientes
+        return response()->json($pacientes, 200);
+    }
+
+    //Función para buscar citas por cliente
+    public function citas($id)
+    {
+        // Buscar el cliente por ID
+        $cliente = Cliente::find($id);
+
+        // Si el cliente no existe
+        if (!$cliente) {
+            return response()->json([
+                'error' => 'Cliente no encontrado.'
+            ], 404);
+        }
+
+        // Obtener todas las citas a través de los contratos asociados al cliente
+        $citas = $cliente->contratos()
+            ->with('citas') // carga las citas de cada contrato
+            ->get()
+            ->pluck('citas')
+            ->flatten();
+
+        // Si no hay citas
+        if ($citas->isEmpty()) {
+            return response()->json([
+                'cliente' => $cliente,
+                'message' => 'No hay citas asociadas a este cliente.'
+            ], 200);
+        }
+
+        // Respuesta exitosa con datos
+        return response()->json([
+            'cliente' => $cliente,
+            'citas' => $citas
+        ], 200);
     }
 }

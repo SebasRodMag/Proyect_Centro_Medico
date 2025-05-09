@@ -8,10 +8,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
 
     /**
      * The attributes that are mass assignable.
@@ -21,9 +27,10 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'password',
-        'rol',
 
     ];
+
+    protected $guard_name = 'sanctum'; 
 
     /**
      * The attributes that should be hidden for serialization.
@@ -59,5 +66,10 @@ class User extends Authenticatable
     public function medico()
     {
         return $this->hasOne(Medico::class, 'id_usuario');
+    }
+
+    public static function idsByRole(string $role): array
+    {
+        return User::role($role)->pluck('id')->toArray();
     }
 }

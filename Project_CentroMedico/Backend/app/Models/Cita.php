@@ -19,8 +19,8 @@ class Cita extends Model
         'id_medico',
         'id_contrato',
         'fecha_hora_cita',
-        'hora_fecha_inicio',
-        'hora_fecha_fin',
+        // 'hora_fecha_inicio',
+        // 'hora_fecha_fin',
     ];
 
     /**

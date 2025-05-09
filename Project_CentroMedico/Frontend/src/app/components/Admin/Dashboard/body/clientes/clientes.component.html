@@ -1,0 +1,53 @@
+<div class="container-clientes">
+    <div class="header-clientes">
+        <div>
+            <button (click)="modal.open()">Registrar cliente</button>
+        </div>
+        <app-modal-create #modal></app-modal-create>
+        <div id="contenedor-busqueda">
+            <input type="text" placeholder="Búsqueda..." />
+            <i class="bi bi-search" id="icono-search"></i>
+        </div>
+    </div>
+    <div id="contenedor-filtros">
+        <label for="razon-social">Razón Social:</label>
+        <input type="text" id="razon-social" placeholder="" />
+        <label for="municipio">Municipio:</label>
+        <input type="text" id="municipio" placeholder="" />
+    </div>
+    <table id="tabla-clientes">
+        <thead>
+            <th>Id</th>
+            <th>Razón social</th>
+            <th>CIF</th>
+            <th>Dirección</th>
+            <th>Municipio</th>
+            <th>Provincia</th>
+            <th>F. Inicio</th>
+            <th>F. Fin</th>
+            <th>Reconocimientos restantes</th>
+            <th>Acciones</th>
+        </thead>
+        <tbody>
+            <tr *ngFor="let cliente of clientes">
+                <td>{{ cliente.id }}</td>
+                <td>
+                    <a [routerLink]="['/clientes', cliente.id, 'pacientes']">
+                        {{ cliente.razon_social }}
+                    </a>
+                </td>
+                <td>{{ cliente.cif }}</td>
+                <td>{{ cliente.direccion }}</td>
+                <td>{{ cliente.municipio }}</td>
+                <td>{{ cliente.provincia }}</td>
+                <td>{{ cliente.fecha_inicio | date }}</td>
+                <td>{{ cliente.fecha_fin | date }}</td>
+                <td>{{ cliente.reconocimientos_restantes }}</td>
+                <td>
+                    <!-- Acciones como editar, eliminar, etc. -->
+                    <button>Editar</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
