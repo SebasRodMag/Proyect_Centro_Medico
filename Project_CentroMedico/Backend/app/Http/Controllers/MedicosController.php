@@ -2,8 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 use App\Models\Medico;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Http\Resources\CitaResource;
+use App\Http\Resources\MedicoResource;
+use App\Http\Resources\UserResource;
+use App\Models\Cita;
+use App\Models\User;
 
 class MedicosController extends Controller
 {
@@ -12,7 +20,7 @@ class MedicosController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
-            'dni' => 'required|string|min:9|max:9',
+            'dni' => 'required|regex:/^[0-9]{8}[A-Z]$/i',//Luego modificarlo para que admita también NIE
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'date|after:fecha_inicio',
             'id_usuario' => 'required|integer|exists:users,id',
@@ -37,7 +45,7 @@ class MedicosController extends Controller
             'apellidos' => 'string|max:255',
             'dni' => 'string|min:9|max:9',
             'fecha_inicio' => 'date',
-            'fecha_fin' => 'date|after:fecha_inicio',
+            'fecha_fin' => 'nullable|date|after:fecha_inicio',
             'id_usuario' => 'integer|exists:users,id',
         ]);
 
@@ -65,31 +73,23 @@ class MedicosController extends Controller
         return response()->json(['message' => 'Médico actualizado con éxito'], 200);
     }
 
-    // public function destroy($id)
-    // {
-    //     $medico = Medico::findOrFail($id);
-    //     $medico->delete();
-    //     return response()->json(['message' => 'Médico eliminado con éxito'], 200);
-    // }
     public function index()
     {
-        $medicos = Medico::all();
-        return response()->json($medicos, 200);
+        return MedicoResource::collection(Medico::all());
     }
     public function show($id)
     {
-        $medico = Medico::findOrFail($id);
-        return response()->json($medico, 200);
+        return new MedicoResource(Medico::findOrFail($id));
     }
     
-    public function showAllMedicos(){
-        $medicos = Medico::withTrashed()->get();
-        return response()->json($medicos, 200);
+    public function showAllMedicos()
+    {
+        return MedicoResource::collection(Medico::withTrashed()->get());
     }
 
-    public function showTrashedMedicos(){
-        $medicos = Medico::onlyTrashed()->get();
-        return response()->json($medicos, 200);
+    public function showTrashedMedicos()
+    {
+        return MedicoResource::collection(Medico::onlyTrashed()->get());
     }
 
     /**
@@ -100,23 +100,51 @@ class MedicosController extends Controller
      */
     public function medicoLogueado(): JsonResponse
     {
-        // Verifica si hay un usuario autenticado
-        if (Auth::check()) {
-            // Obtiene el usuario autenticado
-            $medico = Auth::user();
+        $usuario = Auth::user();
 
-            // Asumiendo que tu modelo de Médico tiene las propiedades 'nombre' y 'apellido'
-            if ($medico && isset($medico->nombre) && isset($medico->apellidos)) {
-                return response()->json([
-                    'nombre' => $medico->nombre,
-                    'apellidos' => $medico->apellidos,
-                ]);
-            } else {
-                return response()->json(['error' => 'El usuario autenticado no tiene nombre y/o apellido.'], 404);
-            }
-        } else {
-            return response()->json(['error' => 'No hay ningún médico autenticado.'], 401);
+        if (!$usuario) {
+            return response()->json(['error' => 'No hay ningún usuario autenticado.'], 401);
         }
+
+        $medico = $usuario->medico;
+
+        if (!$medico) {
+            return response()->json(['error' => 'El usuario autenticado no es un médico o no tiene asociado un perfil de médico.'], 403);
+        }
+
+        return response()->json([
+            'nombre' => $medico->nombre,
+            'apellidos' => $medico->apellidos,
+        ]);
+    }
+    // Método para obtener las citas de un médico
+    public function citas(Request $request, $id)
+{
+    $medico = Medico::findOrFail($id);
+
+    $fecha = $request->query('fecha'); // formato esperado: YYYY-MM-DD
+
+    if (!$fecha) {
+        $fecha = Carbon::today()->toDateString();
+    }
+
+    $citas = $medico->citas()
+        ->whereDate('fecha', $fecha)
+        ->get();
+
+    if ($citas->isEmpty()) {
+        return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
+    }
+
+    return CitaResource::collection($citas);
+}
+
+    public function destroy($id)
+    {
+        $medico = Medico::findOrFail($id);
+        $medico->delete();
+
+        return response()->json(['message' => 'Médico eliminado (soft delete) con éxito'], 200);
     }
     
 }
