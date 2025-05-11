@@ -63,12 +63,6 @@ class ClientesController extends Controller
         return response()->json(['message' => 'Cliente actualizado con éxito'], 200);
     }
 
-    // public function destroy($id){
-    //     $cliente = Cliente::findOrFail($id);
-    //     $cliente->delete();
-    //     return response()->json(['message' => 'Cliente eliminado con éxito'], 200);
-    // }
-
     public function index(){
         $clientes = Cliente::all();
         return response()->json($clientes, 200);

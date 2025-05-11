@@ -29,8 +29,8 @@ class CheckRole
         $user = Auth::user();
         // Devuelve mensaje por log
         Log::debug('Rol del usuario autenticado:', ['role' => $user->role]);
-        // 3. Verificar si el rol del usuario coincide con el rol esperado
-        if (in_array($user->role, $roles)) {
+        // 3. Verificar si el rol del usuario coincide con el rol esperado(no es sensible a mayúsculas)
+        if (in_array(strtolower($user->role), array_map('strtolower', $roles))) {
             return $next($request);
         }
 
