@@ -79,9 +79,13 @@
     width: 100%;
 }
 
+mat-header-cell{
+    text-align: center;
+} 
 #tabla-citas th {
     background-color: #376AA8;
     color: white;
+    text-align: center;
 }
 
 #tabla-citas th,

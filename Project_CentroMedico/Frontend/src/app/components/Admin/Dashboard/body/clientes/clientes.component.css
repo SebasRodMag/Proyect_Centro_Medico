@@ -94,3 +94,26 @@
 #tabla-clientes th:last-child,td:last-child{
     border-right: 0;
 }
+
+mat-paginator {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+mat-paginator .mat-paginator-range-label {
+    font-size: 7px;
+}
+
+mat-paginator button {
+    font-size: 7px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+mat-paginator button:hover {
+    background-color: #45a049;
+}
