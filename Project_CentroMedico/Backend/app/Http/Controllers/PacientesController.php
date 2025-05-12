@@ -107,4 +107,27 @@ class PacientesController extends Controller
         $pacientes = Paciente::onlyTrashed()->get();
         return response()->json($pacientes, 200);
     }
+
+    // Función para mostrar los datos del paciente logueado
+    public function datosPacienteLogueado(Request $request)
+    {
+        $paciente = Paciente::where('id_usuario', $request->user()->id)->first();
+        if ($paciente) {
+            return response()->json($paciente, 200);
+        } else {
+            return response()->json(['message' => 'Paciente no encontrado'], 404);
+        }
+    }
+
+    //Función para mostrar las citas del paciente logueado
+    public function citasPacienteLogueado(Request $request)
+    {
+        $paciente = Paciente::where('id_usuario', $request->user()->id)->first();
+        if ($paciente) {
+            $citas = $paciente->citas()->get();
+            return response()->json($citas, 200);
+        } else {
+            return response()->json(['message' => 'Paciente no encontrado'], 404);
+        }
+    }
 }

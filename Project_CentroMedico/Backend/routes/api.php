@@ -92,9 +92,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {
-        // Rutas para que los clientes consulten sus citas (habría que darle más lógica aquí)
         Route::get('/clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);//Revisar esta función, debería devolver unicamente los pacientes del cliente
-        Route::get('/clientes/yo', [ClientesController::class, 'datosCliente']);
+        Route::get('/clientes/cliente/yo', [ClientesController::class, 'datosCliente']);
+    });
+
+    //Rutas que solo los pacientes pueden acceder
+    Route::middleware(['role:Paciente'])->group(function () {
+        Route::get('/pacientes/paciente/yo', [PacientesController::class, 'datosPacienteLogueado']);
+        Route::get('/pacientes/paciente/citas', [PacientesController::class, 'citasPacienteLogueado']);
     });
 
 
