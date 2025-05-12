@@ -50,12 +50,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos', [ContratosController::class, 'index']);
         Route::post('contratos', [ContratosController::class, 'store']);
         Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
+        Route::get('clientes/{cif}/pacientes', [ClientesController::class, 'pacientesByCIF']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
 
         //Pacientes
         Route::get('pacientes', [PacientesController::class, 'index']);
         Route::post('pacientes', [PacientesController::class, 'store']);
+
+        //Citas
+        
     });
 
     //Rutas que solo los administradores y clientes pueden acceder

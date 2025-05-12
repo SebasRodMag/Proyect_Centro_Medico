@@ -265,4 +265,33 @@ class ClientesController extends Controller
             'citas' => $citas
         ], 200);
     }
+
+    public function pacientesByCIF($cif){
+        // Buscar el cliente por CIF
+        $cliente = Cliente::where('cif', $cif)->first();
+
+        // Si el cliente no existe
+        if (!$cliente) {
+            return response()->json([
+                'error' => 'Cliente no encontrado.'
+            ], 404);
+        }
+
+        // Obtener todos los pacientes asociados al cliente
+        $pacientes = Paciente::where('id_cliente', $cliente->id)->get();
+
+        // Si no hay pacientes
+        if ($pacientes->isEmpty()) {
+            return response()->json([
+                'cliente' => $cliente,
+                'message' => 'No hay pacientes asociados a este cliente.'
+            ], 200);
+        }
+
+        // Respuesta exitosa con datos
+        return response()->json([
+            'cliente' => $cliente,
+            'pacientes' => $pacientes
+        ], 200);
+    }
 }

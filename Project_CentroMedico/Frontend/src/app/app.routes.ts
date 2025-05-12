@@ -1,80 +1,85 @@
-// src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { AuthGuard } from './auth/auth.guard';
+import { RoleGuard } from './auth/role.guard';
+// El guard que verifica el rol del usuario
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
-    {
-        path: 'home',
-        loadComponent: () =>
-        import('./components/Admin/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
-    },
+
+    // Rutas públicas (login)
     {
         path: 'login',
         loadComponent: () =>
         import('./auth/login/login.component').then((m) => m.LoginComponent),
     },
+
+    // Rutas para el Administrador (protección por rol)
     {
-        path: 'medicos/perfil',
+        path: 'home',
         loadComponent: () =>
-        import('./components/medico/medico.component').then((m) => m.MedicoComponent),
+        import('./components/Admin/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
-    // Rutas para el cliente, Falta crear el controlador y el servicio
-/*   {
-        path: 'cliente',
-        loadComponent: () => import('./components/clinete/cliente.component').then(m => m.ClienteComponent),
-    }, */
     {
         path: 'citas',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
         path: 'medicos',
         loadComponent: () => import('./components/Admin/Dashboard/body/medicos/medicos.component').then(m => m.MedicosComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
         path: 'pacientes',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
         path: 'usuarios',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/usuarios/usuarios.component').then((m) => m.UsuariosComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
         path: 'cards',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/cards/cards.component').then((m) => m.CardsComponent),
-    },
-    {
-        path: 'logout',
-        loadComponent: () =>
-        import('./auth/login/login.component').then((m) => m.LoginComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
         path: 'clientes',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/clientes/clientes.component').then((m) => m.ClientesComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
-        path: 'clientes/:id_cliente/pacientes', 
+        path: 'clientes/:id_cliente/pacientes',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
     {
-        path: 'clientes/:id_cliente/contratos', 
+        path: 'clientes/:id_cliente/contratos',
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/contratos/contratos.component').then((m) => m.ContratosComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
     },
+
+    // Ruta por defecto, si no se encuentra ninguna ruta
     {
         path: '**',
         redirectTo: 'home',
     },
-
-    // Rutas para el administrador, Falta crear el controlador y el servicio
-    /* {
-        path: 'admin',
-        loadComponent: () => import('./components/Admin/Dashboard/body/').then(m => m.AdminComponent),
-    }, */
 ];
