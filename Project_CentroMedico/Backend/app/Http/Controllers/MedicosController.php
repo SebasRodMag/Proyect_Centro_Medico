@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-// usar carbon
-use Carbon\Carbon;
 
 class MedicosController extends Controller
 {
@@ -95,96 +93,11 @@ class MedicosController extends Controller
         return response()->json($medicos, 200);
     }
 
-    public function citasHoy(Request $request, $id)
-    {
-        $medico = Medico::findOrFail($id);
-
-        $fecha = $request->query('fecha'); // formato esperado: YYYY-MM-DD
-
-        if (!$fecha) {
-            $fecha = Carbon::today()->toDateString();
-        }
-
-        $citas = $medico->citas()
-            ->whereDate('fecha', $fecha)
-            ->get();
-
-        if ($citas->isEmpty()) {
-            return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
-        }
-
-        return response()->json($citas);
-    }
-
-    //función para mostrar las citas de un medico logueado
-    public function citasMedicoLogueadoAhora(Request $request)
-    {
-        $medico = Auth::user()->medico;
-
-        if (!$medico) {
-            return response()->json(['message' => 'No se encontró el médico asociado al usuario.'], 404);
-        }
-
-        $fecha = $request->query('fecha'); // formato esperado: YYYY-MM-DD
-
-        if (!$fecha) {
-            $fecha = Carbon::today()->toDateString();
-        }
-
-        $citas = $medico->citas()
-            ->whereDate('fecha', $fecha)
-            ->get();
-
-        if ($citas->isEmpty()) {
-            return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
-        }
-
-        return response()->json($citas);
-    }
-
-    //función para mostrar las citas de un medico según su id
-    public function citasMedicoHoy(Request $request, $id)
-    {
-        $medico = Medico::findOrFail($id);
-
-        if (!$medico) {
-            return response()->json(['message' => 'No se encontró el médico.'], 404);
-        }
-
-        $fecha = $request->query('fecha'); // formato esperado: YYYY-MM-DD
-
-        if (!$fecha) {
-            $fecha = Carbon::today()->toDateString();
-        }
-
-        $citas = $medico->citas()
-            ->whereDate('fecha', $fecha)
-            ->get();
-
-        if ($citas->isEmpty()) {
-            return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
-        }
-
-        return response()->json($citas);
-    }
-
-    //función para mostrar todas las citas de un medico según su id
-    public function citasMedico(Request $request, $id)
-    {
-        $medico = Medico::findOrFail($id);
-
-        if (!$medico) {
-            return response()->json(['message' => 'No se encontró el médico.'], 404);
-        }
-
-        $citas = $medico->citas()
-            ->get();
-
-        if ($citas->isEmpty()) {
-            return response()->json(['message' => 'No hay citas para este médico.'], 404);
-        }
-
-        return response()->json($citas);
-    }
+    /**
+     * Método para obtener el médico autenticado
+     * @return JsonResponse
+     * Devuelve el nombre y el apellido del médico autenticado
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     
 }

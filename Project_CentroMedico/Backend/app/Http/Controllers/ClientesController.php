@@ -265,15 +265,4 @@ class ClientesController extends Controller
             'citas' => $citas
         ], 200);
     }
-    //Función que devuelve los datos del cliente logueado
-    public function datosCliente()
-    {
-        $cliente = Auth::user()->cliente;
-
-        if (!$cliente) {
-            return response()->json(['message' => 'No se encontró el cliente asociado al usuario.'], 404);
-        }
-
-        return response()->json($cliente, 200);
-    }
 }

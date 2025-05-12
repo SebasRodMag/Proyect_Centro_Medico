@@ -33,7 +33,7 @@ export class ClientesComponent {
 
                 // setTimeout(() => {
                 //     this.isLoading = false;
-                //     this.isDataLoaded = true;
+                //     this.isDataLoaded = true;a
                 // }, 3000);
                 
             },

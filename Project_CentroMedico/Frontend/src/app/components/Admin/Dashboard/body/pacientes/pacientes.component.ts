@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class PacientesComponent implements OnInit {
     pacientes: any[] = [];
     clienteId!: string;
+    clienteNombre: string = '';
 
     constructor(
         private clienteService: ClienteService,
@@ -21,15 +22,21 @@ export class PacientesComponent implements OnInit {
 
     ngOnInit(): void {
         // Obtener el clienteId de la URL
-        this.route.params.subscribe(params => {
+        this.route.params.subscribe((params) => {
             this.clienteId = params['id_cliente']; // Asignar el id_cliente a la propiedad clienteId
             console.log('Cliente ID:', this.clienteId);
+            this.getPacientes();
         });
 
+        
+    }
+
+    getPacientes(): void {
         // Obtener los pacientes del cliente con el servicio
         this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(
-            (data: any[]) => {
-                this.pacientes = data; // Asignar los pacientes a la propiedad 'pacientes'
+            (data: any) => {
+                this.pacientes = data.pacientes;
+                this.clienteNombre = data.cliente;
             },
             (error: any) => {
                 console.error('Error al obtener los pacientes:', error);
