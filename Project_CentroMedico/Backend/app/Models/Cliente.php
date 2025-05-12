@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Cliente extends Model
 {
@@ -50,7 +51,7 @@ class Cliente extends Model
     /**
      * Relación con la tabla de Citas (a través de los contratos).
      */
-    public function citas()
+    public function citas(): HasManyThrough
     {
         return $this->hasManyThrough(Cita::class, Contrato::class, 'id_cliente', 'id_contrato', 'id', 'id');
     }
