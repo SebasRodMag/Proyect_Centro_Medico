@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contrato;
-use App\Models\Citas;
+use App\Models\Cita;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -67,6 +67,37 @@ class ContratosController extends Controller
         $contratos = Contrato::all();
         return response()->json($contratos, 200);
     }
+
+public function contratosPorCliente($id_cliente)
+{
+    // Obtén todos los contratos del cliente
+    $contratos = Contrato::where('id_cliente', $id_cliente)->get();
+    
+    // Si no hay contratos, devuelve una respuesta vacía
+    if ($contratos->isEmpty()) {
+        return response()->json(['message' => 'No contracts found'], 404);
+    }
+
+    // Recorremos los contratos y obtenemos los datos
+    $contratosData = $contratos->map(function($contrato) {
+        $cliente = $contrato->cliente;
+
+        return [
+            'contrato' => $contrato->id,
+            'empresa' => $cliente->razon_social,
+            'num_reconocimientos' => $contrato->numero_reconocimientos,
+            'reconocimientos_restantes' => $contrato->numero_reconocimientos - Cita::where('id_contrato', $contrato->id)->count(),
+            'fecha_inicio' => $contrato->fecha_inicio,
+            'fecha_fin' => $contrato->fecha_fin,
+        ];
+    });
+
+    // Devuelve el array de contratos
+    return response()->json([
+        'contratos' => $contratosData,
+    ], 200);
+}
+
 
     public function show($id){
         $contrato = Contrato::findOrFail($id);

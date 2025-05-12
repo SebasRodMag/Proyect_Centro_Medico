@@ -51,7 +51,13 @@ class CitasController extends Controller
         if ($request->has('fecha_hora_cita')) {
             $cita->fecha_hora_cita = $request->fecha_hora_cita;
         }
-        if($request->has('id_paciente')){
+        // if($request->has('fecha_hora_inicio')){
+        //     $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
+        // }
+        // if($request->has('fecha_hora_fin')){
+        //     $cita->fecha_hora_fin = $request->fecha_hora_fin;
+        // }
+        if ($request->has('id_paciente')) {
             $cita->id_paciente = $request->id_paciente;
         }
         if ($request->has('id_medico')) {

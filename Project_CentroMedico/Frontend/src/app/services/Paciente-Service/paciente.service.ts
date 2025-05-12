@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UsuariosService {
-    private usuariosUrl = 'http://localhost:8000/api/usuarios';
+export class PacienteService {
+    private apiUrl = 'http://localhost:8000/api/clientes';
+
     constructor(private http: HttpClient) {}
 
     private getAuthHeaders(): HttpHeaders {
@@ -16,8 +17,8 @@ export class UsuariosService {
         });
     }
 
-    getUsuarios(): Observable<any[]> {
-        return this.http.get<any[]>(this.usuariosUrl, {
+    getPacientesDelCliente(clienteId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/${clienteId}/pacientes`, {
             headers: this.getAuthHeaders(),
         });
     }

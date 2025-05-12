@@ -48,7 +48,7 @@ class UsersController extends Controller
     {
         $request->validate([
             'email' => 'string|email|max:255|unique:users,email,' . $id,
-            'password' => 'string|min:8|confirmed', //Habrá que crear dos inputs, uno para la contraseña y otro para la confirmación de la misma
+            'password' => 'string|min:8|confirmed',
         ]);
 
         $user = User::findOrFail($id);

@@ -21,33 +21,19 @@
             <th>Acciones</th>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr *ngFor = "let paciente of pacientes">
+                <td>{{paciente.id}}</td>
+                <td>{{clienteNombre}}</td>
+                <td>{{ paciente.apellidos +', '+paciente.nombre }}</td>
+                <td>{{ paciente.dni }}</td>
+                <td>{{ paciente.email }}</td>
+                <td>{{ paciente.fecha_nacimiento | date : "dd/MM/yyyy"}}</td>
+                <td>
+                    <button id="edit-button">Editar</button>
+                    <button id="delete-button">Eliminar</button>
+                </td>
             </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            
         </tbody>
     </table>
 </div>
