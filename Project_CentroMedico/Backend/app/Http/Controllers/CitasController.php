@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cita;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class CitasController extends Controller
 {
@@ -17,6 +18,16 @@ class CitasController extends Controller
             'id_medico' => 'required|integer|exists:medicos,id',
             'id_contrato' => 'required|integer|exists:contratos,id',
         ]);
+
+        $existeCita = Cita::where('id_medico', $request->id_medico)
+            ->where('fecha_hora_cita', $request->fecha_hora_cita)
+            ->exists();
+
+        if ($existeCita) {
+            return response()->json([
+                'message' => 'El médico ya tiene una cita programada en ese horario.'
+            ], 422);
+        }
 
         $cita = new Cita();
 
@@ -77,30 +88,30 @@ class CitasController extends Controller
     // }
 
     public function index()
-{
-    $citas = Cita::with(['paciente.cliente', 'medico', 'contrato.cliente'])->get();
+    {
+        $citas = Cita::with(['paciente.cliente', 'medico', 'contrato.cliente'])->get();
 
-    $citasFormateadas = $citas->map(function ($cita) {
-        // Intenta sacar el cliente desde paciente o contrato
-        $cliente = $cita->cliente 
-            ?? $cita->paciente->cliente 
-            ?? $cita->contrato->cliente;
+        $citasFormateadas = $citas->map(function ($cita) {
+            // Intenta sacar el cliente desde paciente o contrato
+            $cliente = $cita->cliente
+                ?? $cita->paciente->cliente
+                ?? $cita->contrato->cliente;
 
-        return [
-            'id' => $cita->id,
-            'contrato_id' => $cita->contrato->id ?? null,
-            'paciente' => $cita->paciente ? $cita->paciente->nombre . ' ' . $cita->paciente->apellidos : null,
-            'dni_paciente' => $cita->paciente ? $cita->paciente->dni : null,
-            'fecha' => $cita->fecha_hora_cita,
-            'cliente' => $cliente->razon_social ?? null,
-            'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
-        ];
-    });
+            return [
+                'id' => $cita->id,
+                'contrato_id' => $cita->contrato->id ?? null,
+                'paciente' => $cita->paciente ? $cita->paciente->nombre . ' ' . $cita->paciente->apellidos : null,
+                'dni_paciente' => $cita->paciente ? $cita->paciente->dni : null,
+                'fecha' => $cita->fecha_hora_cita,
+                'cliente' => $cliente->razon_social ?? null,
+                'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
+            ];
+        });
 
-    return response()->json([
-        'citas' => $citasFormateadas,
-    ], 200);
-}
+        return response()->json([
+            'citas' => $citasFormateadas,
+        ], 200);
+    }
 
 
     public function show($id)
@@ -173,5 +184,37 @@ class CitasController extends Controller
     {
         $citas = Cita::where('id_cliente', $id_cliente)->whereDate('fecha_hora_cita', $fecha)->get();
         return response()->json($citas, 200);
+    }
+
+    // Método para obtener las horas disponibles de un médico para un día
+    public function horariosDisponibles(Request $request, $id_medico, $fecha)
+    {
+        // Definir el rango de horas en el que se puede reservar (09:00 a 15:00)
+        $horaInicio = Carbon::createFromFormat('Y-m-d H:i', "$fecha 09:00");
+        $horaFin = Carbon::createFromFormat('Y-m-d H:i', "$fecha 15:00");
+
+        // Crear un array con todas las horas del día (por ejemplo, de 09:00 a 15:00 cada 5 minutos)
+        $horasDisponibles = [];
+        while ($horaInicio < $horaFin) {
+            $horasDisponibles[] = $horaInicio->format('H:i');
+            $horaInicio->addMinutes(5); // Cada cita tiene 5 minutos
+        }
+
+        // Obtener todas las citas ocupadas en ese día para el médico
+        $citasOcupadas = Cita::where('id_medico', $id_medico)
+            ->whereDate('fecha_hora_cita', $fecha)
+            ->get(['fecha_hora_cita']);
+
+        // Convertir las horas de las citas ocupadas en formato 'H:i'
+        $horasOcupadas = $citasOcupadas->map(function ($cita) {
+            return Carbon::parse($cita->fecha_hora_cita)->format('H:i');
+        })->toArray();
+
+        // Filtrar las horas disponibles (eliminamos las horas ocupadas)
+        $horasDisponibles = array_diff($horasDisponibles, $horasOcupadas);
+
+        return response()->json([
+            'horas_disponibles' => array_values($horasDisponibles),
+        ], 200);
     }
 }

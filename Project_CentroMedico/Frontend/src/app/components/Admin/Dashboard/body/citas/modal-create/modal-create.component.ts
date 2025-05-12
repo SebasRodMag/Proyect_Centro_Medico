@@ -9,10 +9,24 @@ import { ClienteService } from '../../../../../../services/Cliente-Service/clien
 import { MedicoService } from '../../../../../../services/Medico-Service/medico.service';
 import { CitaService } from '../../../../../../services/Cita-Service/cita.service';
 
+import dayjs from 'dayjs';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 @Component({
     selector: 'app-modal-create',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, NgSelectModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        NgSelectModule,
+        MatDatepickerModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatNativeDateModule,
+    ],
     templateUrl: './modal-create.component.html',
     styleUrls: ['./modal-create.component.css'],
 })
@@ -21,6 +35,7 @@ export class ModalCreateComponent implements OnInit {
     form: FormGroup;
     pacientes: any[] = [];
     medicos: any[] = [];
+    availableHours: string[] = [];
     idContrato: number | null = null;
 
     @Output() closed = new EventEmitter<void>();
@@ -60,6 +75,19 @@ export class ModalCreateComponent implements OnInit {
                     this.form.get('paciente')?.reset();
                 }
             });
+
+        this.form.get('fecha')?.valueChanges.subscribe((fecha) => {
+            if (fecha && this.form.get('medico')?.value) {
+                this.actualizarHorasDisponibles(fecha); // Actualiza las horas disponibles cuando cambia la fecha
+            }
+        });
+
+        this.form.get('medico')?.valueChanges.subscribe(() => {
+            const fecha = this.form.get('fecha')?.value;
+            if (fecha) {
+                this.actualizarHorasDisponibles(fecha); // Actualiza las horas disponibles cuando cambia el médico
+            }
+        });
     }
 
     open() {
@@ -74,6 +102,7 @@ export class ModalCreateComponent implements OnInit {
         this.pacientes = [];
         this.medicos = [];
         this.idContrato = null;
+        this.availableHours = [];
     }
 
     buscarPacientesPorCif(cif: string) {
@@ -115,13 +144,17 @@ export class ModalCreateComponent implements OnInit {
                 id_paciente: paciente,
                 id_medico: medico,
                 id_contrato: this.idContrato,
-                fecha_hora_cita: `${fecha}T${hora}`,
+                fecha_hora_cita: `${dayjs(fecha).format('YYYY-MM-DD')}T${hora}`,
             };
 
+            // Enviar la solicitud al backend para crear la cita
             this.citaService.storeCita(citaPayload).subscribe({
                 next: (response: any) => {
-                    // Cambia el tipo a `any` si no trabajas con interfaces
                     console.log('Cita creada con éxito:', response);
+                    // Después de crear la cita, actualizamos las horas disponibles
+                    this.actualizarHorasDisponibles(fecha); // Refrescar las horas disponibles
+
+                    // Cerrar el modal de creación de cita
                     this.close();
                 },
                 error: (error: any) => {
@@ -132,4 +165,34 @@ export class ModalCreateComponent implements OnInit {
             this.form.markAllAsTouched();
         }
     }
+
+    actualizarHorasDisponibles(fecha: string | Date) {
+        const dia = dayjs(fecha);
+        const diaSemana = dia.day(); // 0 = domingo, 6 = sábado
+
+        if (diaSemana === 0 || diaSemana === 6) {
+            this.availableHours = [];
+            return;
+        }
+
+        const medicoId = this.form.get('medico')?.value;
+        if (!medicoId) return;
+
+        this.citaService
+            .getHorasDisponibles(dia.format('YYYY-MM-DD'), medicoId)
+            .subscribe({
+                next: (response: any) => {
+                    this.availableHours = response.horas_disponibles || [];
+                },
+                error: () => {
+                    console.error('Error al obtener las horas disponibles');
+                },
+            });
+    }
+    
+    filtrarDiasHabiles = (fecha: Date | null): boolean => {
+        if (!fecha) return false;
+        const dia = fecha.getDay(); // 0: domingo, 6: sábado
+        return dia !== 0 && dia !== 6;
+    };
 }

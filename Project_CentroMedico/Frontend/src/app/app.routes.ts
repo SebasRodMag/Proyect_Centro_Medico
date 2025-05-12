@@ -76,6 +76,12 @@ export const routes: Routes = [
         canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
         data: { role: 'Administrador' },
     },
+    {
+        path: 'medicos/:id_medico/citas/:fecha',
+        loadComponent: () => import('./components/Admin/Dashboard/body/citas/citas.component').then(m => m.CitasComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Administrador' },
+    },
 
     // Ruta por defecto, si no se encuentra ninguna ruta
     {
@@ -83,3 +89,5 @@ export const routes: Routes = [
         redirectTo: 'home',
     },
 ];
+
+//13-05-2025 09.35
