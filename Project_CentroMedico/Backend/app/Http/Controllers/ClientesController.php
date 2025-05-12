@@ -121,30 +121,30 @@ class ClientesController extends Controller
     }
 
     //Funcion para buscar contratos por cliente
-    public function contratos($id)
-    {
-        // 1. Verificar si el cliente existe
-        $cliente = Cliente::find($id);
+    // public function contratos($id)
+    // {
+    //     // 1. Verificar si el cliente existe
+    //     $cliente = Cliente::find($id);
 
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
-        }
+    //     if (!$cliente) {
+    //         return response()->json([
+    //             'message' => 'Cliente no encontrado'
+    //         ], 404);
+    //     }
 
-        // 2. Obtener contratos del cliente, incluyendo eliminados
-        $contratos = Contrato::withTrashed()
-            ->where('id_cliente', $id)
-            ->orderByDesc('fecha_inicio')
-            ->paginate(10);
+    //     // 2. Obtener contratos del cliente, incluyendo eliminados
+    //     $contratos = Contrato::withTrashed()
+    //         ->where('id_cliente', $id)
+    //         ->orderByDesc('fecha_inicio')
+    //         ->paginate(10);
 
-        // 3. Devolver los detalles del cliente y los contratos, aunque esté vacío
-        return response()->json([
-            'cliente' => $cliente,  // Información del cliente
-            'message' => $contratos->isEmpty() ? 'El cliente no tiene contratos' : 'Contratos recuperados con éxito',
-            'data' => $contratos
-        ], 200);
-    }
+    //     // 3. Devolver los detalles del cliente y los contratos, aunque esté vacío
+    //     return response()->json([
+    //         'cliente' => $cliente,  // Información del cliente
+    //         'message' => $contratos->isEmpty() ? 'El cliente no tiene contratos' : 'Contratos recuperados con éxito',
+    //         'data' => $contratos
+    //     ], 200);
+    // }
 
     public function contratoVigente($id_cliente)
     {

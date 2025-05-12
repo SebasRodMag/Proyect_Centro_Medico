@@ -12,7 +12,6 @@
     </div>
     <table id="tabla-medicos">
         <thead>
-            <th><strong>Id</strong></th>
             <th>Nº Contrato</th>
             <th>Empresa</th>
             <th>Reconocimientos <br>contratados</th>
@@ -22,40 +21,13 @@
             <th>Acciones</th>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button id="edit-button">Editar</button>
-                    <button id="delete-button">Eliminar</button>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button id="edit-button">Editar</button>
-                    <button id="delete-button">Eliminar</button>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr *ngFor="let contrato of contratos">
+                <td>{{ contrato.contrato }}</td>
+                <td>{{ contrato.empresa }}</td>
+                <td>{{ contrato.num_reconocimientos }}</td>
+                <td>{{ contrato.reconocimientos_restantes }}</td>
+                <td>{{ contrato.fecha_inicio }}</td>
+                <td>{{ contrato.fecha_fin }}</td>
                 <td>
                     <button id="edit-button">Editar</button>
                     <button id="delete-button">Eliminar</button>

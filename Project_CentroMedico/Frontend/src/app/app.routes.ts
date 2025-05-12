@@ -63,7 +63,7 @@ export const routes: Routes = [
         import('./components/Admin/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
     },
     {
-        path: 'clientes/:id/contratos', 
+        path: 'clientes/:id_cliente/contratos', 
         loadComponent: () =>
         import('./components/Admin/Dashboard/body/contratos/contratos.component').then((m) => m.ContratosComponent),
     },

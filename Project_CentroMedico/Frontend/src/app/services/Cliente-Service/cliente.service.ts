@@ -45,6 +45,11 @@ export class ClienteService {
         return this.http.get(`${this.apiUrl}/${clienteId}/contratos/contrato-vigente/reconocimientos-restantes`, {
             headers: this.getAuthHeaders(),
         });
-        
+    }
+
+    getContratos(clienteId: string): Observable<any>{
+        return this.http.get(`${this.apiUrl}/${clienteId}/contratos`, {
+            headers: this.getAuthHeaders(),
+        });
     }
 }

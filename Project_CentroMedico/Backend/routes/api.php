@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //Contratos
         Route::get('contratos', [ContratosController::class, 'index']);
         Route::post('contratos', [ContratosController::class, 'store']);
+        Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
 
@@ -61,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:Administrador|Cliente'])->group(function () {
         Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::put('clientes/{cliente}', [ClientesController::class, 'update']);
-        Route::get('clientes/{cliente}/contratos', [ClientesController::class, 'contratos']);
+        Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratos']);
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ClientesController::class, 'contratoVigente']);
         Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
