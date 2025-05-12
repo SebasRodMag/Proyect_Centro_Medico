@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cliente extends Model
 {
-    use softDeletes;
+    use SoftDeletes;
     protected $table = 'clientes';
     use HasFactory;
 
@@ -40,18 +40,16 @@ class Cliente extends Model
     }
 
     /**
-     * Relación con la tabla de Pacientes (un cliente puede tener muchos pacientes).
-     */
-    public function pacientes(): HasMany
-    {
-        return $this->hasMany(Paciente::class, 'id_cliente');
-    }
-
-    /**
      * Relación con la tabla de Citas (a través de los contratos).
      */
     public function citas()
     {
         return $this->hasManyThrough(Cita::class, Contrato::class, 'id_cliente', 'id_contrato', 'id', 'id');
+        //Obtenemos todas las citas de los contratos del cliente
+    }
+
+    public function pacientes()
+    {
+        return $this->hasMany(Paciente::class, 'id_cliente');
     }
 }

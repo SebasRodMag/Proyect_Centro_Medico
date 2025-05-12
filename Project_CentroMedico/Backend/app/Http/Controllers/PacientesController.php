@@ -81,13 +81,6 @@ class PacientesController extends Controller
         return response()->json(['message' => 'Paciente actualizado con éxito'], 200);
     }
 
-    // public function destroy($id)
-    // {
-    //     $paciente = Paciente::findOrFail($id);
-    //     $paciente->delete();
-    //     return response()->json(['message' => 'Paciente eliminado con éxito'], 200);
-    // }
-
     public function index(){
         $pacientes = Paciente::all();
         return response()->json($pacientes, 200);
@@ -107,4 +100,5 @@ class PacientesController extends Controller
         $pacientes = Paciente::onlyTrashed()->get();
         return response()->json($pacientes, 200);
     }
+
 }

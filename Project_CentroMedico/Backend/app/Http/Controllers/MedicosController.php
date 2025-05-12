@@ -7,9 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Http\Resources\CitaResource;
-use App\Http\Resources\MedicoResource;
-use App\Http\Resources\UserResource;
+
 use App\Models\Cita;
 use App\Models\User;
 
@@ -75,21 +73,23 @@ class MedicosController extends Controller
 
     public function index()
     {
-        return MedicoResource::collection(Medico::all());
+        $medicos = Medico::all();
+        return response()->json($medicos, 200);
     }
     public function show($id)
     {
-        return new MedicoResource(Medico::findOrFail($id));
+        $medico = Medico::findOrFail($id);
+        return response()->json($medico, 200);
     }
     
-    public function showAllMedicos()
-    {
-        return MedicoResource::collection(Medico::withTrashed()->get());
+    public function showAllMedicos(){
+        $medicos = Medico::withTrashed()->get();
+        return response()->json($medicos, 200);
     }
 
-    public function showTrashedMedicos()
-    {
-        return MedicoResource::collection(Medico::onlyTrashed()->get());
+    public function showTrashedMedicos(){
+        $medicos = Medico::onlyTrashed()->get();
+        return response()->json($medicos, 200);
     }
 
     /**
@@ -100,44 +100,46 @@ class MedicosController extends Controller
      */
     public function medicoLogueado(): JsonResponse
     {
-        $usuario = Auth::user();
+        // Verifica si hay un usuario autenticado
+        if (Auth::check()) {
+            // Obtiene el usuario autenticado
+            $medico = Auth::user();
 
-        if (!$usuario) {
-            return response()->json(['error' => 'No hay ningún usuario autenticado.'], 401);
+            // Asumiendo que tu modelo de Médico tiene las propiedades 'nombre' y 'apellido'
+            if ($medico && isset($medico->nombre) && isset($medico->apellidos)) {
+                return response()->json([
+                    'nombre' => $medico->nombre,
+                    'apellidos' => $medico->apellidos,
+                ]);
+            } else {
+                return response()->json(['error' => 'El usuario autenticado no tiene nombre y/o apellido.'], 404);
+            }
+        } else {
+            return response()->json(['error' => 'No hay ningún médico autenticado.'], 401);
         }
-
-        $medico = $usuario->medico;
-
-        if (!$medico) {
-            return response()->json(['error' => 'El usuario autenticado no es un médico o no tiene asociado un perfil de médico.'], 403);
-        }
-
-        return response()->json([
-            'nombre' => $medico->nombre,
-            'apellidos' => $medico->apellidos,
-        ]);
     }
+
     // Método para obtener las citas de un médico
     public function citas(Request $request, $id)
-{
-    $medico = Medico::findOrFail($id);
+    {
+        $medico = Medico::findOrFail($id);
 
-    $fecha = $request->query('fecha'); // formato esperado: YYYY-MM-DD
+        $fecha = $request->query('fecha'); // formato esperado: YYYY-MM-DD
 
-    if (!$fecha) {
-        $fecha = Carbon::today()->toDateString();
+        if (!$fecha) {
+            $fecha = Carbon::today()->toDateString();
+        }
+
+        $citas = $medico->citas()
+            ->whereDate('fecha', $fecha)
+            ->get();
+
+        if ($citas->isEmpty()) {
+            return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
+        }
+
+        return response()->json($citas);
     }
-
-    $citas = $medico->citas()
-        ->whereDate('fecha', $fecha)
-        ->get();
-
-    if ($citas->isEmpty()) {
-        return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
-    }
-
-    return CitaResource::collection($citas);
-}
 
     public function destroy($id)
     {

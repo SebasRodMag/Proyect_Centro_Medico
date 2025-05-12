@@ -23,6 +23,13 @@ class Paciente extends Model
         'fecha_nacimiento',
         'email',
     ];
+    /**
+     * Relación con la tabla de Usuarios (un paciente pertenece a un usuario).
+     */
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
 
     /**
      * Relación con la tabla de Clientes (un paciente pertenece a un cliente).
@@ -33,10 +40,29 @@ class Paciente extends Model
     }
 
     /**
+     * Relación con la tabla de Contratos (un paciente puede tener muchos contratos).
+     */
+    public function contratos()
+    {
+        return $this->hasMany(Contrato::class, 'id_paciente');
+    }
+
+
+    /**
      * Relación con la tabla de Citas (un paciente puede tener muchas citas).
      */
     public function citas(): HasMany
     {
         return $this->hasMany(Cita::class, 'id_paciente');
+    }
+
+    /**
+     * Relación con la tabla de Citas (un paciente puede tener muchas citas).
+     */
+    public function citasPorClienteId($idCliente)
+    {
+        return $this->citas()->whereHas('contrato', function ($query) use ($idCliente) {
+            $query->where('id_cliente', $idCliente);
+        });
     }
 }

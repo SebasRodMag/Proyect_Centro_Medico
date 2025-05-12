@@ -14,7 +14,6 @@ class Cita extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
         'id_paciente',
         'id_medico',
         'id_contrato',

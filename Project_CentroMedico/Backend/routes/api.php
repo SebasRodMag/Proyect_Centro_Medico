@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
         
         Route::post('citas', [CitasController::class, 'store']);
-        Route::get('usuarios', [UsersController::class, 'index']);
+        //Route::get('usuarios', [UsersController::class, 'index']);
         Route::post('usuarios', [UsersController::class, 'store']);
         Route::get('usuarios/{user}', [UsersController::class, 'show']);
         Route::put('usuarios/{user}', [UsersController::class, 'update']);
@@ -75,20 +75,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('citas', [CitasController::class, 'index']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
         Route::put('/citas/{cita}', [CitasController::class, 'update']);
+        Route::get('clientes/{idCliente}/pacientes/{idPaciente}/citas', [CitasController::class, 'citasDeCliente']);
     });
     
 
     //Ruta que solo los administradores, los médicos, los clientes y pacientes pueden acceder
-    Route::middleware(['role:Administrador|Medico|Cliente|Paciente'])->group(function () {
+    Route::middleware(['role:Administrador,Medico,Cliente,Paciente'])->group(function () {
         Route::get('pacientes/{paciente}', [PacientesController::class, 'show']);
     });
 
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
-        Route::get('medicos/{medico}/citas', [MedicosController::class, 'citasPorMedico']);
+        Route::get('medicos/{medico}/citas', [MedicosController::class, 'citas']);
         Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
         Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
         Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
+        Route::get('usuarios', [UsersController::class, 'index']);
         
     });
     //Rutas que solo los clientes pueden acceder
