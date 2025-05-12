@@ -1,6 +1,6 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -44,12 +44,30 @@ export class CitaService {
         });
     }
 
+    getHorasDisponibles(fecha: string, id_medico: number): Observable<any> {
+        return this.http.get<any>(
+            `${this.apiUrl}/medicos/${id_medico}/citas/${fecha}`,
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
+    }
+
+    // getCitasPorPaciente(pacienteId: number): Observable<any> {
+    //     return this.http.get<any>(
+    //         `${this.apiUrl}/pacientes/${pacienteId}/citas`,
+    //         {
+    //             headers: this.getAuthHeaders(),
+    //         }
+    //     );
+    // }
+
     getCitas(): Observable<any> {
         return this.http.get(`${this.apiUrl}/citas`, {
             headers: this.getAuthHeaders(),
         });
     }
-    
+
     storeCita(cita: {
         id_paciente: number;
         id_medico: number;

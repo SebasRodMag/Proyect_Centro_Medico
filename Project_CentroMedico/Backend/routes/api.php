@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('medicos', [MedicosController::class, 'store']);
         Route::get('medicos/{medico}', [MedicosController::class, 'show']);
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
+        Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
         
         Route::post('citas', [CitasController::class, 'store']);
         Route::get('usuarios', [UsersController::class, 'index']);
