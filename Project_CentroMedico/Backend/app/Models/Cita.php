@@ -16,7 +16,6 @@ class Cita extends Model
     protected $fillable = [
         'id',
         'id_paciente',
-        'id_cliente',
         'id_medico',
         'id_contrato',
         'fecha_hora_cita',
@@ -46,11 +45,5 @@ class Cita extends Model
     public function contrato(): BelongsTo
     {
         return $this->belongsTo(Contrato::class, 'id_contrato');
-    }
-
-    public function cliente(): BelongsTo
-    {
-        return $this->belongsTo(Cliente::class, 'id_cliente');
-
     }
 }

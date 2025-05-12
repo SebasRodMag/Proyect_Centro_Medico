@@ -23,15 +23,12 @@
         <tbody>
             <tr *ngFor = "let paciente of pacientes">
                 <td>{{paciente.id}}</td>
-                <td>{{clienteNombre}}</td>
-                <td>{{ paciente.apellidos +', '+paciente.nombre }}</td>
-                <td>{{ paciente.dni }}</td>
-                <td>{{ paciente.email }}</td>
-                <td>{{ paciente.fecha_nacimiento | date : "dd/MM/yyyy"}}</td>
-                <td>
-                    <button id="edit-button">Editar</button>
-                    <button id="delete-button">Eliminar</button>
-                </td>
+                <td>{{paciente.cliente[0]?.razon_social}}</td>
+                <td>{{ paciente.apellidos +' '+paciente.nombre }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
             
         </tbody>

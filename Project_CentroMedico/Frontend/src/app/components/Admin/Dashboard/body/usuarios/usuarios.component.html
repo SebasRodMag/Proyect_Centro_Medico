@@ -23,8 +23,8 @@
                 <td>{{ usuario.email }}</td>
                 <td>{{ usuario.roles[0]?.name }}</td>
                 <td>
-                    <button (click)="modal.open()" id="edit-button"><i class="bi bi-pencil-square"></i></button>
-                    <button id="delete-button"><i class="bi bi-trash-fill"></i></button>
+                    <button (click)="modal.open()">Editar</button>
+                    <button>Eliminar</button>
                 </td>
             </tr>
         </tbody>
