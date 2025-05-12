@@ -73,19 +73,20 @@
 #tabla-citas th{
     background-color: #376AA8;
     color: white;
-    padding: 10px;
 }
 
 #tabla-citas th,td{
     font-size: 12px;
-    text-align: center;    
+    text-align: center;
+    padding: 10px;
 }
 
 #tabla-citas tr:nth-child(odd){
     background-color: #fff;
 }
 #tabla-citas tr:nth-child(even){
-    background-color: #376aa845;
+    background-color: #376AA8;
+    opacity: 0.25;
 }
 
 #tabla-citas th:last-child,td:last-child{

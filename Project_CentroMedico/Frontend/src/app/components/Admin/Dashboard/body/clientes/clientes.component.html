@@ -17,6 +17,7 @@
         <label for="municipio">Municipio:</label>
         <input type="text" id="municipio" placeholder="" />
     </div>
+
     <table id="tabla-clientes">
         <thead>
             <tr>
@@ -37,7 +38,9 @@
             <tr *ngFor="let cliente of clientes">
                 <td>{{ cliente.id }}</td>
                 <td>
-                    <a [routerLink]="['/clientes', cliente.id, 'pacientes']">{{ cliente.razon_social }}</a>
+                    <a [routerLink]="['/clientes', cliente.id, 'pacientes']">{{
+                        cliente.razon_social
+                    }}</a>
                 </td>
                 <td>{{ cliente.cif }}</td>
                 <td>{{ cliente.direccion }}</td>
@@ -45,32 +48,29 @@
                 <td>{{ cliente.provincia }}</td>
                 <td>
                     <a [routerLink]="['/clientes', cliente.id, 'contratos']">
-                        {{ contratosVigentes[cliente.id]?.contrato?.id ?? "Sin contrato" }}
+                        {{ cliente.contrato ?? "Sin contrato" }}
                     </a>
                 </td>
                 <td>
                     {{
-                        contratosVigentes[cliente.id]?.contrato?.fecha_inicio
-                            ? (contratosVigentes[cliente.id].contrato.fecha_inicio | date : "dd/MM/yyyy")
+                        cliente.fecha_inicio
+                            ? (cliente.fecha_inicio | date : "dd/MM/yyyy")
                             : "-"
                     }}
                 </td>
                 <td>
                     {{
-                        contratosVigentes[cliente.id]?.contrato?.fecha_fin
-                            ? (contratosVigentes[cliente.id].contrato.fecha_fin | date : "dd/MM/yyyy")
+                        cliente.fecha_fin
+                            ? (cliente.fecha_fin | date : "dd/MM/yyyy")
                             : "-"
                     }}
                 </td>
-                <td>{{ contratosVigentes[cliente.id]?.reconocimientosRestantes ?? "-" }}</td>
+                <td>{{ cliente.reconocimientos_restantes ?? "-" }}</td>
                 <td>
-                    <button type="button" id="edit-button"><i class="bi bi-pencil-square"></i></button>
-                    <button type="button" id="delete-button"><i class="bi bi-trash-fill"></i></button>
+                    <button id="edit-button"><i class="bi bi-pencil-square"></i></button>
+                    <button id="delete-button"><i class="bi bi-trash-fill"></i></button>
                 </td>
             </tr>
         </tbody>
     </table>
-    <!-- <div *ngIf="isLoading" class="spinner-container">
-        <div class="spinner"></div>
-    </div> -->
 </div>
