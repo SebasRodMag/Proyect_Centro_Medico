@@ -18,8 +18,8 @@ export class PacienteService {
     }
 
     getPacientesDelCliente(clienteId: string): Observable<any[]> {
-      return this.http.get<any[]>(`${this.apiUrl}/${clienteId}/pacientes`, {
-          headers: this.getAuthHeaders(),
-      });
-  }
+        return this.http.get<any[]>(`${this.apiUrl}/${clienteId}/pacientes`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }

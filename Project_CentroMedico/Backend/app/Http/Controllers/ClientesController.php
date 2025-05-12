@@ -221,7 +221,9 @@ class ClientesController extends Controller
         }
 
         // Retornar la lista de pacientes
-        return response()->json($pacientes, 200);
+        return response()->json([
+            'cliente' => $cliente->razon_social,
+            'pacientes' => $pacientes], 200);
     }
 
     //Función para buscar citas por cliente

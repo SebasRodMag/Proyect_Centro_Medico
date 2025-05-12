@@ -65,8 +65,7 @@
     background-color: #fff;
 }
 #tabla-medicos tr:nth-child(even){
-    background-color: #376AA8;
-    opacity: 0.25;
+    background-color: #376aa845;
 }
 
 #tabla-medicos th:last-child,td:last-child{

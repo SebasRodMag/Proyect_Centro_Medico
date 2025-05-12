@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
         
         Route::post('citas', [CitasController::class, 'store']);
-        Route::get('usuarios', [UsersController::class, 'index']);
+        // Route::get('usuarios', [UsersController::class, 'index']);
         Route::post('usuarios', [UsersController::class, 'store']);
         Route::get('usuarios/{user}', [UsersController::class, 'show']);
         Route::put('usuarios/{user}', [UsersController::class, 'update']);
@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     //Rutas que solo los administradores y médicos pueden acceder
-    Route::middleware(['role:Administrador,medico'])->group(function () {
+    Route::middleware(['role:Administrador|Medico'])->group(function () {
         Route::get('citas', [CitasController::class, 'index']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
         Route::put('/citas/{cita}', [CitasController::class, 'update']);
@@ -79,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
 
     //Ruta que solo los administradores, los médicos, los clientes y pacientes pueden acceder
-    Route::middleware(['role:Administrador,medico,cliente,paciente'])->group(function () {
+    Route::middleware(['role:Administrador|Medico|Cliente|Paciente'])->group(function () {
         Route::get('pacientes/{paciente}', [PacientesController::class, 'show']);
     });
 
@@ -93,7 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {
         // Rutas para que los clientes consulten sus citas (habría que darle más lógica aquí)
-        // Route::get('/citas', [CitaController::class, 'Citas']);
+        Route::get('/clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);
     });
 
     Route::post('/login', [AuthController::class, 'login']);
