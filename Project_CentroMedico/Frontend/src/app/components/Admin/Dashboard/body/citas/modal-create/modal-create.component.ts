@@ -9,7 +9,7 @@ declare var $: any;
     selector: 'app-modal-create',
     imports: [CommonModule, FormsModule, NgSelectModule],
     templateUrl: './modal-create.component.html',
-    styleUrl: '../../../../../../../styles.css',
+    styleUrl: './modal-create.component.css',
 })
 export class ModalCreateComponent {
     isVisible = false;
@@ -17,7 +17,7 @@ export class ModalCreateComponent {
     @Output() closed = new EventEmitter<void>();
 
     open() {
-        this.isVisible = true; // aumentar el delay puede ayudar
+        this.isVisible = true;
     }
 
     close() {
