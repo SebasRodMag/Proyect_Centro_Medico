@@ -83,8 +83,10 @@ class ContratosController extends Controller
         return response()->json($contratos, 200);
     }
 
-    //Función para obtener las citas de un contrato
 
+    
+
+    //Función para obtener las citas de un contrato
     public function citas($id_contrato)
     {
         // Buscar el contrato por su id

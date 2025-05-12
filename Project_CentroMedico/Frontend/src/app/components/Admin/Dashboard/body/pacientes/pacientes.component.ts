@@ -20,8 +20,10 @@ export class PacientesComponent implements OnInit {
 
     ngOnInit(): void {
         // Obtener el clienteId de la URL
-        this.clienteId = this.route.snapshot.paramMap.get('id')!;
-        console.log('Cliente ID:', this.clienteId);
+        this.route.params.subscribe(params => {
+            this.clienteId = params['id_cliente']; // Asignar el id_cliente a la propiedad clienteId
+            console.log('Cliente ID:', this.clienteId);
+        });
 
         // Obtener los pacientes del cliente con el servicio
         this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(

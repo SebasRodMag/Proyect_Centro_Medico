@@ -14,6 +14,7 @@ use App\Http\Controllers\MedicosController;
 use App\Http\Controllers\ContratosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\CitasController;
+use App\Models\Contrato;
 
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
@@ -57,10 +58,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     //Rutas que solo los administradores y clientes pueden acceder
-    Route::middleware(['role:Administrador,cliente'])->group(function () {
+    Route::middleware(['role:Administrador|Cliente'])->group(function () {
         Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::put('clientes/{cliente}', [ClientesController::class, 'update']);
         Route::get('clientes/{cliente}/contratos', [ClientesController::class, 'contratos']);
+        Route::get('clientes/{cliente}/contratos/contrato-vigente', [ClientesController::class, 'contratoVigente']);
+        Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
         Route::get('clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
