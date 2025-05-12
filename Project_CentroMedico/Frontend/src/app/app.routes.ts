@@ -1,5 +1,6 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { MedicoGuard } from './guards/medico.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -17,6 +18,12 @@ export const routes: Routes = [
         path: 'medicos/perfil',
         loadComponent: () =>
         import('./components/medico/medico.component').then((m) => m.MedicoComponent),
+    },
+    {
+        path: 'medico/dashboard',
+        loadComponent: () =>
+        import('./components/medico/medico.component').then((m) => m.MedicoComponent),
+        canActivate: [MedicoGuard],
     },
     // Rutas para el cliente, Falta crear el controlador y el servicio
 /*   {

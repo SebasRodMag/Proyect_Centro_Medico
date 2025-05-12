@@ -20,6 +20,7 @@ export class MedicoService {
         const token = localStorage.getItem('token')
         return new HttpHeaders({
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
         });
     }
 
@@ -28,4 +29,13 @@ export class MedicoService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    getMedicoLogueado(): Observable<any> {
+    return this.http.get<any>('http://localhost:8000/api/auth/me', {
+        headers: this.getAuthHeaders(),
+    });
+
+    
+}
+
 }

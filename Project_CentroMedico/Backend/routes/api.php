@@ -86,9 +86,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
         Route::get('medicos/{medico}/citas', [MedicosController::class, 'citasMedico']);
-        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
+        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);//Debe devolver las citas del medico que hace la consulta
         Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
         Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
+        Route::get('citas/medico/fecha/{fecha}', [CitasController::class, 'obtenerCitasPorMedicoYFecha']);
     });
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {
