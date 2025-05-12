@@ -72,7 +72,12 @@ export class AuthService {
     }
 
     isLoggedIn(): boolean {
-        return !!localStorage.getItem('token');
+        return !!localStorage.getItem('token'); // Verifica si el token existe
+    }
+
+    // Método para obtener el token de sesión o JWT
+    getToken(): string | null {
+        return localStorage.getItem('token');
     }
 
     me(): Observable<User> {

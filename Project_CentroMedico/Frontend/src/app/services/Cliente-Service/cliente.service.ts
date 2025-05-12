@@ -24,6 +24,38 @@ export class ClienteService {
     }
 
     getPacientesDelCliente(clienteId: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/${clienteId}/pacientes`);
+        return this.http.get(`${this.apiUrl}/${clienteId}/pacientes`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getContratosDelCLiente(id_cliente: number): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${id_cliente}/contratos`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getContratoVigente(clienteId: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${clienteId}/contratos/contrato-vigente`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+    
+    getReconocimientosRestantes(clienteId: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${clienteId}/contratos/contrato-vigente/reconocimientos-restantes`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getContratos(clienteId: string): Observable<any>{
+        return this.http.get(`${this.apiUrl}/${clienteId}/contratos`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getPacientesPorCif(cif: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${cif}/pacientes`, {
+            headers: this.getAuthHeaders(),
+        });
     }
 }

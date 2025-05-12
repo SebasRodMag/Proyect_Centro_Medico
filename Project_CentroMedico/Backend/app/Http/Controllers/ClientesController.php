@@ -121,30 +121,30 @@ class ClientesController extends Controller
     }
 
     //Funcion para buscar contratos por cliente
-    public function contratos($id)
-    {
-        // 1. Verificar si el cliente existe
-        $cliente = Cliente::find($id);
+    // public function contratos($id)
+    // {
+    //     // 1. Verificar si el cliente existe
+    //     $cliente = Cliente::find($id);
 
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
-        }
+    //     if (!$cliente) {
+    //         return response()->json([
+    //             'message' => 'Cliente no encontrado'
+    //         ], 404);
+    //     }
 
-        // 2. Obtener contratos del cliente, incluyendo eliminados
-        $contratos = Contrato::withTrashed()
-            ->where('id_cliente', $id)
-            ->orderByDesc('fecha_inicio')
-            ->paginate(10);
+    //     // 2. Obtener contratos del cliente, incluyendo eliminados
+    //     $contratos = Contrato::withTrashed()
+    //         ->where('id_cliente', $id)
+    //         ->orderByDesc('fecha_inicio')
+    //         ->paginate(10);
 
-        // 3. Devolver los detalles del cliente y los contratos, aunque esté vacío
-        return response()->json([
-            'cliente' => $cliente,  // Información del cliente
-            'message' => $contratos->isEmpty() ? 'El cliente no tiene contratos' : 'Contratos recuperados con éxito',
-            'data' => $contratos
-        ], 200);
-    }
+    //     // 3. Devolver los detalles del cliente y los contratos, aunque esté vacío
+    //     return response()->json([
+    //         'cliente' => $cliente,  // Información del cliente
+    //         'message' => $contratos->isEmpty() ? 'El cliente no tiene contratos' : 'Contratos recuperados con éxito',
+    //         'data' => $contratos
+    //     ], 200);
+    // }
 
     public function contratoVigente($id_cliente)
     {
@@ -265,15 +265,33 @@ class ClientesController extends Controller
             'citas' => $citas
         ], 200);
     }
-    //Función que devuelve los datos del cliente logueado
-    public function datosCliente()
-    {
-        $cliente = Auth::user()->cliente;
 
+    public function pacientesByCIF($cif){
+        // Buscar el cliente por CIF
+        $cliente = Cliente::where('cif', $cif)->first();
+
+        // Si el cliente no existe
         if (!$cliente) {
-            return response()->json(['message' => 'No se encontró el cliente asociado al usuario.'], 404);
+            return response()->json([
+                'error' => 'Cliente no encontrado.'
+            ], 404);
         }
 
-        return response()->json($cliente, 200);
+        // Obtener todos los pacientes asociados al cliente
+        $pacientes = Paciente::where('id_cliente', $cliente->id)->get();
+
+        // Si no hay pacientes
+        if ($pacientes->isEmpty()) {
+            return response()->json([
+                'cliente' => $cliente,
+                'message' => 'No hay pacientes asociados a este cliente.'
+            ], 200);
+        }
+
+        // Respuesta exitosa con datos
+        return response()->json([
+            'cliente' => $cliente,
+            'pacientes' => $pacientes
+        ], 200);
     }
 }
