@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 
 class CitasController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'fecha_hora_cita' => 'required|date',
             // 'fecha_hora_inicio' => 'required|date',
@@ -31,11 +32,10 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita creada con éxito'], 201);
     }
 
-    public function horarios(){
-        
-    }
+    public function horarios() {}
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'fecha_hora_cita' => 'date',
 
@@ -48,44 +48,75 @@ class CitasController extends Controller
         ]);
 
         $cita = Cita::findOrFail($id);
-        if($request->has('fecha_hora_cita')){
+        if ($request->has('fecha_hora_cita')) {
             $cita->fecha_hora_cita = $request->fecha_hora_cita;
         }
-
         if($request->has('id_paciente')){
             $cita->id_paciente = $request->id_paciente;
         }
-        if($request->has('id_medico')){
+        if ($request->has('id_medico')) {
             $cita->id_medico = $request->id_medico;
         }
-        if($request->has('id_contrato')){
+        if ($request->has('id_contrato')) {
             $cita->id_contrato = $request->id_contrato;
         }
         $cita->save();
         return response()->json(['message' => 'Cita actualizada con éxito'], 200);
     }
 
-    public function index(){
-        $citas = Cita::all();
-        return response()->json($citas, 200);
-    }
+    // public function destroy($id){
+    //     $cita = Cita::findOrFail($id);
+    //     $cita->delete();
+    //     return response()->json(['message' => 'Cita eliminada con éxito'], 200);
+    // }
 
-    public function show($id){
+    public function index()
+{
+    $citas = Cita::with(['paciente.cliente', 'medico', 'contrato.cliente'])->get();
+
+    $citasFormateadas = $citas->map(function ($cita) {
+        // Intenta sacar el cliente desde paciente o contrato
+        $cliente = $cita->cliente 
+            ?? $cita->paciente->cliente 
+            ?? $cita->contrato->cliente;
+
+        return [
+            'id' => $cita->id,
+            'contrato_id' => $cita->contrato->id ?? null,
+            'paciente' => $cita->paciente ? $cita->paciente->nombre . ' ' . $cita->paciente->apellidos : null,
+            'dni_paciente' => $cita->paciente ? $cita->paciente->dni : null,
+            'fecha' => $cita->fecha_hora_cita,
+            'cliente' => $cliente->razon_social ?? null,
+            'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
+        ];
+    });
+
+    return response()->json([
+        'citas' => $citasFormateadas,
+    ], 200);
+}
+
+
+    public function show($id)
+    {
         $cita = Cita::findOrFail($id);
         return response()->json($cita, 200);
     }
 
-    public function showAllCitas(){
+    public function showAllCitas()
+    {
         $citas = Cita::withTrashed()->get();
         return response()->json($citas, 200);
     }
 
-    public function showTrashedCitas(){
+    public function showTrashedCitas()
+    {
         $citas = Cita::onlyTrashed()->get();
         return response()->json($citas, 200);
     }
 
-    public function showByDate($fecha_inicio, $fecha_fin){
+    public function showByDate($fecha_inicio, $fecha_fin)
+    {
         $citas = Cita::whereBetween('fecha_hora_cita', [$fecha_inicio, $fecha_fin])->get();
         return response()->json($citas, 200);
     }
@@ -112,29 +143,28 @@ class CitasController extends Controller
     }
 
     //implementar la función para mostrar las citas de un médico
-    public function citasPorDia($fecha){
+    public function citasPorDia($fecha)
+    {
         $citas = Cita::whereDate('fecha_hora_cita', $fecha)->get();
         return response()->json($citas, 200);
     }
     //implementar la función para mostrar las citas de un médico
-    public function citasPorDiaMedico($id_medico, $fecha){
+    public function citasPorDiaMedico($id_medico, $fecha)
+    {
         $citas = Cita::where('id_medico', $id_medico)->whereDate('fecha_hora_cita', $fecha)->get();
-
-        if ($citas->isEmpty()) {
-            return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
-        }
-
         return response()->json($citas, 200);
     }
 
     //implementar la función para mostrar las citas de un paciente
-    public function citasPorDiaPaciente($id_paciente, $fecha){
+    public function citasPorDiaPaciente($id_paciente, $fecha)
+    {
         $citas = Cita::where('id_paciente', $id_paciente)->whereDate('fecha_hora_cita', $fecha)->get();
         return response()->json($citas, 200);
     }
 
     //implementar la función para mostrar las citas de un cliente
-    public function citasPorDiaCliente($id_cliente, $fecha){
+    public function citasPorDiaCliente($id_cliente, $fecha)
+    {
         $citas = Cita::where('id_cliente', $id_cliente)->whereDate('fecha_hora_cita', $fecha)->get();
         return response()->json($citas, 200);
     }

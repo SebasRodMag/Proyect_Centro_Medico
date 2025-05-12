@@ -19,43 +19,30 @@
         <thead>
             <th>Id</th>
             <th>Nº Contrato</th>
-            <th>Nombre empresa</th>
             <th>Paciente</th>
+            <th>Nombre empresa</th>
             <th>DNI</th>
+            <th>Médico</th>
             <th>Fecha</th>
             <th>Hora</th>
             <th>Acciones</th>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr *ngFor="let cita of citas">
+                <td>{{ cita.id }}</td>
+                <td>{{ cita.contrato_id }}</td>
+                <td>{{ cita.paciente }}</td>
+                <td>{{ cita.cliente }}</td>
+                <td>{{ cita.dni_paciente }}</td>
+                <td>{{ cita.medico }}</td>
+                <td>{{ cita.fecha | date : "dd-MM-yyyy" }}</td>
+                <td>{{ cita.fecha | date : "HH:mm" }}</td>
+                <td>
+                    <button (click)="modal.open()" id="edit-button">
+                        Modificar
+                    </button>
+                    <button id="delete-button">Eliminar</button>
+                </td>
             </tr>
         </tbody>
     </table>
