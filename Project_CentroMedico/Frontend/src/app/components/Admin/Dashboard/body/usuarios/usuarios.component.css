@@ -54,20 +54,19 @@
 #tabla-usuarios th{
     background-color: #376AA8;
     color: white;
+    padding: 10px;
 }
 
 #tabla-usuarios th,td{
     font-size: 12px;
     text-align: center;
-    padding: 10px;
 }
 
 #tabla-usuarios tr:nth-child(odd){
     background-color: #fff;
 }
 #tabla-usuarios tr:nth-child(even){
-    background-color: #376AA8;
-    opacity: 0.25;
+    background-color: #376aa845;
 }
 
 #tabla-usuarios th:last-child,td:last-child{

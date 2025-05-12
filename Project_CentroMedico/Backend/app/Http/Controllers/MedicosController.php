@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MedicosController extends Controller
 {
@@ -98,25 +99,5 @@ class MedicosController extends Controller
      * Devuelve el nombre y el apellido del médico autenticado
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function medicoLogueado(): JsonResponse
-    {
-        // Verifica si hay un usuario autenticado
-        if (Auth::check()) {
-            // Obtiene el usuario autenticado
-            $medico = Auth::user();
-
-            // Asumiendo que tu modelo de Médico tiene las propiedades 'nombre' y 'apellido'
-            if ($medico && isset($medico->nombre) && isset($medico->apellidos)) {
-                return response()->json([
-                    'nombre' => $medico->nombre,
-                    'apellidos' => $medico->apellidos,
-                ]);
-            } else {
-                return response()->json(['error' => 'El usuario autenticado no tiene nombre y/o apellido.'], 404);
-            }
-        } else {
-            return response()->json(['error' => 'No hay ningún médico autenticado.'], 401);
-        }
-    }
     
 }

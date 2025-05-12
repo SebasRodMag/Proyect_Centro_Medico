@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClienteService } from '../../../../../services/Cliente-Service/cliente.service'; // Asegúrate de importar el servicio de pacientes correctamente
 import { ModalCreateComponent } from './modal-create/modal-create.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-pacientes',
     templateUrl: './pacientes.component.html',
-    imports: [ModalCreateComponent],
+    imports: [ModalCreateComponent, CommonModule],
     styleUrls: ['./pacientes.component.css'],
 })
 export class PacientesComponent implements OnInit {
@@ -20,8 +21,10 @@ export class PacientesComponent implements OnInit {
 
     ngOnInit(): void {
         // Obtener el clienteId de la URL
-        this.clienteId = this.route.snapshot.paramMap.get('id')!;
-        console.log('Cliente ID:', this.clienteId);
+        this.route.params.subscribe(params => {
+            this.clienteId = params['id_cliente']; // Asignar el id_cliente a la propiedad clienteId
+            console.log('Cliente ID:', this.clienteId);
+        });
 
         // Obtener los pacientes del cliente con el servicio
         this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(

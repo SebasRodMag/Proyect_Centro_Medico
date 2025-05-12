@@ -21,33 +21,16 @@
             <th>Acciones</th>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr *ngFor = "let paciente of pacientes">
+                <td>{{paciente.id}}</td>
+                <td>{{paciente.cliente[0]?.razon_social}}</td>
+                <td>{{ paciente.apellidos +' '+paciente.nombre }}</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            
         </tbody>
     </table>
 </div>
