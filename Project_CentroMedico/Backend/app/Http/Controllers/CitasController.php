@@ -70,12 +70,6 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita actualizada con éxito'], 200);
     }
 
-    // public function destroy($id){
-    //     $cita = Cita::findOrFail($id);
-    //     $cita->delete();
-    //     return response()->json(['message' => 'Cita eliminada con éxito'], 200);
-    // }
-
     public function index(){
         $citas = Cita::all();
         return response()->json($citas, 200);
@@ -130,6 +124,11 @@ class CitasController extends Controller
     //implementar la función para mostrar las citas de un médico
     public function citasPorDiaMedico($id_medico, $fecha){
         $citas = Cita::where('id_medico', $id_medico)->whereDate('fecha_hora_cita', $fecha)->get();
+
+        if ($citas->isEmpty()) {
+            return response()->json(['message' => 'No hay citas para esta fecha.'], 404);
+        }
+
         return response()->json($citas, 200);
     }
 
