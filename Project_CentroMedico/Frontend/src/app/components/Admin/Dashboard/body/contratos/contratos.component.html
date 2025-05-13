@@ -1,27 +1,33 @@
 <div class="container-medicos">
     <div class="header-medicos">
-        <div>
+        <!-- <div>
             <button (click)="modal.open()">Agregar contrato</button>
-        </div>
-        <app-modal-create #modal>
-        </app-modal-create>
+        </div> -->
+        <app-modal-create #modal></app-modal-create>
         <div id="contenedor-busqueda">
-            <input type="text" placeholder="Búsqueda...">
+            <input
+                type="text"
+                placeholder="Búsqueda..."
+                (input)="filterContratos()"
+            />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
+
     <table id="tabla-medicos">
         <thead>
-            <th>Nº Contrato</th>
-            <th>Empresa</th>
-            <th>Reconocimientos <br>contratados</th>
-            <th>Reconocimientos <br>restantes</th>
-            <th>Fecha inicio</th>
-            <th>Fecha fin</th>
-            <th>Acciones</th>
+            <tr>
+                <th>Nº Contrato</th>
+                <th>Empresa</th>
+                <th>Reconocimientos <br />contratados</th>
+                <th>Reconocimientos <br />restantes</th>
+                <th>Fecha inicio</th>
+                <th>Fecha fin</th>
+                <th>Acciones</th>
+            </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let contrato of contratos">
+            <tr *ngFor="let contrato of filteredContratos">
                 <td>{{ contrato.contrato }}</td>
                 <td>{{ contrato.empresa }}</td>
                 <td>{{ contrato.num_reconocimientos }}</td>
@@ -30,7 +36,11 @@
                 <td>{{ contrato.fecha_fin }}</td>
                 <td>
                     <button id="edit-button">Editar</button>
-                    <button id="delete-button">Eliminar</button>
+                    <button
+                        id="delete-button"
+                    >
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         </tbody>

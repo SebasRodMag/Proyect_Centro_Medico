@@ -14,8 +14,6 @@ class MedicosController extends Controller
             'nombre' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
             'dni' => 'required|string|min:9|max:9',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'date|after:fecha_inicio',
             'id_usuario' => 'required|integer|exists:users,id',
         ]);
 
@@ -23,8 +21,8 @@ class MedicosController extends Controller
         $medico->nombre = $request->nombre;
         $medico->apellidos = $request->apellidos;
         $medico->dni = $request->dni;
-        $medico->fecha_inicio = $request->fecha_inicio;
-        $medico->fecha_fin = $request->fecha_fin;
+        $medico->fecha_inicio = now();
+        $medico->fecha_fin = null;
         $medico->id_usuario = $request->id_usuario;
         $medico->save();
 
@@ -37,8 +35,6 @@ class MedicosController extends Controller
             'nombre' => 'string|max:255',
             'apellidos' => 'string|max:255',
             'dni' => 'string|min:9|max:9',
-            'fecha_inicio' => 'date',
-            'fecha_fin' => 'date|after:fecha_inicio',
             'id_usuario' => 'integer|exists:users,id',
         ]);
 

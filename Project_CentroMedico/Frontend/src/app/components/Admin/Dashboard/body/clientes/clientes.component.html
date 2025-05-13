@@ -95,10 +95,7 @@
         <ng-container matColumnDef="reconocimientos">
             <th mat-header-cell *matHeaderCellDef>R. restantes</th>
             <td mat-cell *matCellDef="let cliente">
-                {{
-                    contratosVigentes[cliente.id]?.reconocimientosRestantes ??
-                        "-"
-                }}
+                {{ contratosVigentes[cliente.id]?.reconocimientos_restantes ?? 'N/A' }}
             </td>
         </ng-container>
 

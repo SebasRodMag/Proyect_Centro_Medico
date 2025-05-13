@@ -13,15 +13,17 @@ class UsersController extends Controller
     {
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
+            'rol' => 'required|string',
         ]);
 
         $user = new User();
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->save();
+        $user->assignRole($request->rol);
 
-        return response()->json(['message' => 'Usuario creado con éxito'], 201);
+        return response()->json(['message' => 'Usuario creado con éxito. ID: '. $user->id], 201);
     }
 
     public function assign(Request $request, $id)

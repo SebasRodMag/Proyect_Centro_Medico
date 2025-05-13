@@ -15,12 +15,14 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'email' => 'email|unique:users,email',
+            'email' => 'email|required',
             'razon_social' => 'required|string|max:255',
             'cif' => 'required|string|min:9|max:9|unique:clientes',
             'direccion' => 'required|string|max:255',
             'municipio' => 'required|string|max:255',
             'provincia' => 'required|string|max:255',
+
+            'reconocimientos' => 'required|integer',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -36,7 +38,15 @@ class ClientesController extends Controller
         $cliente->provincia = $request->provincia;
         $cliente->id_usuario = $user->id;
         $cliente->save();
-        return response()->json(['message' => 'Cliente creado con éxito'], 201);
+
+        $contrato = new Contrato();
+        $contrato->fecha_inicio = now();
+        $contrato->fecha_fin = now()->addYear();
+        $contrato->numero_reconocimientos = $request->reconocimientos;
+        $contrato->autorenovacion = true;
+        $contrato->id_cliente = $cliente->id;
+        $contrato->save();
+        return response()->json(['message' => 'Cliente y contrato creados con éxito'], 201);
     }
 
     public function update(Request $request, $id)
@@ -164,48 +174,32 @@ class ClientesController extends Controller
         }
 
         // 2. Obtener el contrato vigente basado en las fechas
-        $hoy = now(); // Fecha actual
+        $hoy = now();
 
         $contratoVigente = Contrato::withTrashed()
             ->where('id_cliente', $id_cliente)
-            ->where('fecha_inicio', '<=', $hoy) // El contrato debe haber comenzado antes o hoy
-            ->where('fecha_fin', '>=', $hoy)   // El contrato debe terminar después o hoy
-            ->first();  // Devolvemos solo el primer contrato vigente
+            ->where('fecha_inicio', '<=', $hoy)
+            ->where('fecha_fin', '>=', $hoy)
+            ->first();
 
-        // 3. Si no hay contrato vigente
         if (!$contratoVigente) {
             return response()->json([
                 'message' => 'No hay contrato vigente para este cliente'
             ], 404);
         }
 
-        // 4. Devolver los detalles del contrato vigente
+        // 3. Calcular los reconocimientos restantes
+        $reconocimientos_restantes = $contratoVigente->numero_reconocimientos - $contratoVigente->citas()->count();
+
+        // 4. Devolver la información combinada
         return response()->json([
-            'cliente' => $cliente,  // Información del cliente
-            'contrato' => $contratoVigente,  // Contrato vigente
-            'message' => 'Contrato vigente recuperado con éxito',
+            'cliente' => $cliente,
+            'contrato' => $contratoVigente,
+            'reconocimientos_restantes' => $reconocimientos_restantes,
+            'message' => 'Contrato vigente y reconocimientos recuperados con éxito',
         ], 200);
     }
 
-    public function reconocimientosRestantes($id_contrato)
-    {
-        // Buscar el contrato por su id
-        $contrato = Contrato::find($id_contrato);
-
-        // Si no se encuentra el contrato, retornar un mensaje de error
-        if (!$contrato) {
-            return response()->json(['error' => 'Contrato no encontrado'], 404);
-        }
-
-        // Calcular los reconocimientos restantes
-        $reconocimientos_restantes = $contrato->numero_reconocimientos - $contrato->citas()->count();
-
-        // Retornar la cantidad de reconocimientos restantes
-        return response()->json([
-            'reconocimientos_restantes' => $reconocimientos_restantes
-        ], 200);
-
-    }
 
     //Función para buscar pacientes por cliente
     public function pacientes($id_cliente)
@@ -229,7 +223,8 @@ class ClientesController extends Controller
         // Retornar la lista de pacientes
         return response()->json([
             'cliente' => $cliente->razon_social,
-            'pacientes' => $pacientes], 200);
+            'pacientes' => $pacientes
+        ], 200);
     }
 
     //Función para buscar citas por cliente
@@ -272,7 +267,8 @@ class ClientesController extends Controller
         ], 200);
     }
 
-    public function pacientesByCIF($cif){
+    public function pacientesByCIF($cif)
+    {
         // Buscar el cliente por CIF
         $cliente = Cliente::where('cif', $cif)->first();
 
