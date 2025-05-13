@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 interface User {
@@ -22,7 +22,7 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    private apiUrl = 'http://localhost:8000/api/auth'; // Ajusta según tu backend
+    private apiUrl = 'http://localhost:8000/api/auth'; //Según la ruta del backend que tengamos
 
     constructor(private http: HttpClient, private router: Router) {}
 
@@ -41,27 +41,65 @@ export class AuthService {
 
                     console.log('Rol: ', res.user.rol);
                     console.log('Nombre: ', res.user.name);
-                    
-                    
-                    // Redirigir al usuario según su rol
+                }),
+                catchError((error) => {
+                    console.error('Error en el login:', error);
+                    return throwError(error);
+                }),
+                tap((res) => { 
+                    // Redirigir al usuario según su rol despues del tap
                     this.redirectUser(res.user.rol);
                 })
             );
     }
 
     redirectUser(rol: string) {
+        console.log('Función redirectUser llamada con rol:', rol);
         switch (rol) {
             case 'Administrador':
-                this.router.navigate(['/admin/dashboard/home']);
+                this.router.navigate(['/admin/dashboard/home']).then(navigated => {
+                    if (navigated) {
+                        console.log('Navegación a /admin/dashboard/home exitosa');
+                    } else {
+                        console.error('Navegación a /admin/dashboard/home fallida');
+                    }
+                });
                 break;
             case 'Medico':
-                this.router.navigate(['/medico/dashboard/home']);
+                this.router.navigate(['/medico/dashboard/home']).then(navigated => {
+                    if (navigated) {
+                        console.log('Navegación a /medico/dashboard/home exitosa');
+                    } else {
+                        console.error('Navegación a /medico/dashboard/home fallida');
+                    }
+                });
                 break;
             case 'Cliente':
-                this.router.navigate(['/cliente/dashboard/home']);
+                this.router.navigate(['/cliente/dashboard/home']).then(navigated => {
+                    if (navigated) {
+                        console.log('Navegación a /cliente/dashboard/home exitosa');
+                    } else {
+                        console.error('Navegación a /cliente/dashboard/home fallida');
+                    }
+                });
+                break;
+            case 'Paciente':
+                this.router.navigate(['/paciente/dashboard/home']).then(navigated => {
+                    if (navigated) {
+                        console.log('Navegación a /paciente/dashboard/home exitosa');
+                    } else {
+                        console.error('Navegación a /paciente/dashboard/home fallida');
+                    }
+                });
                 break;
             default:
-                this.router.navigate(['/login']);
+                this.router.navigate(['/login']).then(navigated => {
+                    if (navigated) {
+                        console.log('Navegación a /login exitosa');
+                    } else {
+                        console.error('Navegación a /login fallida');
+                    }
+                });
                 break;
         }
     }
@@ -69,6 +107,7 @@ export class AuthService {
     logout() {
         localStorage.clear();
         this.router.navigate(['/login']);
+        console.log("Sesión cerrada");
     }
 
     getRol(): string {
