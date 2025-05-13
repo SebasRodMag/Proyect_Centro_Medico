@@ -47,7 +47,7 @@ export class AuthService {
                     return throwError(error);
                 }),
                 tap((res) => { 
-                    // Redirigir al usuario según su rol despues del tap
+                    // Redirigir al usuario según su rol después del tap
                     this.redirectUser(res.user.rol);
                 })
             );
