@@ -13,7 +13,7 @@ export class RoleGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
-        const expectedRole = route.data['role]'];
+        const expectedRole = route.data['role'];
         const actualRole = this.authService.getRol();
 
         if (!this.authService.isLoggedIn() || actualRole !== expectedRole) {

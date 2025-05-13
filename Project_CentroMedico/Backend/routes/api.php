@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('clientes/{cliente}', [ClientesController::class, 'update']);
         Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratos']);
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ClientesController::class, 'contratoVigente']);
-        Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
+        // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
         Route::get('clientes/{id_cliente}/pacientes', [ClientesController::class, 'pacientes']);
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);

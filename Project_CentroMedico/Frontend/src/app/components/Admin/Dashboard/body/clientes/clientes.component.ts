@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalCreateComponent } from './modal-create/modal-create.component';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -10,7 +10,10 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 @Component({
     selector: 'app-clientes',
     standalone: true,
-    imports: [ModalCreateComponent, RouterLink, CommonModule,
+    imports: [
+        ModalCreateComponent,
+        RouterLink,
+        CommonModule,
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
@@ -38,6 +41,7 @@ export class ClientesComponent implements OnInit {
 
     @ViewChild(MatPaginator)
     paginator: MatPaginator = new MatPaginator();
+
     @ViewChild(MatSort)
     sort: MatSort = new MatSort();
 
@@ -49,10 +53,11 @@ export class ClientesComponent implements OnInit {
                 this.clientes = data;
                 this.clientesDataSource.data = this.clientes;
                 this.clientesDataSource.paginator = this.paginator;
+                this.clientesDataSource.sort = this.sort;
 
+                // Obtener contrato vigente y reconocimientos restantes para cada cliente
                 this.clientes.forEach((cliente) => {
                     this.getContratoVigente(cliente.id);
-                    this.getReconocimientosRestantes(cliente.id);
                 });
             },
             (error) => console.error('Error al obtener los clientes', error)
@@ -63,35 +68,16 @@ export class ClientesComponent implements OnInit {
         this.clienteService.getContratoVigente(clienteId.toString()).subscribe(
             (data) => {
                 if (data?.contrato) {
-                    if (!this.contratosVigentes[clienteId])
-                        this.contratosVigentes[clienteId] = {};
-                    this.contratosVigentes[clienteId].contrato = data.contrato;
+                    this.contratosVigentes[clienteId] = {
+                        contrato: data.contrato,
+                        reconocimientos_restantes: data.reconocimientos_restantes,
+                        fecha_inicio: data.contrato.fecha_inicio,
+                        fecha_fin: data.contrato.fecha_fin,
+                    };
                 }
             },
             (error) =>
                 console.error('Error al obtener el contrato vigente', error)
         );
-    }
-
-    getReconocimientosRestantes(clienteId: number) {
-        this.clienteService
-            .getReconocimientosRestantes(clienteId.toString())
-            .subscribe(
-                (data) => {
-                    if (data?.reconocimientos_restantes !== undefined) {
-                        if (!this.contratosVigentes[clienteId])
-                            this.contratosVigentes[clienteId] = {};
-                        this.contratosVigentes[
-                            clienteId
-                        ].reconocimientosRestantes =
-                            data.reconocimientos_restantes;
-                    }
-                },
-                (error) =>
-                    console.error(
-                        'Error al obtener los reconocimientos restantes',
-                        error
-                    )
-            );
     }
 }

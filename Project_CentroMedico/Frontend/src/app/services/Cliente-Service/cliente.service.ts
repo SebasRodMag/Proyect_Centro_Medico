@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class ClienteService {
+    [x: string]: any;
     private apiUrl = 'http://localhost:8000/api/clientes';
 
     constructor(private http: HttpClient) {}
@@ -36,18 +37,15 @@ export class ClienteService {
     }
 
     getContratoVigente(clienteId: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/${clienteId}/contratos/contrato-vigente`, {
-            headers: this.getAuthHeaders(),
-        });
-    }
-    
-    getReconocimientosRestantes(clienteId: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/${clienteId}/contratos/contrato-vigente/reconocimientos-restantes`, {
-            headers: this.getAuthHeaders(),
-        });
+        return this.http.get(
+            `${this.apiUrl}/${clienteId}/contratos/contrato-vigente`,
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
     }
 
-    getContratos(clienteId: string): Observable<any>{
+    getContratos(clienteId: string): Observable<any> {
         return this.http.get(`${this.apiUrl}/${clienteId}/contratos`, {
             headers: this.getAuthHeaders(),
         });
@@ -55,6 +53,12 @@ export class ClienteService {
 
     getPacientesPorCif(cif: string): Observable<any> {
         return this.http.get(`${this.apiUrl}/pacientes/cif/${cif}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    createCliente(cliente: any): Observable<any> {
+        return this.http.post(this.apiUrl, cliente, {
             headers: this.getAuthHeaders(),
         });
     }

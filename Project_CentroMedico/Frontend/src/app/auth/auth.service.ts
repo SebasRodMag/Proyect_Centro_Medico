@@ -41,15 +41,12 @@ export class AuthService {
 
                     console.log('Rol: ', res.user.rol);
                     console.log('Nombre: ', res.user.name);
+                    this.redirectUser(res.user.rol);
                 }),
                 catchError((error) => {
                     console.error('Error en el login:', error);
                     return throwError(error);
                 }),
-                tap((res) => { 
-                    // Redirigir al usuario según su rol despues del tap
-                    this.redirectUser(res.user.rol);
-                })
             );
     }
 
