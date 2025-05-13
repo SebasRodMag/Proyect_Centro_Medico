@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use App\Models\Contrato;
 use App\Models\Paciente;
 use App\Models\Cita;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,22 +15,26 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
+            'email' => 'email|unique:users,email',
             'razon_social' => 'required|string|max:255',
             'cif' => 'required|string|min:9|max:9|unique:clientes',
             'direccion' => 'required|string|max:255',
             'municipio' => 'required|string|max:255',
             'provincia' => 'required|string|max:255',
-            'id_usuario' => 'required|integer|exists:users,id',
         ]);
-        
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
         $cliente = new Cliente();
         $cliente->razon_social = $request->razon_social;
         $cliente->cif = $request->cif;
         $cliente->direccion = $request->direccion;
         $cliente->municipio = $request->municipio;
         $cliente->provincia = $request->provincia;
-        $cliente->id_usuario = $request->id_usuario;
+        $cliente->id_usuario = $user->id;
         $cliente->save();
         return response()->json(['message' => 'Cliente creado con éxito'], 201);
     }
