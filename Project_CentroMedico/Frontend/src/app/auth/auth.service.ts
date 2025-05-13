@@ -48,13 +48,13 @@ export class AuthService {
     redirectUser(rol: string) {
         switch (rol) {
             case 'Administrador':
-                this.router.navigate(['/admin/dashboard']);
+                this.router.navigate(['/admin/dashboard/home']);
                 break;
             case 'Medico':
-                this.router.navigate(['/medico/dashboard']);
+                this.router.navigate(['/medicos/dashboard/home']);
                 break;
             case 'Cliente':
-                this.router.navigate(['/cliente/dashboard']);
+                this.router.navigate(['/cliente/dashboard/home']);
                 break;
             default:
                 this.router.navigate(['/login']);

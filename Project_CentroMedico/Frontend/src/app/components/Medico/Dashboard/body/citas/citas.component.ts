@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CitaService } from '../../../../services/Cita-Service/cita.service';
+import { CitaService } from '../../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -8,7 +8,7 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
 
 @Component({
     selector: 'app-citas',
-    standalone: true,
+    standalone: true, // Si usas Standalone Component
     imports: [
         CommonModule,
         ModalCreateComponent,

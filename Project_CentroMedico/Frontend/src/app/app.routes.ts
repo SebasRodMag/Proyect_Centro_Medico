@@ -83,6 +83,13 @@ export const routes: Routes = [
         canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
         data: { role: 'Administrador' },
     },
+    {
+        path: 'medicos/dashboard/home',   
+        loadComponent: () =>
+        import('./components/Medico/Dashboard/body/home/home.component').then(m => m.HomeComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
+        data: { role: 'Medico' },
+    },
 
     // Ruta por defecto, si no se encuentra ninguna ruta
     {

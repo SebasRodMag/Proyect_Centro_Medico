@@ -35,17 +35,22 @@ export class LoginComponent implements OnInit {
         if (this.authService.isLoggedIn()) {
             const rol = this.authService.getRol();
             if (rol === 'Administrador') {
+                
                 this.router.navigate(['/home']);
             } else if (rol === 'Medico') {
-                this.router.navigate(['/medicos/perfil']);
+                this.router.navigate(['/home']);
             } else if (rol === 'Cliente') {
                 this.router.navigate(['/clientes']);
             }
+            console.log('Inicio de sesión con Rol: ', rol);
         }
     }
 
     onSubmit(): void {
-        if (this.loginForm.invalid) return;
+        if (this.loginForm.invalid){
+            console.error('Formulario inválido');
+            return;
+        }
 
         this.authService.login(this.loginForm.value).subscribe({
             next: () => {},
