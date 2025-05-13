@@ -29,7 +29,7 @@ export const routes: Routes = [
     {
         path: 'medico/dashboard',
         loadComponent: () =>
-        import('./components/medico/medico.component').then((m) => m.MedicoComponent),
+        import('./components/Medico/medico.component').then((m) => m.MedicoComponent),
         canActivate: [MedicoGuard],
     },
     // Rutas para el cliente, Falta crear el controlador y el servicio

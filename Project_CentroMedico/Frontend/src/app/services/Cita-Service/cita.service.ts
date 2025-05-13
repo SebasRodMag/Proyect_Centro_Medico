@@ -1,24 +1,9 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-<<<<<<< HEAD
+
 import { map } from 'rxjs/operators';
 
-
-
-interface CitaResponse {
-  total: number;
-  data: Cita[];
-}
-interface Cita {
-  id: number;
-  fecha_hora_cita: string;
-  paciente: { nombre: string; apellidos: string }; // Asumiendo que la API devuelve los datos del paciente anidados
-  empresa: string; // Necesitarás incluir este campo en tu modelo/respuesta de Laravel
-  estado: string; // Necesitarás incluir este campo en tu modelo/respuesta de Laravel
-}
-=======
->>>>>>> 33eb940a9fc70feffbec75d7bac9e2adf9f7faf3
 
 @Injectable({
     providedIn: 'root',
@@ -26,11 +11,7 @@ interface Cita {
 export class CitaService {
     private apiUrl = 'http://localhost:8000/api';
 
-<<<<<<< HEAD
-  constructor(private http: HttpClient) { }
-=======
-    constructor(private http: HttpClient) {}
->>>>>>> 33eb940a9fc70feffbec75d7bac9e2adf9f7faf3
+    constructor(private http: HttpClient) { }
 
     private getAuthHeaders(): HttpHeaders {
         const token = localStorage.getItem('token');
@@ -49,20 +30,6 @@ export class CitaService {
             .set('page', page.toString())
             .set('pageSize', pageSize.toString());
 
-<<<<<<< HEAD
-  // Obtenemos todas las citas de un día para el médico logueado
-  getCitasPorDia(fecha: string): Observable<Cita[]> {
-    return this.http.get<Cita[]>(`${this.apiUrlBase}/citas/dia`, {
-      params: { fecha }
-    });
-
-
-  }
-  getCitasPorFecha(fecha: string): Observable<any[]> {
-    return this.http.get<any[]>(`/api/citas?fecha=${fecha}`);
-  }
-}
-=======
         if (fecha) {
             params = params.set('fecha', fecha);
         }
@@ -89,14 +56,14 @@ export class CitaService {
         );
     }
 
-    // getCitasPorPaciente(pacienteId: number): Observable<any> {
-    //     return this.http.get<any>(
-    //         `${this.apiUrl}/pacientes/${pacienteId}/citas`,
-    //         {
-    //             headers: this.getAuthHeaders(),
-    //         }
-    //     );
-    // }
+    getCitasPorPaciente(pacienteId: number): Observable<any> {
+        return this.http.get<any>(
+            `${this.apiUrl}/pacientes/${pacienteId}/citas`,
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
+    }
 
     getCitas(): Observable<any> {
         return this.http.get(`${this.apiUrl}/citas`, {
@@ -117,4 +84,4 @@ export class CitaService {
         });
     }
 }
->>>>>>> 33eb940a9fc70feffbec75d7bac9e2adf9f7faf3
+

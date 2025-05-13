@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
-import { MedicoComponent } from './components/medico/medico.component';
+import { MedicoComponent } from './components/Medico/medico.component';
 import { HeaderComponent } from './components/Admin/Dashboard/header/header.component';
 import { BodyComponent } from './components/Admin/Dashboard/body/body.component';
 import { AuthGuard } from './auth/auth.guard';
