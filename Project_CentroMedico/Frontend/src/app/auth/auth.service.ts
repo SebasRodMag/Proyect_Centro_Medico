@@ -39,6 +39,10 @@ export class AuthService {
                     localStorage.setItem('rol', res.user.rol);
                     localStorage.setItem('name', res.user.name);
 
+                    console.log('Rol: ', res.user.rol);
+                    console.log('Nombre: ', res.user.name);
+                    
+                    
                     // Redirigir al usuario según su rol
                     this.redirectUser(res.user.rol);
                 })
@@ -48,13 +52,13 @@ export class AuthService {
     redirectUser(rol: string) {
         switch (rol) {
             case 'Administrador':
-                this.router.navigate(['/admin/dashboard']);
+                this.router.navigate(['/admin/dashboard/home']);
                 break;
             case 'Medico':
-                this.router.navigate(['/medico/dashboard']);
+                this.router.navigate(['/medico/dashboard/home']);
                 break;
             case 'Cliente':
-                this.router.navigate(['/cliente/dashboard']);
+                this.router.navigate(['/cliente/dashboard/home']);
                 break;
             default:
                 this.router.navigate(['/login']);

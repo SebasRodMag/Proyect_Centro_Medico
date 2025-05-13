@@ -22,6 +22,7 @@ class ClientesController extends Controller
             'provincia' => 'required|string|max:255',
             'id_usuario' => 'required|integer|exists:users,id',
         ]);
+        
         $cliente = new Cliente();
         $cliente->razon_social = $request->razon_social;
         $cliente->cif = $request->cif;
@@ -205,7 +206,7 @@ class ClientesController extends Controller
     public function pacientes($id_cliente)
     {
         // Buscar al cliente por su id
-        $cliente = Cliente::find($id_cliente);
+        $cliente = Cliente::findOrFail($id_cliente);
 
         // Si no se encuentra el cliente, retornar un mensaje de error
         if (!$cliente) {

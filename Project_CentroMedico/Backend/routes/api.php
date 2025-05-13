@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos', [ContratosController::class, 'index']);
         Route::post('contratos', [ContratosController::class, 'store']);
         Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
-        Route::get('clientes/{cif}/pacientes', [ClientesController::class, 'pacientesByCIF']);
+        Route::get('clientes/pacientes/cif/{cif}', [ClientesController::class, 'pacientesByCIF']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
 

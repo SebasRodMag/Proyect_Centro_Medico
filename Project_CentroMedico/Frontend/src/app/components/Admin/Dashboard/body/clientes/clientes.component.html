@@ -30,7 +30,7 @@
         <ng-container matColumnDef="razon_social">
             <th mat-header-cell *matHeaderCellDef>Razón social</th>
             <td mat-cell *matCellDef="let cliente">
-                <a [routerLink]="['/clientes', cliente.id, 'pacientes']">{{
+                <a [routerLink]="['/admin/dashboard/clientes', cliente.id, 'pacientes']">{{
                     cliente.razon_social
                 }}</a>
             </td>
@@ -59,7 +59,7 @@
         <ng-container matColumnDef="contrato">
             <th mat-header-cell *matHeaderCellDef>Contrato</th>
             <td mat-cell *matCellDef="let cliente">
-                <a [routerLink]="['/clientes', cliente.id, 'contratos']">
+                <a [routerLink]="['/admin/dashboard/clientes', cliente.id, 'contratos']">
                     {{
                         contratosVigentes[cliente.id]?.contrato?.id ??
                             "Sin contrato"

@@ -25,7 +25,7 @@ import { MatInputModule } from '@angular/material/input';
         MatDatepickerModule,
         MatFormFieldModule,
         MatInputModule,
-        MatNativeDateModule,
+        MatNativeDateModule
     ],
     templateUrl: './modal-create.component.html',
     styleUrls: ['./modal-create.component.css'],
@@ -39,6 +39,7 @@ export class ModalCreateComponent implements OnInit {
     idContrato: number | null = null;
 
     @Output() closed = new EventEmitter<void>();
+    @Output() citaCreada = new EventEmitter<void>();
 
     private clienteService = inject(ClienteService);
     private medicoService = inject(MedicoService);
@@ -153,9 +154,10 @@ export class ModalCreateComponent implements OnInit {
                     console.log('Cita creada con éxito:', response);
                     // Después de crear la cita, actualizamos las horas disponibles
                     this.actualizarHorasDisponibles(fecha); // Refrescar las horas disponibles
-
                     // Cerrar el modal de creación de cita
                     this.close();
+                    // Enviar evento de cita creada
+                    this.citaCreada.emit();
                 },
                 error: (error: any) => {
                     console.error('Error al crear cita:', error);
@@ -189,7 +191,7 @@ export class ModalCreateComponent implements OnInit {
                 },
             });
     }
-    
+
     filtrarDiasHabiles = (fecha: Date | null): boolean => {
         if (!fecha) return false;
         const dia = fecha.getDay(); // 0: domingo, 6: sábado

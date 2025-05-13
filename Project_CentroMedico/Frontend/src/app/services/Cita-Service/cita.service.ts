@@ -53,14 +53,14 @@ export class CitaService {
         );
     }
 
-    // getCitasPorPaciente(pacienteId: number): Observable<any> {
-    //     return this.http.get<any>(
-    //         `${this.apiUrl}/pacientes/${pacienteId}/citas`,
-    //         {
-    //             headers: this.getAuthHeaders(),
-    //         }
-    //     );
-    // }
+    getCitasPorPaciente(pacienteId: number): Observable<any> {
+        return this.http.get<any>(
+            `${this.apiUrl}/pacientes/${pacienteId}/citas`,
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
+    }
 
     getCitas(): Observable<any> {
         return this.http.get(`${this.apiUrl}/citas`, {

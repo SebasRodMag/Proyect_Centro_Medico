@@ -13,7 +13,7 @@ class ContratosController extends Controller
         $request->validate([
             'fecha_inicio' => 'required|date',
             'numero_reconocimientos' => 'required|integer',
-            'autorenovacion' => 'required|boolean',
+            'autorenovacion' => 'required|boolean|nullable',
             'id_cliente' => 'required|integer|exists:clientes,id',
         ]);
 
