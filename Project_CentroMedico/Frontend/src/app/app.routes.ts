@@ -12,8 +12,13 @@ export const routes: Routes = [
         loadComponent: () =>
         import('./auth/login/login.component').then((m) => m.LoginComponent),
     },
+////////////////////////////////////////////////////////////////////////////////
 
-    // Rutas para el Administrador (protección por rol)
+
+                // Rutas para el Administrador (protección por rol)
+
+
+////////////////////////////////////////////////////////////////////////////////
     {
         path: 'admin/dashboard/home',
         loadComponent: () =>
@@ -83,6 +88,23 @@ export const routes: Routes = [
         data: { role: 'Administrador' },
     },
 
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+
+                    // Rutas para el Médico con protección por rol)
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    {
+        path: 'medico/dashboard/home',
+        loadComponent: () =>
+            import('./components/medico/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
+    },
+
+    
     // Ruta por defecto, si no se encuentra ninguna ruta
     {
         path: '**',
