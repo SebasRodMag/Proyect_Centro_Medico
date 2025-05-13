@@ -54,7 +54,7 @@ export class ClienteService {
     }
 
     getPacientesPorCif(cif: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/${cif}/pacientes`, {
+        return this.http.get(`${this.apiUrl}/pacientes/cif/${cif}`, {
             headers: this.getAuthHeaders(),
         });
     }

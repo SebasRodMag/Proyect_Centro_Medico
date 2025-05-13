@@ -12,35 +12,20 @@ trait CompilesUseStatements
      */
     protected function compileUse($expression)
     {
-        $expression = trim(preg_replace('/[()]/', '', $expression), " '\"");
+        $expression = preg_replace('/[()]/', '', $expression);
 
-        // Isolate alias...
+        // Preserve grouped imports as-is...
         if (str_contains($expression, '{')) {
-            $pathWithOptionalModifier = $expression;
-            $aliasWithLeadingSpace = '';
-        } else {
-            $segments = explode(',', $expression);
-            $pathWithOptionalModifier = trim($segments[0], " '\"");
+            $use = ltrim(trim($expression, " '\""), '\\');
 
-            $aliasWithLeadingSpace = isset($segments[1])
-                ? ' as '.trim($segments[1], " '\"")
-                : '';
+            return "<?php use \\{$use}; ?>";
         }
 
-        // Split modifier and path...
-        if (str_starts_with($pathWithOptionalModifier, 'function ')) {
-            $modifierWithTrailingSpace = 'function ';
-            $path = explode(' ', $pathWithOptionalModifier, 2)[1] ?? $pathWithOptionalModifier;
-        } elseif (str_starts_with($pathWithOptionalModifier, 'const ')) {
-            $modifierWithTrailingSpace = 'const ';
-            $path = explode(' ', $pathWithOptionalModifier, 2)[1] ?? $pathWithOptionalModifier;
-        } else {
-            $modifierWithTrailingSpace = '';
-            $path = $pathWithOptionalModifier;
-        }
+        $segments = explode(',', $expression);
 
-        $path = ltrim($path, '\\');
+        $use = ltrim(trim($segments[0], " '\""), '\\');
+        $as = isset($segments[1]) ? ' as '.trim($segments[1], " '\"") : '';
 
-        return "<?php use {$modifierWithTrailingSpace}\\{$path}{$aliasWithLeadingSpace}; ?>";
+        return "<?php use \\{$use}{$as}; ?>";
     }
 }

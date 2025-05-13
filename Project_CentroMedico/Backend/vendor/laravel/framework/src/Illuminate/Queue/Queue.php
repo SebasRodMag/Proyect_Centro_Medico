@@ -2,7 +2,6 @@
 
 namespace Illuminate\Queue;
 
-use Carbon\Carbon;
 use Closure;
 use DateTimeInterface;
 use Illuminate\Bus\UniqueLock;
@@ -98,24 +97,17 @@ abstract class Queue
      * @param  \Closure|string|object  $job
      * @param  string  $queue
      * @param  mixed  $data
-     * @param  \DateTimeInterface|\DateInterval|int|null  $delay
      * @return string
      *
      * @throws \Illuminate\Queue\InvalidPayloadException
      */
-    protected function createPayload($job, $queue, $data = '', $delay = null)
+    protected function createPayload($job, $queue, $data = '')
     {
         if ($job instanceof Closure) {
             $job = CallQueuedClosure::create($job);
         }
 
-        $value = $this->createPayloadArray($job, $queue, $data);
-
-        $value['delay'] = isset($delay)
-            ? $this->secondsUntil($delay)
-            : null;
-
-        $payload = json_encode($value, \JSON_UNESCAPED_UNICODE);
+        $payload = json_encode($value = $this->createPayloadArray($job, $queue, $data), \JSON_UNESCAPED_UNICODE);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new InvalidPayloadException(
@@ -164,7 +156,6 @@ abstract class Queue
                 'commandName' => $job,
                 'command' => $job,
             ],
-            'createdAt' => Carbon::now()->getTimestamp(),
         ]);
 
         $command = $this->jobShouldBeEncrypted($job) && $this->container->bound(Encrypter::class)
@@ -286,7 +277,6 @@ abstract class Queue
             'backoff' => null,
             'timeout' => null,
             'data' => $data,
-            'createdAt' => Carbon::now()->getTimestamp(),
         ]);
     }
 

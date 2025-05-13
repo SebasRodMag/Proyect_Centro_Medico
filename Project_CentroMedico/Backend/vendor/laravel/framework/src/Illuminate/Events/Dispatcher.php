@@ -21,8 +21,6 @@ use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\ReflectsClosures;
 use ReflectionClass;
 
-use function Illuminate\Support\enum_value;
-
 class Dispatcher implements DispatcherContract
 {
     use Macroable, ReflectsClosures;
@@ -633,8 +631,8 @@ class Dispatcher implements DispatcherContract
             : $listener->delay ?? null;
 
         is_null($delay)
-            ? $connection->pushOn(enum_value($queue), $job)
-            : $connection->laterOn(enum_value($queue), $delay, $job);
+            ? $connection->pushOn($queue, $job)
+            : $connection->laterOn($queue, $delay, $job);
     }
 
     /**

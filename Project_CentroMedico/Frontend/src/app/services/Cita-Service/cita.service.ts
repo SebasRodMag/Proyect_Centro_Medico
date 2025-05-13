@@ -2,16 +2,13 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { map } from 'rxjs/operators';
-
-
 @Injectable({
     providedIn: 'root',
 })
 export class CitaService {
     private apiUrl = 'http://localhost:8000/api';
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {}
 
     private getAuthHeaders(): HttpHeaders {
         const token = localStorage.getItem('token');
@@ -84,4 +81,3 @@ export class CitaService {
         });
     }
 }
-

@@ -27,7 +27,6 @@ export class HeaderComponent {
 
   logout(){
     this.authService.logout();
-    console.log('Sesión cerrada');
   }
   
 

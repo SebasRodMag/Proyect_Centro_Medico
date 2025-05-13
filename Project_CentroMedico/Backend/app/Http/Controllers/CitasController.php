@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cita;
 use Illuminate\Http\Request;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\Auth;
-=======
 use Illuminate\Support\Carbon;
->>>>>>> 33eb940a9fc70feffbec75d7bac9e2adf9f7faf3
 
 class CitasController extends Controller
 {
@@ -163,25 +159,12 @@ class CitasController extends Controller
         ], 200);
     }
 
-    //Implementar fucioón citasPorDia que devuelve las citas del medico logueado para un dia en particular
-    public function citasPorDia(Request $request)
-{
-    $request->validate(['fecha' => 'required|date']);
-
-    $user = Auth::user();
-
-    if (!$user || $user->rol !== 'Medico') {
-        return response()->json(['message' => 'No autorizado'], 403);
+    //implementar la función para mostrar las citas de un médico
+    public function citasPorDia($fecha)
+    {
+        $citas = Cita::whereDate('fecha_hora_cita', $fecha)->get();
+        return response()->json($citas, 200);
     }
-
-    $citas = Cita::with(['paciente']) // puedes añadir más relaciones si necesitas
-        ->where('id_medico', $user->id)
-        ->whereDate('fecha_hora_cita', $request->input('fecha'))
-        ->orderBy('fecha_hora_cita')
-        ->get();
-
-    return response()->json($citas, 200);
-}
     //implementar la función para mostrar las citas de un médico
     public function citasPorDiaMedico($id_medico, $fecha)
     {

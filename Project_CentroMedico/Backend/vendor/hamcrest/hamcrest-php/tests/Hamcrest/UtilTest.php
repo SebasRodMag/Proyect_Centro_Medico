@@ -28,28 +28,21 @@ class UtilTest extends TestCase
         ));
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testCheckAllAreMatchersFailsForPrimitive()
     {
-        $exceptionThrown = false;
-        try {
-            \Hamcrest\Util::checkAllAreMatchers(array(
-                new \Hamcrest\Text\MatchesPattern('/fo+/'),
-                'foo',
-            ));
-        } catch (\InvalidArgumentException $exception) {
-            $exceptionThrown = true;
-        }
-
-        $this->assertTrue(
-            $exceptionThrown,
-            'Failed asserting that exception of type "InvalidArgumentException" is thrown.'
-        );
+        \Hamcrest\Util::checkAllAreMatchers(array(
+            new \Hamcrest\Text\MatchesPattern('/fo+/'),
+            'foo',
+        ));
     }
 
     private function callAndAssertCreateMatcherArray($items)
     {
         $matchers = \Hamcrest\Util::createMatcherArray($items);
-        $this->assertTrue(is_array($matchers), sprintf('Type "array" expected, but got "%s" instead', gettype($matchers)));
+        $this->assertInternalType('array', $matchers);
         $this->assertSameSize($items, $matchers);
         foreach ($matchers as $matcher) {
             $this->assertInstanceOf('\Hamcrest\Matcher', $matcher);

@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos', [ContratosController::class, 'index']);
         Route::post('contratos', [ContratosController::class, 'store']);
         Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
-        Route::get('clientes/{cif}/pacientes', [ClientesController::class, 'pacientesByCIF']);
+        Route::get('clientes/pacientes/cif/{cif}', [ClientesController::class, 'pacientesByCIF']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
 
@@ -91,12 +91,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
-        Route::get('medicos/{medico}/citas', [MedicosController::class, 'citasMedico']);
-        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);//Debe devolver las citas del medico que hace la consulta
-
+        Route::get('medicos/{medico}/citas', [MedicosController::class, 'citasPorMedico']);
+        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
         Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
         Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
-        Route::get('citas/medico/fecha/{fecha}', [CitasController::class, 'obtenerCitasPorMedicoYFecha']);
     });
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {

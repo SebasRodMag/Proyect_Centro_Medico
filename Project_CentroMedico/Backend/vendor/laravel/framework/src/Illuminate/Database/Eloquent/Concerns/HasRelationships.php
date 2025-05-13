@@ -47,13 +47,6 @@ trait HasRelationships
     protected $relationAutoloadCallback = null;
 
     /**
-     * The relationship autoloader callback context.
-     *
-     * @var mixed
-     */
-    protected $relationAutoloadContext = null;
-
-    /**
      * The many to many relationship methods.
      *
      * @var string[]
@@ -125,16 +118,10 @@ trait HasRelationships
      */
     public function autoloadRelationsUsing(Closure $callback, $context = null)
     {
-        // Prevent circular relation autoloading...
-        if ($context && $this->relationAutoloadContext === $context) {
-            return $this;
-        }
-
         $this->relationAutoloadCallback = $callback;
-        $this->relationAutoloadContext = $context;
 
         foreach ($this->relations as $key => $value) {
-            $this->propagateRelationAutoloadCallbackToRelation($key, $value);
+            $this->propagateRelationAutoloadCallbackToRelation($key, $value, $context);
         }
 
         return $this;
@@ -176,9 +163,10 @@ trait HasRelationships
      *
      * @param  string  $key
      * @param  mixed  $models
+     * @param  mixed  $context
      * @return void
      */
-    protected function propagateRelationAutoloadCallbackToRelation($key, $models)
+    protected function propagateRelationAutoloadCallbackToRelation($key, $models, $context = null)
     {
         if (! $this->hasRelationAutoloadCallback() || ! $models) {
             return;
@@ -195,7 +183,10 @@ trait HasRelationships
         $callback = fn (array $tuples) => $this->invokeRelationAutoloadCallbackFor($key, $tuples);
 
         foreach ($models as $model) {
-            $model->autoloadRelationsUsing($callback, $this->relationAutoloadContext);
+            // Check if relation autoload contexts are different to avoid circular relation autoload...
+            if ((is_null($context) || $context !== $model) && is_object($model) && method_exists($model, 'autoloadRelationsUsing')) {
+                $model->autoloadRelationsUsing($callback, $context);
+            }
         }
     }
 
@@ -1095,7 +1086,7 @@ trait HasRelationships
     {
         $this->relations[$relation] = $value;
 
-        $this->propagateRelationAutoloadCallbackToRelation($relation, $value);
+        $this->propagateRelationAutoloadCallbackToRelation($relation, $value, $this);
 
         return $this;
     }

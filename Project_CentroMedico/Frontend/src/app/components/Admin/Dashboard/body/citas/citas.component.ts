@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CitaService } from '../../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -8,7 +16,6 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
 
 @Component({
     selector: 'app-citas',
-    standalone: true, // Si usas Standalone Component
     imports: [
         CommonModule,
         ModalCreateComponent,
@@ -19,7 +26,7 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
-export class CitasComponent implements OnInit {
+export class CitasComponent implements OnInit, AfterViewInit {
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
@@ -33,10 +40,8 @@ export class CitasComponent implements OnInit {
         'acciones',
     ];
 
-    @ViewChild(MatPaginator)
-    paginator: MatPaginator = new MatPaginator();
-    @ViewChild(MatSort)
-    sort: MatSort = new MatSort();
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
 
     constructor(private citaService: CitaService) {}
 
@@ -44,13 +49,16 @@ export class CitasComponent implements OnInit {
         this.getCitas();
     }
 
+    ngAfterViewInit(): void {
+        this.citasDataSource.paginator = this.paginator;
+        this.citasDataSource.sort = this.sort;
+    }
+
     getCitas() {
         this.citaService.getCitas().subscribe(
             (data) => {
                 console.log('Citas: ', data);
                 this.citasDataSource.data = data.citas;
-                this.citasDataSource.paginator = this.paginator;
-                this.citasDataSource.sort = this.sort;
             },
             (error) => console.error('Error al obtener las citas', error)
         );

@@ -803,7 +803,7 @@ trait QueriesRelationships
         $this->has(
             $relationshipName,
             boolean: $boolean,
-            callback: fn (Builder $query) => $query->whereKey($relatedCollection->pluck($related->getKeyName())),
+            callback: fn (Builder $query) => $query->whereKey($relatedCollection),
         );
 
         return $this;
