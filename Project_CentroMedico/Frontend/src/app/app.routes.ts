@@ -1,11 +1,8 @@
 import { Routes } from '@angular/router';
-<<<<<<< HEAD
-import { MedicoGuard } from './guards/medico.guard';
-=======
 import { AuthGuard } from './auth/auth.guard';
 import { RoleGuard } from './auth/role.guard';
 // El guard que verifica el rol del usuario
->>>>>>> 33eb940a9fc70feffbec75d7bac9e2adf9f7faf3
+
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -25,20 +22,6 @@ export const routes: Routes = [
         canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
         data: { role: 'Administrador' },
     },
-<<<<<<< HEAD
-    {
-        path: 'medico/dashboard',
-        loadComponent: () =>
-        import('./components/Medico/medico.component').then((m) => m.MedicoComponent),
-        canActivate: [MedicoGuard],
-    },
-    // Rutas para el cliente, Falta crear el controlador y el servicio
-/*   {
-        path: 'cliente',
-        loadComponent: () => import('./components/clinete/cliente.component').then(m => m.ClienteComponent),
-    }, */
-=======
->>>>>>> 33eb940a9fc70feffbec75d7bac9e2adf9f7faf3
     {
         path: 'citas',
         loadComponent: () =>
