@@ -21,7 +21,6 @@ class ClientesController extends Controller
             'direccion' => 'required|string|max:255',
             'municipio' => 'required|string|max:255',
             'provincia' => 'required|string|max:255',
-
             'reconocimientos' => 'required|integer',
         ]);
 

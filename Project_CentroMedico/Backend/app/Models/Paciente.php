@@ -39,4 +39,9 @@ class Paciente extends Model
     {
         return $this->hasMany(Cita::class, 'id_paciente');
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
 }

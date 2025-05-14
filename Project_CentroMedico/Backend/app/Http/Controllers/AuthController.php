@@ -15,7 +15,7 @@ class AuthController extends Controller
     use HasApiTokens, HasRoles;
     public function login(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::with(['Paciente', 'Cliente', 'Medico'])->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -27,13 +27,13 @@ class AuthController extends Controller
         // Asignar nombre según rol
         switch ($rol) {
             case 'Paciente':
-                $name = optional($user->paciente)->nombre ?? 'Paciente sin nombre';
+                $name = $user->paciente?->nombre ?? 'Paciente sin nombre';
                 break;
             case 'Cliente':
-                $name = optional($user->cliente)->razon_social ?? 'Cliente sin nombre';
+                $name = $user->cliente?->razon_social ?? 'Cliente sin nombre';
                 break;
             case 'Medico':
-                $name = optional($user->medico)->nombre ?? 'Médico sin nombre';
+                $name = $user->medico?->nombre ?? 'Médico sin nombre';
                 break;
             case 'Administrador':
                 $name = 'Administrador';
@@ -70,7 +70,7 @@ class AuthController extends Controller
     public function me()
     {
         $user = Auth::user();
-        
+
         return response()->json([
             'user' => $user,
         ]);
