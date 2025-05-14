@@ -109,7 +109,7 @@ export const routes: Routes = [
     // Ruta por defecto, si no se encuentra ninguna ruta
     {
         path: '**',
-        redirectTo: 'home',
+        redirectTo: 'login',
     },
 ];
 
