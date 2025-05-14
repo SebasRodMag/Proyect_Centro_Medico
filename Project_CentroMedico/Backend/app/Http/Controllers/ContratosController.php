@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
 use App\Models\Contrato;
 use App\Models\Cita;
 use Carbon\Carbon;
@@ -115,7 +116,31 @@ public function contratosPorCliente($id_cliente)
     }
 
 
-    
+    public function contratoVigente($id_cliente){
+        $unAnyoPrev = Carbon::now()->subYear();
+        $cliente = Cliente::findOrFail($id_cliente);
+
+        if(!$cliente){
+            return response()->json([
+                'message'=>'Cliente no encontrado',
+            ], 404);
+        }
+        $contratoVigente = Contrato::where('id_cliente', $cliente->id)
+            ->where('fecha_inicio', '>=', $unAnyoPrev)
+            ->orderByDesc('fecha_incio')->first();
+
+        if(!$contratoVigente){
+            return response()->json([
+                'message'=>'No hay contrato vigente para este cliente.',
+            ], 404);
+        }
+
+        $contratoVigente->reconocimientos_restantes = $contratoVigente->numero_reconocimientos - $cliente->citas->count();
+
+        return response()->json([
+            'contrato_vigente' => $contratoVigente,
+        ], 200);
+    }
 
     //Función para obtener las citas de un contrato
     public function citas($id_contrato)
@@ -138,8 +163,7 @@ public function contratosPorCliente($id_cliente)
 
         // Retornar los datos del contrato junto con las citas asociadas
         return response()->json([
-            'contrato' => $contrato,
-            'citas' => $citas
+            'contrato' => $contrato
         ], 200);
     }
 

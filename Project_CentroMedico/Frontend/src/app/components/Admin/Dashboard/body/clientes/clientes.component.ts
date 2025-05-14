@@ -67,12 +67,12 @@ export class ClientesComponent implements OnInit {
     getContratoVigente(clienteId: number) {
         this.clienteService.getContratoVigente(clienteId.toString()).subscribe(
             (data) => {
-                if (data?.contrato) {
+                if (data?.contrato_vigente) {
                     this.contratosVigentes[clienteId] = {
-                        contrato: data.contrato,
-                        reconocimientos_restantes: data.reconocimientos_restantes,
-                        fecha_inicio: data.contrato.fecha_inicio,
-                        fecha_fin: data.contrato.fecha_fin,
+                        contrato: data.contrato_vigente,
+                        reconocimientos_restantes: data.contrato_vigente.reconocimientos_restantes,
+                        fecha_inicio: data.contrato_vigente.fecha_inicio,
+                        fecha_fin: data.contrato_vigente.fecha_fin,
                     };
                 }
             },
