@@ -3,34 +3,73 @@
         <div>
             <button (click)="modal.open()">Registrar médico</button>
         </div>
-        <app-modal-create #modal>
-        </app-modal-create>
+        <app-modal-create #modal></app-modal-create>
+
+        <div id="contenedor-filtros">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" placeholder="" />
+            <label for="dni">DNI:</label>
+            <input type="text" id="dni" placeholder="" />
+        </div>
+
         <div id="contenedor-busqueda">
-            <input type="text" placeholder="Búsqueda...">
+            <input type="text" placeholder="Búsqueda..." (keyup)="applyFilter($event)" />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
-    <table id="tabla-medicos">
-        <thead>
-            <th>Id</th>
-            <th>Nombre</th>
-            <th>DNI</th>
-            <th>Fecha inicio</th>
-            <th>Fecha fin</th>
-            <th>Acciones</th>
-        </thead>
-        <tbody>
-            <tr *ngFor="let medico of medicos">
-                <td>{{ medico.id }}</td>
-                <td>{{ medico.apellidos+', '+medico.nombre}}</td>
-                <td>{{ medico.dni }}</td>
-                <td>{{ medico.fecha_inicio | date: 'dd/MM/yyyy' }}</td>
-                <td>{{ medico.fecha_fin | date: 'dd/MM/yyyy' }}</td>
-                <td>
-                    <button id="edit-button"><i class="bi bi-pencil-square"></i></button>
-                    <button id="delete-button"><i class="bi bi-trash-fill"></i></button>
-                </td>
-            </tr>
-        </tbody>
+
+    <table
+        mat-table
+        [dataSource]="medicosDataSource"
+        class="mat-elevation-z1"
+        matSort
+    >
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+            <td mat-cell *matCellDef="let medico">{{ medico.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+            <td mat-cell *matCellDef="let medico">
+                {{ medico.apellidos }}, {{ medico.nombre }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="dni">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
+            <td mat-cell *matCellDef="let medico">{{ medico.dni }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha_inicio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Inicio</th>
+            <td mat-cell *matCellDef="let medico">
+                {{ medico.fecha_inicio ? (medico.fecha_inicio | date: 'dd/MM/yyyy') : '-' }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha_fin">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Fin</th>
+            <td mat-cell *matCellDef="let medico">
+                {{ medico.fecha_fin ? (medico.fecha_fin | date: 'dd/MM/yyyy') : '-' }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let medico">
+                <button id="edit-button"><i class="bi bi-pencil-square"></i></button>
+                <button id="delete-button"><i class="bi bi-trash-fill"></i></button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
+
+    <mat-paginator
+        [length]="medicos.length"
+        [pageSize]="5"
+        [pageSizeOptions]="[10, 20, 50]"
+    ></mat-paginator>
 </div>
