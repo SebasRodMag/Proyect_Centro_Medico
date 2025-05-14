@@ -80,4 +80,11 @@ export class CitaService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    //obtener el medico logueado a traves de la función me de auth.service.ts
+    getMedicoLogueado(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/auth/me`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }

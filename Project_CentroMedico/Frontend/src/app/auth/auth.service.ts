@@ -11,7 +11,7 @@ interface User {
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
-    rol: string; // Este es el rol que obtienes de la respuesta
+    rol: string;
     name: string;
 }
 
@@ -48,7 +48,7 @@ export class AuthService {
                     return throwError(error);
                 }),
                 tap((res) => { 
-                    // Redirigir al usuario según su rol despues del tap
+                    // Redirigir al usuario según su rol después del tap
                     this.redirectUser(res.user.rol);
                 })
             );
