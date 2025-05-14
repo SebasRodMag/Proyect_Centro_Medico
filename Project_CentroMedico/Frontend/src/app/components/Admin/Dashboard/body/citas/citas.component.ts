@@ -31,6 +31,7 @@ export class CitasComponent implements OnInit, AfterViewInit {
     displayedColumns: string[] = [
         'id',
         'contrato_id',
+        'numero_de_cita',
         'paciente',
         'cliente',
         'dni_paciente',

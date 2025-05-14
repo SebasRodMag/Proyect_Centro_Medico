@@ -161,43 +161,43 @@ class ClientesController extends Controller
     //     ], 200);
     // }
 
-    public function contratoVigente($id_cliente)
-    {
-        // 1. Verificar si el cliente existe
-        $cliente = Cliente::find($id_cliente);
+    // public function contratoVigente($id_cliente)
+    // {
+    //     // 1. Verificar si el cliente existe
+    //     $cliente = Cliente::find($id_cliente);
 
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
-        }
+    //     if (!$cliente) {
+    //         return response()->json([
+    //             'message' => 'Cliente no encontrado'
+    //         ], 404);
+    //     }
 
-        // 2. Obtener el contrato vigente basado en las fechas
-        $hoy = now();
+    //     // 2. Obtener el contrato vigente basado en las fechas
+    //     $hoy = now();
 
-        $contratoVigente = Contrato::withTrashed()
-            ->where('id_cliente', $id_cliente)
-            ->where('fecha_inicio', '<=', $hoy)
-            ->where('fecha_fin', '>=', $hoy)
-            ->first();
+    //     $contratoVigente = Contrato::withTrashed()
+    //         ->where('id_cliente', $id_cliente)
+    //         ->where('fecha_inicio', '<=', $hoy)
+    //         ->where('fecha_fin', '>=', $hoy)
+    //         ->first();
 
-        if (!$contratoVigente) {
-            return response()->json([
-                'message' => 'No hay contrato vigente para este cliente'
-            ], 404);
-        }
+    //     if (!$contratoVigente) {
+    //         return response()->json([
+    //             'message' => 'No hay contrato vigente para este cliente'
+    //         ], 404);
+    //     }
 
-        // 3. Calcular los reconocimientos restantes
-        $reconocimientos_restantes = $contratoVigente->numero_reconocimientos - $contratoVigente->citas()->count();
+    //     // 3. Calcular los reconocimientos restantes
+    //     $reconocimientos_restantes = $contratoVigente->numero_reconocimientos - $contratoVigente->citas()->count();
 
-        // 4. Devolver la información combinada
-        return response()->json([
-            'cliente' => $cliente,
-            'contrato' => $contratoVigente,
-            'reconocimientos_restantes' => $reconocimientos_restantes,
-            'message' => 'Contrato vigente y reconocimientos recuperados con éxito',
-        ], 200);
-    }
+    //     // 4. Devolver la información combinada
+    //     return response()->json([
+    //         'cliente' => $cliente,
+    //         'contrato' => $contratoVigente,
+    //         'reconocimientos_restantes' => $reconocimientos_restantes,
+    //         'message' => 'Contrato vigente y reconocimientos recuperados con éxito',
+    //     ], 200);
+    // }
 
 
     //Función para buscar pacientes por cliente
