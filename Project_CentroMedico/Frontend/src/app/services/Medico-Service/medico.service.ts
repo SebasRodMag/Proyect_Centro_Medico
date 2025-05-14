@@ -18,7 +18,7 @@ export class MedicoService {
     constructor(private http: HttpClient) {}
 
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('token');
         return new HttpHeaders({
             Authorization: `Bearer ${token}`,
         });
@@ -30,4 +30,9 @@ export class MedicoService {
         });
     }
 
+    createMedico(data: any): Observable<any> {
+        return this.http.post(this.apiUrl, data, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }

@@ -27,7 +27,7 @@ class Cliente extends Model
     /**
      * Relación con la tabla de Usuarios (un cliente pertenece a un usuario).
      */
-    public function usuario(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }

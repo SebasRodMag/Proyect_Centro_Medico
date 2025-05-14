@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medico;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,8 +15,13 @@ class MedicosController extends Controller
             'nombre' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
             'dni' => 'required|string|min:9|max:9',
-            'id_usuario' => 'required|integer|exists:users,id',
+            'email' => 'required|email',
         ]);
+        
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
 
         $medico = new Medico();
         $medico->nombre = $request->nombre;
@@ -23,7 +29,7 @@ class MedicosController extends Controller
         $medico->dni = $request->dni;
         $medico->fecha_inicio = now();
         $medico->fecha_fin = null;
-        $medico->id_usuario = $request->id_usuario;
+        $medico->id_usuario = $user->id;
         $medico->save();
 
         return response()->json(['message' => 'Médico creado con éxito'], 201);
