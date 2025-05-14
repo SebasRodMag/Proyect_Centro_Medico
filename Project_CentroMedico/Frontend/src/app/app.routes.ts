@@ -15,7 +15,7 @@ export const routes: Routes = [
 ////////////////////////////////////////////////////////////////////////////////
 
 
-                // Rutas para el Administrador (protección por rol)
+                // Rutas para el ADMINISTRADOR (protección por rol)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -92,20 +92,51 @@ export const routes: Routes = [
     ////////////////////////////////////////////////////////////////////////////////
 
 
-                    // Rutas para el Médico con protección por rol)
+                    // Rutas para el MÉDICO con protección por rol)
 
 
     ////////////////////////////////////////////////////////////////////////////////
 
     {
         path: 'medico/dashboard/home',
-        loadComponent: () =>
-            import('./components/medico/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
+        loadComponent: () =>import('./components/medico/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
         canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
         data: { role: 'Medico' },
     },
 
     
+    ////////////////////////////////////////////////////////////////////////////////
+
+
+                    // Rutas para el PACIENTE con protección por rol)
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    
+    {
+        path: 'paciente/dashboard/home',
+        loadComponent: () =>import('./components/Paciente/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
+        data: { role: 'Paciente' },
+    },
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+
+                    // Rutas para el CLIENTE con protección por rol)
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    
+
+    {
+        path: 'cliente/dashboard/home',
+        loadComponent: () =>import('./components/Cliente/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
+        data: { role: 'Cliente' },
+    },
     // Ruta por defecto, si no se encuentra ninguna ruta
     {
         path: '**',

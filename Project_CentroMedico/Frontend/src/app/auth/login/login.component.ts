@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
     errorMessage: string | null = null;
     loginForm!: FormGroup;
 
-    constructor(private authService: AuthService, private router: Router) {} // Asegúrate de inyectar el Router
+    constructor(private authService: AuthService, private router: Router) {}
 
     ngOnInit(): void {
         this.loginForm = new FormGroup({
