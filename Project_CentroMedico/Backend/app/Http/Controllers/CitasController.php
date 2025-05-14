@@ -165,13 +165,15 @@ class CitasController extends Controller
     }
 
     // Función para mostrar las citas que tiene el medico logueado paginada de a 10
+
     public function citasPorMedico(Request $request, $medicoId)
     {
         $pageSize = $request->query('pageSize', 10);
         $page = $request->query('page', 1);
-        $fecha = $request->query('fecha'); // Obtiene el parámetro de fecha si existe
+        $fecha = $request->query('fecha'); // parámetro opcional
 
-        $query = Cita::where('id_medico', $medicoId)->with('paciente');
+        $query = Cita::with(['paciente.cliente', 'medico', 'contrato.cliente'])
+            ->where('id_medico', $medicoId);
 
         if ($fecha) {
             $query->whereDate('fecha_hora_cita', $fecha);
@@ -179,9 +181,26 @@ class CitasController extends Controller
 
         $citas = $query->paginate($pageSize, ['*'], 'page', $page);
 
+        $citasFormateadas = $citas->getCollection()->map(function ($cita) {
+            $cliente = $cita->cliente
+                ?? $cita->paciente->cliente
+                ?? $cita->contrato->cliente;
+
+            return [
+                'id' => $cita->id,
+                'contrato_id' => $cita->contrato->id ?? null,
+                'paciente' => $cita->paciente ? $cita->paciente->nombre . ' ' . $cita->paciente->apellidos : null,
+                'dni_paciente' => $cita->paciente->dni ?? null,
+                'fecha' => $cita->fecha_hora_cita,
+                'cliente' => $cliente->razon_social ?? null,
+                'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
+                'estado' => $cita->estado,
+            ];
+        });
+
         return response()->json([
             'total' => $citas->total(),
-            'data' => $citas->items(),
+            'data' => $citasFormateadas,
         ], 200);
     }
 

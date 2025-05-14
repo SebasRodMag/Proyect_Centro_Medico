@@ -12,6 +12,7 @@ interface User {
     updated_at: string;
     deleted_at: string | null;
     rol: string;
+    rol: string;
     name: string;
 }
 
@@ -48,7 +49,10 @@ export class AuthService {
                 }),
                 catchError((error) => {
                     console.error('Error en el login:', error);
-                    return throwError(() => error);
+                    return throwError(error);
+                }),
+                tap((res) => { 
+                    this.redirectUser(res.user.rol);
                 })
             );
     }

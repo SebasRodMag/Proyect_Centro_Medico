@@ -20,6 +20,9 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
     styleUrls: ['./citas.component.css'],
 })
 export class CitasComponent implements OnInit {
+    medicoId!: number; // Declare the medicoId property
+    citas: any[] = []; // Declare the citas property
+    loading: boolean = false; // Declare the loading property
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
@@ -30,6 +33,7 @@ export class CitasComponent implements OnInit {
         'medico',
         'fecha',
         'hora',
+        'estado',
         'acciones',
     ];
 
@@ -42,17 +46,41 @@ export class CitasComponent implements OnInit {
 
     ngOnInit(): void {
         this.getCitas();
+        console.log(this.citasDataSource.data)
     }
 
     getCitas() {
-        this.citaService.getCitas().subscribe(
-            (data) => {
-                console.log('Citas: ', data);
-                this.citasDataSource.data = data.citas;
-                this.citasDataSource.paginator = this.paginator;
-                this.citasDataSource.sort = this.sort;
+        this.loading = true;
+        this.citaService.getMedicoLogueado().subscribe({
+            next: (medico) => {
+                this.medicoId = medico.user.id;
+                console.log('LISTAR PACIENTES DE: ID del médico logueado:', this.medicoId);
+                this.citaService.getCitasPorMedico(this.medicoId).subscribe({
+                    next: (respuesta) => {
+                        const citasObtenidas = (respuesta as any).citas ?? respuesta;
+                        this.citas = citasObtenidas.data ?? citasObtenidas;
+                        this.citasDataSource.data = this.citas;
+                        this.loading = false;
+                        console.log('Citas obtenidas:', this.citas);
+                        console.log('Citas brutas recibidas:', this.citas);
+                        console.log('Campos estado:', this.citas.map(c => c.estado));
+                        this.citasDataSource.data = [...this.citas];
+                    },
+                    error: (err) => {
+                        console.error('Error al cargar citas del médico:', err);
+                        this.loading = false;
+                    },
+                });
             },
-            (error) => console.error('Error al obtener las citas', error)
-        );
+            error: (err) => {
+                console.error('Error al obtener médico logueado:', err);
+                this.loading = false;
+            },
+        });
+    }
+
+    ngAfterViewInit() {
+        this.citasDataSource.paginator = this.paginator;
+        this.citasDataSource.sort = this.sort;
     }
 }
