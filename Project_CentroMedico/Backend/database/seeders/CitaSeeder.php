@@ -31,7 +31,7 @@ class CitaSeeder extends Seeder
         // Fecha inicial: hoy a las 08:00
         $fecha = Carbon::today()->setHour(8)->setMinute(0);
         $finDia = Carbon::today()->setHour(14)->setMinute(0); // límite diario
-        $totalCitas = 20;
+        $totalCitas = 600;//Definir la cantidad de citas a crear
 
         for ($i = 0; $i < $totalCitas; $i++) {
             // Si pasamos de las 14:00, saltamos al día siguiente a las 08:00
