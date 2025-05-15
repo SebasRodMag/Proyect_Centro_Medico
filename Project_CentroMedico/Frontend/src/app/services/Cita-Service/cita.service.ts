@@ -21,11 +21,14 @@ export class CitaService {
         medicoId: number,
         page: number = 1,
         pageSize: number = 10,
+        mostrar: 'hoy' | 'mañana',
         fecha?: string
-    ): Observable<Response> {
+        ): Observable<Response> {
         let params = new HttpParams()
             .set('page', page.toString())
-            .set('pageSize', pageSize.toString());
+            .set('pageSize', pageSize.toString())
+            .set('mostrar', mostrar);
+            
 
         if (fecha) {
             params = params.set('fecha', fecha);

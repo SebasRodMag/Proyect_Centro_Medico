@@ -12,7 +12,6 @@ interface User {
     updated_at: string;
     deleted_at: string | null;
     rol: string;
-    rol: string;
     name: string;
 }
 

@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
         $admin->assignRole("Administrador");
 
         // Crear usuarios médicos
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $medico = User::create([
                 'email' => "medico{$i}@example.com",
                 'password' => Hash::make('password123'),
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
         }
 
         // Crear usuarios clientes
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 150; $i++) {
             $cliente = User::create([
                 'email' => "cliente{$i}@example.com",
                 'password' => Hash::make('password123'),
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
         }
 
         // Crear usuarios pacientes
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 840; $i++) {
             $paciente = User::create([
                 'email' => "paciente{$i}@example.com",
                 'password' => Hash::make('password123'),
