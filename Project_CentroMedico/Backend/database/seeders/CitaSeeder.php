@@ -28,22 +28,20 @@ class CitaSeeder extends Seeder
             return;
         }
 
-        // Fecha inicial: hoy a las 08:00
+        // Inicia el cursor de tiempo a las 08:00 de hoy
         $fecha = Carbon::today()->setHour(8)->setMinute(0);
-        $finDia = Carbon::today()->setHour(14)->setMinute(0); // límite diario
-        $totalCitas = 600;//Definir la cantidad de citas a crear
+        $finDia = Carbon::today()->setHour(14)->setMinute(0); // Fin de jornada
+        $totalCitas = 400;// Total de citas a crear
 
         for ($i = 0; $i < $totalCitas; $i++) {
-            // Si pasamos de las 14:00, saltamos al día siguiente a las 08:00
+            // Si ya es hora de cerrar, salta al día siguiente a las 08:00
             if ($fecha->greaterThanOrEqualTo($finDia)) {
                 $fecha = $fecha->copy()->addDay()->setHour(8)->setMinute(0);
                 $finDia = $fecha->copy()->setHour(14)->setMinute(0);
             }
 
-            // Duración aleatoria (múltiplo de 5, entre 5 y 30 minutos)
-            $duracion = $faker->randomElement([5, 10, 15, 20, 25, 30]);
             $fechaInicio = $fecha->copy();
-            $fechaFin = $fecha->copy()->addMinutes($duracion);
+            $fechaFin = $fechaInicio->copy()->addMinutes(5); // Duración fija
 
             DB::table('citas')->insert([
                 'id_paciente' => $faker->randomElement($pacientesIds),
@@ -56,7 +54,7 @@ class CitaSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]);
 
-            // Avanzamos al siguiente bloque de 5 minutos
+            // Avanza exactamente 5 minutos
             $fecha->addMinutes(5);
         }
     }
