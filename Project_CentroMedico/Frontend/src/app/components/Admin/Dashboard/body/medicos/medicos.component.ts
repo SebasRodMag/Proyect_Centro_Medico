@@ -33,6 +33,8 @@ export class MedicosComponent implements OnInit {
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild('modal') modal!: ModalCreateComponent;
+
 
     constructor(private medicoService: MedicoService) {}
 

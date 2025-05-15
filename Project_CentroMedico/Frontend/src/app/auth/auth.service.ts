@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 
 interface User {
-    id: number;
+    user: any;
+    id: string;
     email: string;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
-    rol: string;
     rol: string;
     name: string;
 }
@@ -31,6 +31,13 @@ export class AuthService {
 
     constructor(private http: HttpClient, private router: Router) {}
 
+    private getAuthHeaders(): HttpHeaders {
+        const token = localStorage.getItem('token');
+        return new HttpHeaders({
+            Authorization: `Bearer ${token}`,
+        });
+    }
+    
     login(credentials: { email: string; password: string }): Observable<AuthResponse> {
         return this.http
             .post<AuthResponse>(`${this.apiUrl}/login`, credentials)
@@ -40,6 +47,7 @@ export class AuthService {
                     localStorage.setItem('token', res.token);
                     localStorage.setItem('rol', res.user.rol);
                     localStorage.setItem('name', res.user.name);
+                    localStorage.setItem('id', res.user.id);
 
                     console.log('Rol:', res.user.rol);
                     console.log('Nombre:', res.user.name);
@@ -108,6 +116,8 @@ export class AuthService {
     }
 
     me(): Observable<User> {
-        return this.http.get<User>(`${this.apiUrl}/me`);
+        return this.http.get<User>(`${this.apiUrl}/me`,{
+            headers: this.getAuthHeaders(),
+        });
     }
 }

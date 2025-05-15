@@ -71,6 +71,20 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
+        // Obtener el nombre del primer rol (como viene de Spatie)
+        $role = $user->getRoleNames()->first(); // Ej: 'Medico'
+
+        // Comparar con los nombres exactos que tienes en la BD
+        $rolId = match ($role) {
+            'Paciente' => \App\Models\Paciente::where('id_usuario', $user->id)->value('id'),
+            'Cliente'  => \App\Models\Cliente::where('id_usuario', $user->id)->value('id'),
+            'Medico'   => \App\Models\Medico::where('id_usuario', $user->id)->value('id'),
+            default    => null,
+        };
+
+        // Añadir al objeto del usuario
+        $user->rol_id = $rolId;
+        unset($user->roles);
         return response()->json([
             'user' => $user,
         ]);
