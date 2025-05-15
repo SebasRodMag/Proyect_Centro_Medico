@@ -28,6 +28,26 @@
     width: 200px;
     height: 40px;
 }
+#contenedor-filtros{
+    display: flex;
+    margin: 10px;
+}
+#contenedor-filtros input{
+    margin: 0 30px 0px 5px;
+    border-radius: 20px 5px 5px 20px;
+    border: 0;
+}
+#contenedor-filtros input{
+    margin: 0 30px 0px 5px;
+    border-radius: 15px 5px 5px 15px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+#contenedor-filtros input:active, #contenedor-filtros input:focus{
+    outline: none;
+    border: 1.25px solid #1500ff;
+    scale: 1.02;
+}
 
 #contenedor-busqueda input{
     padding: 15px;

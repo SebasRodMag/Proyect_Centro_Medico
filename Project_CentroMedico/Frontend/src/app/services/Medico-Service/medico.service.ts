@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
+import { data } from 'jquery';
 
 interface Medico {
     id: number;
@@ -30,8 +31,20 @@ export class MedicoService {
         });
     }
 
+    getMedicoById(medicoId: number): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${medicoId}`,{
+            headers: this.getAuthHeaders(),
+        });
+    }
+
     createMedico(data: any): Observable<any> {
         return this.http.post(this.apiUrl, data, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    updateMedico(medicoId: number, medico: any ){
+        return this.http.put(this.apiUrl, data, {
             headers: this.getAuthHeaders(),
         });
     }

@@ -3,7 +3,7 @@
         <div>
             <button (click)="modal.open()">Registrar usuario</button>
         </div>
-        <app-modal-create #modal></app-modal-create>
+        <app-modal-create #modal (userCreated)="getUsuarios()" (userEdited)="getUsuarios()"></app-modal-create>
 
         <div id="contenedor-busqueda">
             <input
@@ -41,7 +41,7 @@
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef>Acciones</th>
             <td mat-cell *matCellDef="let usuario">
-                <button (click)="modal.open()" id="edit-button">
+                <button (click)="modal.open(usuario)" id="edit-button">
                     <i class="bi bi-pencil-square"></i>
                 </button>
                 <button id="delete-button">

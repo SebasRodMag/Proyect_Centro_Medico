@@ -1,7 +1,7 @@
 <div class="modal-backdrop" *ngIf="isVisible">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>REGISTRAR CLIENTE</h2>
+            <h2>{{isEditMode ? 'EDITAR' : 'REGISTRAR'}} USUARIO</h2>
             <i class="bi bi-x-circle close-button" (click)="close()"></i>
         </div>
         <div>
@@ -69,7 +69,8 @@
                     </div>
 
                     <div id="boton-registrar">
-                        <button type="submit" id="registrar" [disabled]="userForm.invalid">Registrar</button>
+                        <button type="submit" id="registrar" [disabled]="userForm.invalid">
+                            {{isEditMode ? 'Actualizar' : 'Registrar'}}</button>
                     </div>
                 </div>
             </form>
