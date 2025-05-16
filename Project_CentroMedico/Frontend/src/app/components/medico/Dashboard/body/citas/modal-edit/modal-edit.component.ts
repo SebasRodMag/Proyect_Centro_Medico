@@ -2,13 +2,15 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CitaService } from '../../../../../../services/Cita-Service/cita.service';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-modal-edit',
     standalone: true,
     templateUrl: './modal-edit.component.html',
     styleUrls: ['./modal-edit.component.css'],
-    imports: [FormsModule],
+    imports: [FormsModule, CommonModule],
+    providers: [NgbActiveModal]
 })
 export class ModalEditComponent implements OnInit {
     @Input() citaSeleccionada: any;

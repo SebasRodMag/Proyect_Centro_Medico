@@ -1,9 +1,5 @@
 <div class="container-citas">
     <div class="header-citas">
-        <app-modal-edit
-            (citaCreada)="getCitasDelMedicoLogueado()"
-            #modal
-        ></app-modal-edit>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
             <input type="date" id="fecha-desde" [(ngModel)]="fechaDesde" (change)="filtrarPorFechas()" />

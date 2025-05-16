@@ -7,7 +7,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ModalEditComponent } from './modal-edit/modal-edit.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgModule } from '@angular/core';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-citas',
@@ -18,7 +18,7 @@ import { NgModule } from '@angular/core';
         MatPaginatorModule,
         MatSortModule,
         FormsModule,
-        ModalEditComponent
+        NgbModule
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
@@ -96,18 +96,18 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     abrirModalEditar(cita: any): void {
-        this.citaService.getHorariosDisponibles().subscribe({
-            next: (horariosDisponibles) => {
-                const modalRef = this.modalService.open(ModalEditComponent, { size: 'lg' });
-                modalRef.componentInstance.citaSeleccionada = cita;
-                modalRef.componentInstance.horariosDisponibles = horariosDisponibles;
+    this.citaService.getHorariosDisponibles().subscribe({
+        next: (horariosDisponibles) => {
+            const modalRef = this.modalService.open(ModalEditComponent, { size: 'lg', centered: true, backdrop: 'static' });
+            modalRef.componentInstance.citaSeleccionada = cita;
+            modalRef.componentInstance.horariosDisponibles = horariosDisponibles;
 
-                modalRef.result.then((resultado) => {
-                    if (resultado === 'guardado') {
-                        this.getCitasDelMedicoLogueado();
-                    }
-                }).catch(() => { });
-            }
-        });
-    }
+            modalRef.result.then((resultado) => {
+                if (resultado === 'guardado') {
+                    this.getCitasDelMedicoLogueado();
+                }
+            }).catch(() => {});
+        }
+    });
+}
 }

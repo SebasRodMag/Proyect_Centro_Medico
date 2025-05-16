@@ -1,15 +1,13 @@
-.modal-title {
-    font-size: 1.5rem;
-    text-align: center;
-    width: 100%;
+/* Asegura que el contenido no se corte */
+.modal-content {
+    overflow: visible;
+}
+
+/* Mejora del aspecto si quieres personalizar un poco más */
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
 }
 
 .modal-body {
-    padding-top: 0;
-}
-
-.btn-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    padding-top: 1rem;
 }

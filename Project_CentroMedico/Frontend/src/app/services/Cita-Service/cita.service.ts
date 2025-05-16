@@ -92,7 +92,7 @@ getCitasDelMedico(): Observable<any> {
 
     getHorariosDisponibles(): Observable<string[]> {
         return this.http.get<string[]>(
-            `${this.apiUrl}citas/horarios-disponibles`,
+            `${this.apiUrl}/citasdisponibles`,
             { headers: this.getAuthHeaders() }
         );
     }
