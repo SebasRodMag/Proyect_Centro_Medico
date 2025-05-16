@@ -170,21 +170,25 @@ class CitasController extends Controller
     {
         $pageSize = $request->query('pageSize', 10);
         $page = $request->query('page', 1);
-        $fecha = $request->query('fecha'); // parámetro opcional
+        $mostrar = $request->query('mostrar'); // puede ser 'hoy' o 'mañana'
 
-        $query = Cita::with(['paciente.cliente', 'medico', 'contrato.cliente'])
-            ->where('id_medico', $medicoId);
+        $fecha = match ($mostrar) {
+            'mañana' => now()->addDay()->toDateString(),
+            default => now()->toDateString(),
+        };
 
-        if ($fecha) {
-            $query->whereDate('fecha_hora_cita', $fecha);
-        }
+        $query = Cita::whereHas('contrato', function ($q) use ($medicoId) {
+            $q->where('medico_id', $medicoId);
+        })
+        ->with(['contrato.cliente', 'medico', 'paciente.usuario'])
+        ->whereDate('fecha_hora_cita', $fecha);
 
         $citas = $query->paginate($pageSize, ['*'], 'page', $page);
 
         $citasFormateadas = $citas->getCollection()->map(function ($cita) {
-            $cliente = $cita->cliente
-                ?? $cita->paciente->cliente
-                ?? $cita->contrato->cliente;
+            $cliente = $cita->contrato->cliente ?? null;
+            $paciente = $cita->paciente->usuario ?? null;
+            $medico = $cita->medico ?? null;
 
             return [
                 'id' => $cita->id,

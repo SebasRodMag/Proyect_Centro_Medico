@@ -19,7 +19,6 @@ class CitaSeeder extends Seeder
     {
         $faker = Faker::create('es_ES');
 
-        // Obtiene IDs de pacientes, médicos y contratos existentes
         $pacientesIds = DB::table('pacientes')->pluck('id')->toArray();
         $medicosIds = DB::table('medicos')->pluck('id')->toArray();
         $contratosIds = DB::table('contratos')->pluck('id')->toArray();
@@ -29,21 +28,35 @@ class CitaSeeder extends Seeder
             return;
         }
 
-        for ($i = 0; $i < 20; $i++) {
-            $fechaHoraCita = Carbon::instance($faker->dateTimeBetween('now', '+2 months')); // Se Convertir a Carbon
-            $fechaHoraInicio = (clone $fechaHoraCita)->addMinutes(rand(5, 15)); // Se usa Carbon para addMinutes porque no funciona con DateTime
-            $fechaHoraFin = (clone $fechaHoraInicio)->addMinutes(rand(15, 30));  
+        // Inicia el cursor de tiempo a las 08:00 de hoy
+        $fecha = Carbon::today()->setHour(8)->setMinute(0);
+        $finDia = Carbon::today()->setHour(14)->setMinute(0); // Fin de jornada
+        $totalCitas = 400;// Total de citas a crear
+
+        for ($i = 0; $i < $totalCitas; $i++) {
+            // Si ya es hora de cerrar, salta al día siguiente a las 08:00
+            if ($fecha->greaterThanOrEqualTo($finDia)) {
+                $fecha = $fecha->copy()->addDay()->setHour(8)->setMinute(0);
+                $finDia = $fecha->copy()->setHour(14)->setMinute(0);
+            }
+
+            $fechaInicio = $fecha->copy();
+            $fechaFin = $fechaInicio->copy()->addMinutes(5); // Duración fija
 
             DB::table('citas')->insert([
                 'id_paciente' => $faker->randomElement($pacientesIds),
                 'id_medico' => $faker->randomElement($medicosIds),
                 'id_contrato' => $faker->randomElement($contratosIds),
-                'fecha_hora_cita' => $fechaHoraCita,
+                'fecha_hora_cita' => $fechaInicio,
                 'estado' => $faker->randomElement(['pendiente', 'realizado', 'cancelado']),
                 'observaciones' => $faker->sentence(10),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+
+            // Avanza exactamente 5 minutos
+            $fecha->addMinutes(5);
         }
     }
+
 }

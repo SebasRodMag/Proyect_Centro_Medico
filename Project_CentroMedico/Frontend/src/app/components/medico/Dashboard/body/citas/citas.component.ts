@@ -23,6 +23,7 @@ export class CitasComponent implements OnInit {
     medicoId!: number; // Declare the medicoId property
     citas: any[] = []; // Declare the citas property
     loading: boolean = false; // Declare the loading property
+    mostrar: 'hoy' | 'mañana' = 'hoy'; // Declare the mostrar property
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
@@ -49,34 +50,52 @@ export class CitasComponent implements OnInit {
         console.log(this.citasDataSource.data)
     }
 
-    getCitas() {
-        this.loading = true;
-        this.citaService.getMedicoLogueado().subscribe({
-            next: (medico) => {
-                this.medicoId = medico.user.id;
-                console.log('LISTAR PACIENTES DE: ID del médico logueado:', this.medicoId);
-                this.citaService.getCitasPorMedico(this.medicoId).subscribe({
-                    next: (respuesta) => {
-                        const citasObtenidas = (respuesta as any).citas ?? respuesta;
-                        this.citas = citasObtenidas.data ?? citasObtenidas;
-                        this.citasDataSource.data = this.citas;
-                        this.loading = false;
-                        console.log('Citas obtenidas:', this.citas);
-                        console.log('Citas brutas recibidas:', this.citas);
-                        console.log('Campos estado:', this.citas.map(c => c.estado));
-                        this.citasDataSource.data = [...this.citas];
-                    },
-                    error: (err) => {
-                        console.error('Error al cargar citas del médico:', err);
-                        this.loading = false;
-                    },
-                });
-            },
-            error: (err) => {
-                console.error('Error al obtener médico logueado:', err);
-                this.loading = false;
-            },
-        });
+    //Constantes para la Paginación
+    readonly PAGE_DEFAULT = 1;
+    readonly PAGE_SIZE_DEFAULT = 10;
+
+getCitas(): void {
+    this.loading = true;
+
+    this.citaService.getMedicoLogueado().subscribe({
+        next: (medico) => {
+            this.medicoId = medico.user.id;
+            console.log('ID del médico logueado:', this.medicoId);
+
+            this.cargarCitasMedico(this.medicoId);
+        },
+        error: (err) => {
+            console.error('Error al obtener médico logueado:', err);
+            this.loading = false;
+        },
+    });
+}
+
+private cargarCitasMedico(medicoId: number): void {
+    this.citaService.getCitasPorMedico(
+        medicoId,
+        this.PAGE_DEFAULT,
+        this.PAGE_SIZE_DEFAULT,
+        this.mostrar // 'hoy' o 'mañana'
+    ).subscribe({
+        next: (respuesta) => {
+            const citasObtenidas = (respuesta as any).citas ?? respuesta;
+            this.citas = citasObtenidas.data ?? citasObtenidas;
+            this.citasDataSource.data = [...this.citas];
+            this.loading = false;
+
+            console.log('Citas obtenidas:', this.citas);
+        },
+        error: (err) => {
+            console.error('Error al cargar citas del médico:', err);
+            this.loading = false;
+        },
+    });
+}
+
+    cambiarDia() {
+        this.mostrar = this.mostrar === 'hoy' ? 'mañana' : 'hoy';
+        this.getCitas();
     }
 
     ngAfterViewInit() {
