@@ -37,6 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
         
         Route::post('citas', [CitasController::class, 'store']);
+        Route::get('citas', [CitasController::class, 'index']);
+
         Route::get('usuarios', [UsersController::class, 'index']);
         Route::post('usuarios', [UsersController::class, 'store']);
         Route::get('usuarios/{user}', [UsersController::class, 'show']);
@@ -79,9 +81,12 @@ Route::middleware('auth:sanctum')->group(function () {
     
     //Rutas que solo los administradores y médicos pueden acceder
     Route::middleware(['role:Administrador|Medico'])->group(function () {
-        Route::get('citas', [CitasController::class, 'index']);
+        Route::get('medicos/{medico}/citas', [CitasController::class, 'citasPorMedico']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
         Route::put('/citas/{cita}', [CitasController::class, 'update']);
+        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
+        Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
+        Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
     });
     
 
@@ -92,10 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
-        Route::get('medicos/{medico}/citas', [CitasController::class, 'citasPorMedico']);
-        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
-        Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
-        Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
+        
     });
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {

@@ -15,6 +15,8 @@ export class PacientesComponent implements OnInit {
     clienteId!: string;
     clienteNombre: string = '';
 
+
+    
     constructor(
         private clienteService: ClienteService,
         private route: ActivatedRoute

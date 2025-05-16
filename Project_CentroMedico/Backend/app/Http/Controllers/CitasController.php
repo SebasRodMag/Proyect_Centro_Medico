@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cita;
+use App\Models\Cliente;
+use App\Models\Contrato;
+use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -127,6 +130,7 @@ class CitasController extends Controller
                 'dni_paciente' => $cita->paciente ? $cita->paciente->dni : null,
                 'fecha' => $cita->fecha_hora_cita,
                 'cliente' => $cliente->razon_social ?? null,
+                'id_medico' => $cita->medico->id,
                 'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
                 'numero_de_cita' => $numeroDeCita, // e.g., "3/80"
             ];
@@ -166,47 +170,31 @@ class CitasController extends Controller
 
     // Función para mostrar las citas que tiene el medico logueado paginada de a 10
 
-    public function citasPorMedico(Request $request, $medicoId)
-    {
-        $pageSize = $request->query('pageSize', 10);
-        $page = $request->query('page', 1);
-        $mostrar = $request->query('mostrar'); // puede ser 'hoy' o 'mañana'
+    public function citasPorMedico($id_medico)
+{
+    $citas = Cita::with(['medico', 'contrato.cliente'])
+                ->where('id_medico', $id_medico)
+                ->get();
 
-        $fecha = match ($mostrar) {
-            'mañana' => now()->addDay()->toDateString(),
-            default => now()->toDateString(),
-        };
+    $citasFormateadas = $citas->map(function ($cita) {
+        $fechaHora = Carbon::parse($cita->fecha_hora_cita);
+        return [
+            'id' => $cita->id,
+            'id_contrato' => $cita->id_contrato,
+            'id_medico' => $cita->id_medico,
+            'paciente' => $cita->paciente->nombre. ' '. $cita->paciente->apellidos,
+            'fecha' => $fechaHora->toDateString(),
+            'hora' => $fechaHora->format('H:i'),
+            'cliente' => $cita->contrato->cliente->razon_social ?? null,
+            'medico' => $cita->medico->nombre. ' '. $cita->medico->apellidos ?? null,
+            'estado' => $cita->estado,
+            'observaciones' => $cita->observaciones,
+        ];
+    });
 
-        $query = Cita::whereHas('contrato', function ($q) use ($medicoId) {
-            $q->where('medico_id', $medicoId);
-        })
-        ->with(['contrato.cliente', 'medico', 'paciente.usuario'])
-        ->whereDate('fecha_hora_cita', $fecha);
+    return response()->json($citasFormateadas, 200);
+}
 
-        $citas = $query->paginate($pageSize, ['*'], 'page', $page);
-
-        $citasFormateadas = $citas->getCollection()->map(function ($cita) {
-            $cliente = $cita->contrato->cliente ?? null;
-            $paciente = $cita->paciente->usuario ?? null;
-            $medico = $cita->medico ?? null;
-
-            return [
-                'id' => $cita->id,
-                'contrato_id' => $cita->contrato->id ?? null,
-                'paciente' => $cita->paciente ? $cita->paciente->nombre . ' ' . $cita->paciente->apellidos : null,
-                'dni_paciente' => $cita->paciente->dni ?? null,
-                'fecha' => $cita->fecha_hora_cita,
-                'cliente' => $cliente->razon_social ?? null,
-                'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
-                'estado' => $cita->estado,
-            ];
-        });
-
-        return response()->json([
-            'total' => $citas->total(),
-            'data' => $citasFormateadas,
-        ], 200);
-    }
 
     //implementar la función para mostrar las citas de un médico
     public function citasPorDia($fecha)

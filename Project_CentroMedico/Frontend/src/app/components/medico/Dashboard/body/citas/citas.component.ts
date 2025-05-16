@@ -25,13 +25,13 @@ export class CitasComponent implements OnInit {
     loading: boolean = false; // Declare the loading property
     mostrar: 'hoy' | 'mañana' = 'hoy'; // Declare the mostrar property
     citasDataSource = new MatTableDataSource<any>();
+    
     displayedColumns: string[] = [
         'id',
-        'contrato_id',
-        'paciente',
-        'cliente',
-        'dni_paciente',
+        'id_contrato',
         'medico',
+        'cliente',
+        'paciente',
         'fecha',
         'hora',
         'estado',
