@@ -31,12 +31,15 @@ class ContratoSeeder extends Seeder
         }
 
         foreach ($clientesIds as $clienteId) {
+            // Generar una fecha aleatoria entre el 1 de enero y el 31 de mayo de 2025
+            $fechaInicio = Carbon::create(2025, 1, 1)->addDays(rand(0, 151)); // enero (0 días) a mayo 31 (151 días)
+
             DB::table('contratos')->insert([
                 'id_cliente' => $clienteId,
-                'fecha_inicio' => Carbon::now()->subMonths(rand(1, 12))->toDateString(),
-                'fecha_fin' => Carbon::now()->addYear()->toDateString(),
+                'fecha_inicio' => $fechaInicio->toDateString(),
+                'fecha_fin' => $fechaInicio->copy()->addYear()->toDateString(),
                 'numero_reconocimientos' => rand(10, 100),
-                'autorenovacion' => $faker->boolean(90), // 90% de probabilidad de ser true
+                'autorenovacion' => $faker->boolean(90),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
