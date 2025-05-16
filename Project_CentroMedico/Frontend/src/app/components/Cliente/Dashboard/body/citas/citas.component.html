@@ -9,15 +9,16 @@
         ></app-modal-create>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
-            <input type="text" id="fecha-desde" placeholder="" />
+            <input type="date" id="fecha-desde" placeholder="" [(ngModel)]="fechaDesde" (change)="filtrarPorFechas()"/>
             <label for="fecha-hasta">Fecha hasta:</label>
-            <input type="text" id="fecha-hasta" placeholder="" />
+            <input type="date" id="fecha-hasta" placeholder="" [(ngModel)]="fechaHasta" (change)="filtrarPorFechas()"/>
         </div>
         <div id="contenedor-busqueda">
             <input type="text" placeholder="Búsqueda..." />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
+
     <table
         mat-table
         [dataSource]="citasDataSource"
@@ -26,50 +27,47 @@
     >
         <!-- ID -->
         <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
             <td mat-cell *matCellDef="let cita">{{ cita.id }}</td>
         </ng-container>
 
         <!-- Paciente -->
-        <ng-container matColumnDef="id_paciente">
-            <th mat-header-cell *matHeaderCellDef>Paciente</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.id_paciente }}</td>
+        <ng-container matColumnDef="nombre_paciente">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Paciente</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.nombre_paciente }}</td>
         </ng-container>
 
         <!-- Médico -->
-        <ng-container matColumnDef="id_medico">
-            <th mat-header-cell *matHeaderCellDef>Médico</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.id_medico }}</td>
+        <ng-container matColumnDef="nombre_medico">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Médico</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.nombre_medico }}</td>
         </ng-container>
 
-        <!-- Contrato -->
-        <ng-container matColumnDef="id_contrato">
-            <th mat-header-cell *matHeaderCellDef>Contrato</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.id_contrato }}</td>
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.fecha }}</td>
         </ng-container>
 
-        <!-- Fecha y Hora -->
-        <ng-container matColumnDef="fecha_hora_cita">
-            <th mat-header-cell *matHeaderCellDef>Fecha y Hora</th>
-            <td mat-cell *matCellDef="let cita">
-                {{ cita.fecha_hora_cita | date : "short" }}
-            </td>
-        </ng-container>
-
-        <!-- Estado -->
-        <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.estado }}</td>
+        <!-- Hora -->
+        <ng-container matColumnDef="hora">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.hora }}</td>
         </ng-container>
 
         <!-- Observaciones -->
         <ng-container matColumnDef="observaciones">
-            <th mat-header-cell *matHeaderCellDef>Observaciones</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.observaciones }}</td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Observaciones</th>
+            <td mat-cell *matCellDef="let cita">
+                <abbr [title]="cita.observaciones || 'Sin observaciones'"
+                    >Ver observación</abbr
+                >
+            </td>
         </ng-container>
 
+        <!-- Acciones -->
         <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
             <td mat-cell *matCellDef="let cita">
                 <button (click)="modal.open()" id="edit-button">
                     <i class="bi bi-pencil-square"></i>

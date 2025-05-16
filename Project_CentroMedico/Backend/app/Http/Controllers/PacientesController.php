@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class PacientesController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $id_cliente)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -20,7 +20,7 @@ class PacientesController extends Controller
             'password' => 'required|string|min:8|max:255',
             // 'telefono' => 'required|string|max:15',
             // 'direccion' => 'required|string|max:255',
-            'id_cliente' => 'required|integer|exists:clientes,id',
+            // 'id_cliente' => 'required|integer|exists:clientes,id',
             // 'id_usuario' => 'required|integer|exists:users,id',
         ]);
         $user = new User();
@@ -36,7 +36,7 @@ class PacientesController extends Controller
         $paciente->dni = $request->dni;
         $paciente->fecha_nacimiento = $request->fecha_nacimiento;
         $paciente->email = $request->email;
-        $paciente->id_cliente = $request->id_cliente;
+        $paciente->id_cliente = $id_cliente;
         $paciente->id_usuario = $user->id;
         return response()->json(['message' => 'Paciente creado con éxito'], 201);
     }

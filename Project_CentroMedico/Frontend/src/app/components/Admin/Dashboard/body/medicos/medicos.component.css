@@ -70,27 +70,8 @@ table{
     width: 100%;
 }
 
-#tabla-medicos th{
-    background-color: #376AA8;
-    color: white;
-    padding: 10px;
-}
-
-#tabla-medicos th,td{
-    font-size: 12px;
-    text-align: center;
-    
-}
-
-#tabla-medicos tr:nth-child(odd){
-    background-color: #fff;
-}
-#tabla-medicos tr:nth-child(even){
-    background-color: #376aa845;
-}
-
-#tabla-medicos th:last-child,td:last-child{
-    border-right: 0;
+table th, table td{
+    text-align: start;
 }
 
 mat-paginator {

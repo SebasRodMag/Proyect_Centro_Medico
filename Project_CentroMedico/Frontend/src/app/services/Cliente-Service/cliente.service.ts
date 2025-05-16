@@ -24,8 +24,8 @@ export class ClienteService {
         });
     }
 
-    getPacientesDelCliente(clienteId: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/${clienteId}/pacientes`, {
+    getPacientesDelCliente(id_cliente: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${id_cliente}/pacientes`, {
             headers: this.getAuthHeaders(),
         });
     }

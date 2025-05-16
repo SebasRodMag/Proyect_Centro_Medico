@@ -50,6 +50,9 @@ table{
     width: 100%;
 }
 
+table th, table td{
+    text-align: center;
+}
 #tabla-pacientes th{
     background-color: #376AA8;
     color: white;

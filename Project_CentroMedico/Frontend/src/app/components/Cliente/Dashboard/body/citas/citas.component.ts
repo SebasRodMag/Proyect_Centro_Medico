@@ -6,6 +6,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ModalCreateComponent } from './modal-create/modal-create.component';
 import { AuthService } from '../../../../../auth/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-citas',
@@ -16,6 +17,7 @@ import { AuthService } from '../../../../../auth/auth.service';
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
+        FormsModule,
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
@@ -24,16 +26,17 @@ export class CitasComponent implements OnInit, AfterViewInit {
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
-        'id_paciente',
-        'id_medico',
-        'id_contrato',
-        'fecha_hora_cita',
-        'estado',
+        'nombre_paciente',
+        'nombre_medico',
+        'fecha',
+        'hora',
         'observaciones',
-        'acciones'
+        'acciones',
     ];
 
     rol_id!: number;
+    fechaDesde: string = '';
+    fechaHasta: string = '';
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -61,5 +64,21 @@ export class CitasComponent implements OnInit, AfterViewInit {
         this.citaService.getCitasPorId(rol_id).subscribe((response) => {
             this.citasDataSource.data = response.citas;
         });
+    }
+
+    filtrarPorFechas(): void {
+        const desde = this.fechaDesde ? new Date(this.fechaDesde) : null;
+        const hasta = this.fechaHasta ? new Date(this.fechaHasta) : null;
+
+        this.citasDataSource.filterPredicate = (data: any) => {
+            const fechaCita = new Date(data.fecha);
+
+            const cumpleDesde = !desde || fechaCita >= desde;
+            const cumpleHasta = !hasta || fechaCita <= hasta;
+
+            return cumpleDesde && cumpleHasta;
+        };
+
+        this.citasDataSource.filter = '' + Math.random(); // Forzar refresco del filtro
     }
 }
