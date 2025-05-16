@@ -1,43 +1,51 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CitaService } from '../../../../../../services/Cita-Service/cita.service';
-import { FormsModule } from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-modal-edit',
+    selector: 'app-edit-cita-dialog',
     standalone: true,
-    templateUrl: './modal-edit.component.html',
-    styleUrls: ['./modal-edit.component.css'],
-    imports: [FormsModule, CommonModule],
-    providers: [NgbActiveModal]
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatDialogModule,
+        MatButtonModule
+        // importa más módulos si usas select, input, etc.
+    ],
+    template: `
+    <h2 mat-dialog-title>Editar Cita</h2>
+    <mat-dialog-content>
+        <p><strong>Paciente:</strong> {{ data.cita.nombrePaciente }}</p>
+
+        <label>Hora:
+        <select [(ngModel)]="data.cita.hora">
+          <option *ngFor="let hora of data.horariosDisponibles" [value]="hora">{{ hora }}</option>
+        </select>
+        </label>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="cancelar()">Cancelar</button>
+        <button mat-flat-button color="primary" (click)="guardar()">Guardar</button>
+    </mat-dialog-actions>
+    `,
 })
-export class ModalEditComponent implements OnInit {
-    @Input() citaSeleccionada: any;
-    @Input() horariosDisponibles: string[] = [];
-
-    citaModificada: any;
-
+export class ModalEditComponent {
     constructor(
-        public activeModal: NgbActiveModal,
-        private citaService: CitaService
+        public dialogRef: MatDialogRef<ModalEditComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: {
+            cita: any;
+            horariosDisponibles: string[];
+        }
     ) { }
 
-    ngOnInit(): void {
-        this.citaModificada = { ...this.citaSeleccionada };
+    guardar(): void {
+        this.dialogRef.close({ citaActualizada: this.data.cita });
     }
 
-    guardar(): void {
-    this.citaService.actualizarCita(this.citaModificada.id, this.citaModificada).subscribe({
-        next: () => this.activeModal.close('guardado'),
-        error: (err) => {
-            console.error('Error al actualizar cita', err);
-            this.activeModal.dismiss('error');
-        }
-    });
-}
-
     cancelar(): void {
-        this.activeModal.dismiss();
+        this.dialogRef.close();
     }
 }

@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { CitaService } from '../../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ModalEditComponent } from './modal-edit/modal-edit.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-citas',
@@ -18,7 +21,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
         MatPaginatorModule,
         MatSortModule,
         FormsModule,
-        NgbModule
+        NgbModule,
+        MatButtonModule,
+        MatDialogModule
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
@@ -46,7 +51,9 @@ export class CitasComponent implements OnInit, AfterViewInit {
 
     constructor(
         private citaService: CitaService,
-        private modalService: NgbModal
+        private modalService: NgbModal,
+        private dialog: MatDialog,
+        private snackBar: MatSnackBar
     ) { }
 
     ngOnInit(): void {
@@ -95,18 +102,41 @@ export class CitasComponent implements OnInit, AfterViewInit {
         this.citasDataSource.filter = filtroValor.trim().toLowerCase();
     }
 
-    abrirModalEditar(cita: any): void {
+    openModal(cita: any): void {
     this.citaService.getHorariosDisponibles().subscribe({
-        next: (horariosDisponibles) => {
-            const modalRef = this.modalService.open(ModalEditComponent, { size: 'lg', centered: true, backdrop: 'static' });
-            modalRef.componentInstance.citaSeleccionada = cita;
-            modalRef.componentInstance.horariosDisponibles = horariosDisponibles;
-
-            modalRef.result.then((resultado) => {
-                if (resultado === 'guardado') {
-                    this.getCitasDelMedicoLogueado();
+        next: (horariosDisponibles: string[]) => {
+            const dialogRef = this.dialog.open(ModalEditComponent, {
+                width: '500px',
+                data: {
+                    cita: { ...cita },
+                    horariosDisponibles
                 }
-            }).catch(() => {});
+            });
+
+            dialogRef.afterClosed().subscribe(result => {
+                if (result?.citaActualizada) {
+                    const citaEditada = result.citaActualizada;
+
+                    this.citaService.actualizarCita(citaEditada.id, citaEditada).subscribe({
+                        next: () => {
+                            const index = this.citasOriginal.findIndex(c => c.id === citaEditada.id);
+                            if (index !== -1) {
+                                this.citasOriginal[index] = { ...this.citasOriginal[index], ...citaEditada };
+                            }
+                            this.citasDataSource.data = [...this.citasOriginal];
+                            this.snackBar.open('Cita actualizada con éxito', 'Cerrar', { duration: 3000 });
+                        },
+                        error: (err) => {
+                            this.snackBar.open(err?.error?.message || 'No se pudo actualizar la cita', 'Cerrar', {
+                                duration: 4000,
+                            });
+                        }
+                    });
+                }
+            });
+        },
+        error: (err) => {
+            this.snackBar.open('No se pudieron cargar los horarios disponibles', 'Cerrar', { duration: 4000 });
         }
     });
 }
