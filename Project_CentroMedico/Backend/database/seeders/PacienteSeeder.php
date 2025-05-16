@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cliente;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
-use App\Models\User;
 
 class PacienteSeeder extends Seeder
 {
@@ -14,28 +15,44 @@ class PacienteSeeder extends Seeder
     {
         $faker = Faker::create('es_ES');
 
-        $clientesIds = DB::table('clientes')->pluck('id')->toArray();
+        // Obtener usuarios con el rol de 'Paciente'
+        $usuariosPacientes = User::role('Paciente')->get();
 
-        if (empty($clientesIds)) {
-            $this->command->warn('No hay clientes disponibles para crear pacientes. Ejecuta primero el ClienteSeeder.');
+        if ($usuariosPacientes->isEmpty()) {
+            $this->command->warn('No hay usuarios con el rol de Paciente.');
             return;
         }
 
-        // Obtener todos los usuarios con rol Paciente
-        $pacientes = User::role('Paciente')->get();
+        // Obtener todos los clientes existentes
+        $clientes = Cliente::whereHas('user', function($query) {
+            $query->role('Cliente'); // o más condiciones si quieres
+        })->get();
 
-        foreach ($pacientes as $user) {
-            DB::table('pacientes')->insert([
-                'id_usuario' => $user->id,
-                'id_cliente' => $faker->randomElement($clientesIds),
-                'nombre' => $faker->firstName,
-                'apellidos' => $faker->lastName . ' ' . $faker->lastName,
-                'dni' => $faker->unique()->dni,
-                'fecha_nacimiento' => $faker->date('Y-m-d'),
-                'email' => $faker->unique()->safeEmail,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+        if ($clientes->isEmpty()) {
+            $this->command->warn('No hay clientes en la base de datos. No se pueden asignar pacientes.');
+            return;
+        }
+
+        foreach ($usuariosPacientes as $user) {
+            $yaExiste = DB::table('pacientes')->where('id_usuario', $user->id)->exists();
+            if (!$yaExiste) {
+
+                // Obtener un cliente aleatorio para asociar al paciente
+                $cliente = $clientes->random();
+
+                DB::table('pacientes')->insert([
+                    'nombre' => $faker->firstName,
+                    'apellidos' => $faker->lastName . ' ' . $faker->lastName,
+                    'dni' => $faker->unique()->dni,
+                    'id_usuario' => $user->id,
+                    'fecha_nacimiento' => $faker->dateTimeBetween('-70 years', '-18 years')->format('Y-m-d'),
+                    'email' => $user->email,
+                    'id_cliente' => $cliente->id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
         }
     }
 }
+

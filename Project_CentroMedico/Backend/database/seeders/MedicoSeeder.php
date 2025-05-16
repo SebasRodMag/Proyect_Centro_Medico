@@ -24,39 +24,25 @@ class MedicoSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('es_ES');
-        $emails = [
-            'medico1@example.com', 
-            'medico2@example.com', 
-            'medico3@example.com', 
-            'medico4@example.com', 
-            'medico5@example.com', 
-            'medico6@example.com', 
-            'medico7@example.com', 
-            'medico8@example.com'
-        ];
 
-        // Crea algunos usuarios médicos
-        //Se hace de esta forma, por un error en al implementar el seeder y dar conflicto con los correos repetidos
-        foreach ($emails as $email) {
-            // Verificar si el usuario ya existe
-            $user = User::where('email', $email)->first();
-            $medicos = User::Role('Medico')->get();
+        // Obtener usuarios con el rol de 'Medico'
+        $usuariosMedicos = User::role('Medico')->get();
 
-            if (!$user) {
-                $user = User::create([
-                    'email' => $email,
-                    'password' => Hash::make('password123'),
-                ]);
-            
-                // $user->assignRole('Medico', 'sanctum');
+        if ($usuariosMedicos->isEmpty()) {
+            $this->command->warn('No hay usuarios con el rol de Medico.');
+            return;
+        }
 
-            
+        foreach ($usuariosMedicos as $user) {
+            // Verifica si ya tiene entrada en la tabla 'medicos'
+            $yaExiste = DB::table('medicos')->where('id_usuario', $user->id)->exists();
+            if (!$yaExiste) {
                 DB::table('medicos')->insert([
                     'id_usuario' => $user->id,
                     'nombre' => $faker->firstName,
                     'apellidos' => $faker->lastName . ' ' . $faker->lastName,
                     'dni' => $faker->unique()->dni,
-                    'fecha_inicio' => Carbon::now()->subYears(5)->toDateString(),
+                    'fecha_inicio' => Carbon::now()->subYears(rand(1, 5))->toDateString(),
                     'fecha_fin' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -64,4 +50,5 @@ class MedicoSeeder extends Seeder
             }
         }
     }
+
 }

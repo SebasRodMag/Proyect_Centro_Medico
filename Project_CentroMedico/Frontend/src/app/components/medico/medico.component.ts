@@ -37,6 +37,7 @@ export class MedicoComponent implements OnInit {
   paginaActual = 1;
   citasPorPagina = 10;
   totalCitas = 0;
+  mostrar:'hoy' | 'mañana' = 'hoy';
   fechaActual: Date = new Date();
   medicoId: number | null = null;
 
@@ -59,7 +60,7 @@ export class MedicoComponent implements OnInit {
     });
   } */
 
-  actualizarCitas(fecha?: Date, pagina: number = 1): void {
+  /* actualizarCitas(fecha?: Date, pagina: number = 1): void {
     if (this.medicoId) {
       const fechaStr = fecha ? this.formatearFecha(fecha) : undefined;
 
@@ -77,12 +78,12 @@ export class MedicoComponent implements OnInit {
           },
         });
     }
-  }
+  } */
 
-  cambiarPagina(pagina: number): void {
+ /*  cambiarPagina(pagina: number): void {
     this.actualizarCitas(this.fechaActual, pagina);
-  }
-
+  } */
+/* 
   avanzarDia(): void {
     const nuevaFecha = new Date(this.fechaActual);
     nuevaFecha.setDate(nuevaFecha.getDate() + 1);
@@ -108,4 +109,9 @@ export class MedicoComponent implements OnInit {
     const numeroPaginas = Math.ceil(this.totalCitas / this.citasPorPagina);
     return Array.from({ length: numeroPaginas }, (_, i) => i + 1);
   }
-}
+
+  cambiarDia() {
+    this.mostrar = this.mostrar === 'hoy' ? 'mañana' : 'hoy';
+    this.actualizarCitas();
+  }
+} */}

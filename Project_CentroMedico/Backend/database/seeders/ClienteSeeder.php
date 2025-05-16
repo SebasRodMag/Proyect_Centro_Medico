@@ -24,7 +24,6 @@ class ClienteSeeder extends Seeder
         }
 
         foreach ($clientes as $user) {
-            // Crear la entrada correspondiente en la tabla clientes
             DB::table('clientes')->insert([
                 'id_usuario' => $user->id,
                 'razon_social' => $faker->company,
