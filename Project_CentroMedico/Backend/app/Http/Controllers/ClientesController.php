@@ -90,9 +90,21 @@ class ClientesController extends Controller
 
     public function index()
     {
-        $clientes = Cliente::all();
+        $clientes = Cliente::with(['contratos' => function ($query) {
+            $query->where('fecha_inicio', '<=', now())
+                ->where('fecha_inicio', '>=', now()->subYear())
+                ->orderBy('fecha_inicio', 'desc');
+        }])->get();
+
+        // O bien, si quieres solo el contrato vigente como una propiedad extra:
+        foreach ($clientes as $cliente) {
+            $cliente->contrato_vigente = $cliente->contratos->first();
+            unset($cliente->contratos); // opcional si no quieres todos
+        }
+
         return response()->json($clientes, 200);
     }
+
 
     //Funcon para mostrar un cliente por Id
     public function show($id)

@@ -23,7 +23,6 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 })
 export class ClientesComponent implements OnInit {
     clientes: any[] = [];
-    contratosVigentes: { [key: number]: any } = {};
     clientesDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
@@ -39,11 +38,8 @@ export class ClientesComponent implements OnInit {
         'acciones',
     ];
 
-    @ViewChild(MatPaginator)
-    paginator: MatPaginator = new MatPaginator();
-
-    @ViewChild(MatSort)
-    sort: MatSort = new MatSort();
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
 
     constructor(private clienteService: ClienteService) {}
 
@@ -54,30 +50,8 @@ export class ClientesComponent implements OnInit {
                 this.clientesDataSource.data = this.clientes;
                 this.clientesDataSource.paginator = this.paginator;
                 this.clientesDataSource.sort = this.sort;
-
-                // Obtener contrato vigente y reconocimientos restantes para cada cliente
-                this.clientes.forEach((cliente) => {
-                    this.getContratoVigente(cliente.id);
-                });
             },
             (error) => console.error('Error al obtener los clientes', error)
-        );
-    }
-
-    getContratoVigente(clienteId: number) {
-        this.clienteService.getContratoVigente(clienteId.toString()).subscribe(
-            (data) => {
-                if (data?.contrato_vigente) {
-                    this.contratosVigentes[clienteId] = {
-                        contrato: data.contrato_vigente,
-                        reconocimientos_restantes: data.contrato_vigente.reconocimientos_restantes,
-                        fecha_inicio: data.contrato_vigente.fecha_inicio,
-                        fecha_fin: data.contrato_vigente.fecha_fin,
-                    };
-                }
-            },
-            (error) =>
-                console.error('Error al obtener el contrato vigente', error)
         );
     }
 }
