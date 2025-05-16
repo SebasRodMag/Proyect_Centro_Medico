@@ -25,7 +25,7 @@ export class CitasComponent implements OnInit {
     loading: boolean = false; // Declare the loading property
     mostrar: 'hoy' | 'mañana' = 'hoy'; // Declare the mostrar property
     citasDataSource = new MatTableDataSource<any>();
-    
+
     displayedColumns: string[] = [
         'id',
         'id_contrato',
@@ -47,55 +47,69 @@ export class CitasComponent implements OnInit {
 
     ngOnInit(): void {
         this.getCitas();
-        console.log(this.citasDataSource.data)
+        console.log(this.citasDataSource.data);
     }
 
     //Constantes para la Paginación
     readonly PAGE_DEFAULT = 1;
     readonly PAGE_SIZE_DEFAULT = 10;
 
-getCitas(): void {
-    this.loading = true;
+    getCitas(): void {
+        this.loading = true;
 
-    this.citaService.getMedicoLogueado().subscribe({
-        next: (medico) => {
-            this.medicoId = medico.user.id;
-            console.log('ID del médico logueado:', this.medicoId);
+        this.citaService.getMedicoLogueado().subscribe({
+            next: (medico) => {
+                this.medicoId = medico.user.id;
+                console.log('ID del médico logueado:', this.medicoId);
 
-            this.cargarCitasMedico(this.medicoId);
-        },
-        error: (err) => {
-            console.error('Error al obtener médico logueado:', err);
-            this.loading = false;
-        },
-    });
-}
+                this.cargarCitasMedico(this.medicoId);
+            },
+            error: (err) => {
+                console.error('Error al obtener médico logueado:', err);
+                this.loading = false;
+            },
+        });
+    }
 
-private cargarCitasMedico(medicoId: number): void {
-    this.citaService.getCitasPorMedico(
-        medicoId,
-        this.PAGE_DEFAULT,
-        this.PAGE_SIZE_DEFAULT,
-        this.mostrar // 'hoy' o 'mañana'
-    ).subscribe({
-        next: (respuesta) => {
-            const citasObtenidas = (respuesta as any).citas ?? respuesta;
-            this.citas = citasObtenidas.data ?? citasObtenidas;
-            this.citasDataSource.data = [...this.citas];
-            this.loading = false;
+    private cargarCitasMedico(medicoId: number): void {
+        this.citaService
+            .getCitasPorMedico(
+                medicoId,
+                this.PAGE_DEFAULT,
+                this.PAGE_SIZE_DEFAULT,
+                this.mostrar // 'hoy' o 'mañana'
+            )
+            .subscribe({
+                next: (respuesta) => {
+                    const citasObtenidas =
+                        (respuesta as any).citas ?? respuesta;
+                    this.citas = citasObtenidas.data ?? citasObtenidas;
+                    this.citasDataSource.data = [...this.citas];
+                    this.loading = false;
 
-            console.log('Citas obtenidas:', this.citas);
-        },
-        error: (err) => {
-            console.error('Error al cargar citas del médico:', err);
-            this.loading = false;
-        },
-    });
-}
+                    console.log('Citas obtenidas:', this.citas);
+                },
+                error: (err) => {
+                    console.error('Error al cargar citas del médico:', err);
+                    this.loading = false;
+                },
+            });
+    }
 
     cambiarDia() {
         this.mostrar = this.mostrar === 'hoy' ? 'mañana' : 'hoy';
         this.getCitas();
+    }
+    
+    esFechaHoy(fecha: string): boolean {
+        const fechaCita = new Date(fecha);
+        const hoy = new Date();
+
+        return (
+            fechaCita.getFullYear() === hoy.getFullYear() &&
+            fechaCita.getMonth() === hoy.getMonth() &&
+            fechaCita.getDate() === hoy.getDate()
+        );
     }
 
     ngAfterViewInit() {
