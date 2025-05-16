@@ -1,29 +1,31 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CitaService } from '../../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { ModalCreateComponent } from './modal-create/modal-create.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-citas',
-    standalone: true, // Si usas Standalone Component
+    standalone: true,
     imports: [
         CommonModule,
-        ModalCreateComponent,
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
+        FormsModule,
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
-export class CitasComponent implements OnInit {
-    medicoId!: number; // Declare the medicoId property
-    citas: any[] = []; // Declare the citas property
-    loading: boolean = false; // Declare the loading property
-    mostrar: 'hoy' | 'mañana' = 'hoy'; // Declare the mostrar property
+export class CitasComponent implements OnInit, AfterViewInit {
+    medicoId!: number;
+    citas: any[] = [];
+    loading: boolean = false;
+    fechaDesde: string = '';
+    fechaHasta: string = '';
+    mostrar: 'hoy' | 'mañana' | 'todo' = 'hoy';
     citasDataSource = new MatTableDataSource<any>();
 
     displayedColumns: string[] = [
@@ -38,21 +40,20 @@ export class CitasComponent implements OnInit {
         'acciones',
     ];
 
-    @ViewChild(MatPaginator)
-    paginator: MatPaginator = new MatPaginator();
-    @ViewChild(MatSort)
-    sort: MatSort = new MatSort();
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
 
     constructor(private citaService: CitaService) {}
 
     ngOnInit(): void {
+        this.setFechasSegunMostrar();
         this.getCitas();
-        console.log(this.citasDataSource.data);
     }
 
-    //Constantes para la Paginación
-    readonly PAGE_DEFAULT = 1;
-    readonly PAGE_SIZE_DEFAULT = 10;
+    ngAfterViewInit() {
+        this.citasDataSource.paginator = this.paginator;
+        this.citasDataSource.sort = this.sort;
+    }
 
     getCitas(): void {
         this.loading = true;
@@ -60,9 +61,20 @@ export class CitasComponent implements OnInit {
         this.citaService.getMedicoLogueado().subscribe({
             next: (medico) => {
                 this.medicoId = medico.user.id;
-                console.log('ID del médico logueado:', this.medicoId);
-
-                this.cargarCitasMedico(this.medicoId);
+                this.citaService.getCitasPorMedico(this.medicoId).subscribe({
+                    next: (respuesta) => {
+                        const citasObtenidas =
+                            (respuesta as any).citas ?? respuesta;
+                        this.citas = citasObtenidas.data ?? citasObtenidas;
+                        this.citasDataSource.data = [...this.citas];
+                        this.filtrarPorFechas(); // Aplica filtro local
+                        this.loading = false;
+                    },
+                    error: (err) => {
+                        console.error('Error al cargar citas del médico:', err);
+                        this.loading = false;
+                    },
+                });
             },
             error: (err) => {
                 console.error('Error al obtener médico logueado:', err);
@@ -71,49 +83,61 @@ export class CitasComponent implements OnInit {
         });
     }
 
-    private cargarCitasMedico(medicoId: number): void {
-        this.citaService
-            .getCitasPorMedico(
-                medicoId,
-                this.PAGE_DEFAULT,
-                this.PAGE_SIZE_DEFAULT,
-                this.mostrar // 'hoy' o 'mañana'
-            )
-            .subscribe({
-                next: (respuesta) => {
-                    const citasObtenidas =
-                        (respuesta as any).citas ?? respuesta;
-                    this.citas = citasObtenidas.data ?? citasObtenidas;
-                    this.citasDataSource.data = [...this.citas];
-                    this.loading = false;
+    setFechasSegunMostrar(): void {
+        const hoy = new Date();
+        const mañana = new Date();
+        mañana.setDate(hoy.getDate() + 1);
 
-                    console.log('Citas obtenidas:', this.citas);
-                },
-                error: (err) => {
-                    console.error('Error al cargar citas del médico:', err);
-                    this.loading = false;
-                },
-            });
+        function formatDate(date: Date): string {
+            return date.toISOString().split('T')[0];
+        }
+
+        if (this.mostrar === 'hoy') {
+            this.fechaDesde = formatDate(hoy);
+            this.fechaHasta = formatDate(hoy);
+        } else if (this.mostrar === 'mañana') {
+            this.fechaDesde = formatDate(mañana);
+            this.fechaHasta = formatDate(mañana);
+        } else {
+            this.fechaDesde = '';
+            this.fechaHasta = '';
+        }
     }
 
-    cambiarDia() {
-        this.mostrar = this.mostrar === 'hoy' ? 'mañana' : 'hoy';
-        this.getCitas();
+    filtrarPorFechas(): void {
+        const desde = this.fechaDesde ? new Date(this.fechaDesde) : null;
+        const hasta = this.fechaHasta ? new Date(this.fechaHasta) : null;
+
+        this.citasDataSource.filterPredicate = (data: any, filter: string) => {
+            const fechaCita = new Date(data.fecha);
+            const cumpleDesde = !desde || fechaCita >= desde;
+            const cumpleHasta = !hasta || fechaCita <= hasta;
+            return cumpleDesde && cumpleHasta;
+        };
+
+        this.citasDataSource.filter = '' + Math.random();
     }
-    
+
+    cambiarDia(): void {
+        this.mostrar =
+            this.mostrar === 'hoy'
+                ? 'mañana'
+                : this.mostrar === 'mañana'
+                ? 'todo'
+                : 'hoy';
+
+        this.setFechasSegunMostrar();
+        this.filtrarPorFechas();
+    }
+
     esFechaHoy(fecha: string): boolean {
         const fechaCita = new Date(fecha);
         const hoy = new Date();
-
         return (
             fechaCita.getFullYear() === hoy.getFullYear() &&
             fechaCita.getMonth() === hoy.getMonth() &&
             fechaCita.getDate() === hoy.getDate()
         );
     }
-
-    ngAfterViewInit() {
-        this.citasDataSource.paginator = this.paginator;
-        this.citasDataSource.sort = this.sort;
-    }
 }
+

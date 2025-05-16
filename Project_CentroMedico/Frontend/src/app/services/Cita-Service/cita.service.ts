@@ -21,17 +21,22 @@ export class CitaService {
         medicoId: number,
         page: number = 1,
         pageSize: number = 10,
-        mostrar: 'hoy' | 'mañana',
-        fecha?: string
-        ): Observable<Response> {
+        mostrar: 'hoy' | 'mañana' | '' = '',
+        fechaDesde?: string,
+        fechaHasta?: string
+    ): Observable<Response> {
         let params = new HttpParams()
             .set('page', page.toString())
-            .set('pageSize', pageSize.toString())
-            .set('mostrar', mostrar);
-            
+            .set('pageSize', pageSize.toString());
 
-        if (fecha) {
-            params = params.set('fecha', fecha);
+        if (mostrar !== '') {
+            params = params.set('mostrar', mostrar);
+        }
+        if (fechaDesde) {
+            params = params.set('fechaDesde', fechaDesde);
+        }
+        if (fechaHasta) {
+            params = params.set('fechaHasta', fechaHasta);
         }
 
         const apiUrl = `${this.apiUrl}/medicos/${medicoId}/citas`;
@@ -92,8 +97,11 @@ export class CitaService {
     }
 
     getCitasPorId($rol_id: any): Observable<any> {
-        return this.http.get(`http://localhost:8000/api/clientes/${$rol_id}/citas`,{
-            headers: this.getAuthHeaders(),
-        });
+        return this.http.get(
+            `http://localhost:8000/api/clientes/${$rol_id}/citas`,
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
     }
 }
