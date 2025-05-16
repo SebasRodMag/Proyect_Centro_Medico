@@ -1,105 +1,113 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CitaService } from '../../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { ModalCreateComponent } from './modal-create/modal-create.component';
+import { ModalEditComponent } from './modal-edit/modal-edit.component';
+import { FormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgModule } from '@angular/core';
 
 @Component({
     selector: 'app-citas',
-    standalone: true, // Si usas Standalone Component
+    standalone: true,
     imports: [
         CommonModule,
-        ModalCreateComponent,
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
+        FormsModule,
+        ModalEditComponent
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
-export class CitasComponent implements OnInit {
-    medicoId!: number; // Declare the medicoId property
-    citas: any[] = []; // Declare the citas property
-    loading: boolean = false; // Declare the loading property
-    mostrar: 'hoy' | 'mañana' = 'hoy'; // Declare the mostrar property
+export class CitasComponent implements OnInit, AfterViewInit {
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
-        'contrato_id',
-        'paciente',
-        'cliente',
-        'dni_paciente',
-        'medico',
+        'nombre_paciente',
+        'dni',
+        'nombre_medico',
         'fecha',
         'hora',
         'estado',
+        'observaciones',
         'acciones',
     ];
 
-    @ViewChild(MatPaginator)
-    paginator: MatPaginator = new MatPaginator();
-    @ViewChild(MatSort)
-    sort: MatSort = new MatSort();
+    fechaDesde: string = '';
+    fechaHasta: string = '';
+    citasOriginal: any[] = [];
 
-    constructor(private citaService: CitaService) {}
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
+
+    constructor(
+        private citaService: CitaService,
+        private modalService: NgbModal
+    ) { }
 
     ngOnInit(): void {
-        this.getCitas();
-        console.log(this.citasDataSource.data)
+        this.getCitasDelMedicoLogueado();
+        this.citasDataSource.filterPredicate = (data: any, filter: string) => {
+            const nombreCompleto = (data.paciente?.nombre + ' ' + data.paciente?.apellidos).toLowerCase();
+            const dni = data.paciente?.dni?.toLowerCase() || '';
+            const medico = (data.medico?.nombre + ' ' + data.medico?.apellidos).toLowerCase();
+
+            return (
+                nombreCompleto.includes(filter) ||
+                dni.includes(filter) ||
+                medico.includes(filter)
+            );
+        };
     }
 
-    //Constantes para la Paginación
-    readonly PAGE_DEFAULT = 1;
-    readonly PAGE_SIZE_DEFAULT = 10;
-
-getCitas(): void {
-    this.loading = true;
-
-    this.citaService.getMedicoLogueado().subscribe({
-        next: (medico) => {
-            this.medicoId = medico.user.id;
-            console.log('ID del médico logueado:', this.medicoId);
-
-            this.cargarCitasMedico(this.medicoId);
-        },
-        error: (err) => {
-            console.error('Error al obtener médico logueado:', err);
-            this.loading = false;
-        },
-    });
-}
-
-private cargarCitasMedico(medicoId: number): void {
-    this.citaService.getCitasPorMedico(
-        medicoId,
-        this.PAGE_DEFAULT,
-        this.PAGE_SIZE_DEFAULT,
-        this.mostrar // 'hoy' o 'mañana'
-    ).subscribe({
-        next: (respuesta) => {
-            const citasObtenidas = (respuesta as any).citas ?? respuesta;
-            this.citas = citasObtenidas.data ?? citasObtenidas;
-            this.citasDataSource.data = [...this.citas];
-            this.loading = false;
-
-            console.log('Citas obtenidas:', this.citas);
-        },
-        error: (err) => {
-            console.error('Error al cargar citas del médico:', err);
-            this.loading = false;
-        },
-    });
-}
-
-    cambiarDia() {
-        this.mostrar = this.mostrar === 'hoy' ? 'mañana' : 'hoy';
-        this.getCitas();
-    }
-
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.citasDataSource.paginator = this.paginator;
         this.citasDataSource.sort = this.sort;
+    }
+
+    getCitasDelMedicoLogueado(): void {
+        this.citaService.getCitasDelMedico().subscribe((citas) => {
+            this.citasOriginal = citas;
+            this.citasDataSource.data = citas;
+        });
+    }
+
+    filtrarPorFechas(): void {
+        const desde = this.fechaDesde ? new Date(this.fechaDesde) : null;
+        const hasta = this.fechaHasta ? new Date(this.fechaHasta) : null;
+
+        const citasFiltradas = this.citasOriginal.filter((cita: any) => {
+            const fechaCita = new Date(cita.fecha_hora_cita);
+            if (desde && fechaCita < desde) return false;
+            if (hasta && fechaCita > hasta) return false;
+            return true;
+        });
+
+        this.citasDataSource.data = citasFiltradas;
+    }
+
+    aplicarFiltro(event: Event): void {
+        const filtroValor = (event.target as HTMLInputElement).value;
+        this.citasDataSource.filter = filtroValor.trim().toLowerCase();
+    }
+
+    abrirModalEditar(cita: any): void {
+        this.citaService.getHorariosDisponibles().subscribe({
+            next: (horariosDisponibles) => {
+                const modalRef = this.modalService.open(ModalEditComponent, { size: 'lg' });
+                modalRef.componentInstance.citaSeleccionada = cita;
+                modalRef.componentInstance.horariosDisponibles = horariosDisponibles;
+
+                modalRef.result.then((resultado) => {
+                    if (resultado === 'guardado') {
+                        this.getCitasDelMedicoLogueado();
+                    }
+                }).catch(() => { });
+            }
+        });
     }
 }

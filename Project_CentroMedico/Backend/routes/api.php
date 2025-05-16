@@ -75,13 +75,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
+        
+        
     });
     
     //Rutas que solo los administradores y médicos pueden acceder
     Route::middleware(['role:Administrador|Medico'])->group(function () {
         Route::get('citas', [CitasController::class, 'index']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
-        Route::put('/citas/{cita}', [CitasController::class, 'update']);
+        Route::put('/citas/{cita}', [CitasController::class, 'updateHoy']);
+        Route::put('citas/{cita}/cancelar', [CitasController::class, 'cancelarCita']);
+        Route::get('pacientes/medico/listar', [PacientesController::class, 'pacientesByMedico']);//Listar pacientes por id_medico
+        
     });
     
 
@@ -92,10 +97,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
-        Route::get('medicos/{medico}/citas', [CitasController::class, 'citasPorMedico']);
-        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);
-        Route::get('medicos/perfil' , [MedicosController::class, 'medicoLogueado']);
-        Route::get('medicos/{medico}/citas/dia/{fecha}' , [CitasController::class, 'citasPorDiaMedico']);
+        Route::get('medicos/medico/citas', [CitasController::class, 'citasPorMedicoLogueado']);//corregir la función citasPorMedico
+        Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);//correcto
+        Route::get('medicos/perfil/yo' , [MedicosController::class, 'medicoLogueado']);//correcto
+        Route::get('/citas/horarios-disponibles', [CitasController::class, 'horariosDisponiblesMedico']);//buscar las horas disponibles para un medico logueado en una fecha
     });
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {

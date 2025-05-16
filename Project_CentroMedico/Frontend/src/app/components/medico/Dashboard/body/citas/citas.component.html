@@ -1,89 +1,93 @@
 <div class="container-citas">
     <div class="header-citas">
-        <h2 class="text-xl font-semibold mb-2">
-            Citas del {{ mostrar === 'hoy' ? 'día de hoy' : 'día de mañana' }}
-        </h2>
-        <button (click)="cambiarDia()" class="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Ver {{ mostrar === 'hoy' ? 'mañana' : 'hoy' }}
-        </button>
-        <app-modal-create #modal></app-modal-create>
+        <app-modal-edit
+            (citaCreada)="getCitasDelMedicoLogueado()"
+            #modal
+        ></app-modal-edit>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
-            <input type="text" id="fecha-desde" placeholder="" />
+            <input type="date" id="fecha-desde" [(ngModel)]="fechaDesde" (change)="filtrarPorFechas()" />
             <label for="fecha-hasta">Fecha hasta:</label>
-            <input type="text" id="fecha-hasta" placeholder="" />
+            <input type="date" id="fecha-hasta" [(ngModel)]="fechaHasta" (change)="filtrarPorFechas()" />
         </div>
         <div id="contenedor-busqueda">
-            <input type="text" placeholder="Búsqueda..." />
+            <input type="text" placeholder="Búsqueda..." (input)="aplicarFiltro($event)" />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
-    <table mat-table [dataSource]="citasDataSource" matSort class="mat-elevation-z8">
+
+    <table
+        mat-table
+        [dataSource]="citasDataSource"
+        matSort
+        class="mat-elevation-z8"
+    >
+        <!-- ID -->
         <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>Id</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.id }}</td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.id_paciente }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="contrato_id">
-            <th mat-header-cell *matHeaderCellDef>Nº Contrato</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.contrato_id }}</td>
+        <!-- Paciente -->
+        <ng-container matColumnDef="nombre_paciente">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Paciente</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.paciente?.nombre }} {{ cita.paciente?.apellidos }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="paciente">
-            <th mat-header-cell *matHeaderCellDef>Paciente</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.paciente}}</td>
+        <!-- DNI -->
+        <ng-container matColumnDef="dni">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.paciente?.dni }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="cliente">
-            <th mat-header-cell *matHeaderCellDef>Nombre empresa</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.cliente }}</td>
+        <!-- Médico -->
+        <ng-container matColumnDef="nombre_medico">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Médico</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.medico?.nombre }} {{ cita.medico?.apellidos }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="dni_paciente">
-            <th mat-header-cell *matHeaderCellDef>DNI</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.dni_paciente ?? '-' }}</td>
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.fecha_hora_cita | date : "dd-MM-yyyy" }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="medico">
-            <th mat-header-cell *matHeaderCellDef>Médico</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.medico}}</td>
+        <!-- Hora -->
+        <ng-container matColumnDef="hora">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.fecha_hora_cita | date : "HH:mm" }}</td>
         </ng-container>
 
+        <!-- Estado -->
         <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
             <td mat-cell *matCellDef="let cita">{{ cita.estado }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="fecha">
-            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <!-- Observaciones -->
+        <ng-container matColumnDef="observaciones">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Observaciones</th>
             <td mat-cell *matCellDef="let cita">
-                {{ cita.fecha | date : "dd-MM-yyyy" }}
+                <abbr [title]="cita.observaciones || 'Sin observaciones'"
+                    >Ver observación</abbr
+                >
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="hora">
-            <th mat-header-cell *matHeaderCellDef>Hora</th>
-            <td mat-cell *matCellDef="let cita">
-                {{ cita.fecha | date : "HH:mm" }}
-            </td>
-        </ng-container>
-
+        <!-- Acciones -->
         <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
             <td mat-cell *matCellDef="let cita">
-                <button (click)="modal.open()" id="edit-button">
-                    Modificar
+                <button class="btn btn-sm btn-outline-primary" (click)="abrirModalEditar(cita) " id="edit-button"><i class="bi bi-pencil-square"></i></button>
+                <button id="delete-button">
+                    <i class="bi bi-trash-fill"></i>
                 </button>
-                <button id="delete-button">Eliminar</button>
             </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-    <div *ngIf="!loading && citas.length === 0" class="no-citas-msg">
-        No hay citas programadas.
-    </div>
 
     <mat-paginator
         [length]="citasDataSource.data.length"

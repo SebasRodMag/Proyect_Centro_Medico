@@ -107,4 +107,19 @@ class PacientesController extends Controller
         $pacientes = Paciente::onlyTrashed()->get();
         return response()->json($pacientes, 200);
     }
+
+    //listar los pacientes de un medico logueado
+    public function pacientesByMedico(Request $request){
+        $user = Auth::user();
+        $medico = Medico::where('id', $user->id)->first();
+
+        if (!$medico) {
+            return response()->json(['message' => 'Médico no encontrado'], 404);
+        }
+        if( $medico->rol !== 'medico'){
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+        $pacientes = Paciente::where('id_medico', medico)->get();
+        return response()->json($pacientes, 200);
+    }
 }

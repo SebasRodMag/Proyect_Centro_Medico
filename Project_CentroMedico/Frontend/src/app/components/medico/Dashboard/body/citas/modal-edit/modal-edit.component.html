@@ -1,0 +1,15 @@
+<h3>Editar cita</h3>
+
+<form (ngSubmit)="guardar()">
+    <label for="hora">Hora:</label>
+    <select id="hora" [(ngModel)]="citaModificada.hora" name="hora">
+        <option *ngFor="let hora of horariosDisponibles" [value]="hora">
+            {{ hora }}
+        </option>
+    </select>
+
+    <div class="mt-3 d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>

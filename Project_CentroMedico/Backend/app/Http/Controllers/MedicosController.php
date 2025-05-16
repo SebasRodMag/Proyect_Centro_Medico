@@ -102,5 +102,23 @@ class MedicosController extends Controller
      * Devuelve el nombre y el apellido del médico autenticado
      * @throws \Illuminate\Auth\AuthenticationException
      */
+    //Función para devolver el medico logueado
+    public function medicoLogueado(Request $request)
+    {
+        $user = Auth::user();
+        $medico = Medico::where('id', $user->id)->first();
+
+        if (!$medico) {
+            return response()->json(['message' => 'Médico no encontrado'], 404);
+        }
+
+        return response()->json([
+            'nombre' => $medico->nombre,
+            'apellidos' => $medico->apellidos,
+            'dni' => $medico->dni,
+            'email' => $user->email,
+            'id' => $medico->id,
+        ], 200);
+    }
     
 }

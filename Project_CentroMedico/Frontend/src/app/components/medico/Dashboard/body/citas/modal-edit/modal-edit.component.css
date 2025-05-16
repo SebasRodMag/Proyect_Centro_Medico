@@ -1,0 +1,15 @@
+.modal-title {
+    font-size: 1.5rem;
+    text-align: center;
+    width: 100%;
+}
+
+.modal-body {
+    padding-top: 0;
+}
+
+.btn-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}

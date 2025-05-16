@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -17,29 +19,14 @@ export class CitaService {
         });
     }
 
-    getCitasPorMedico(
-        medicoId: number,
-        page: number = 1,
-        pageSize: number = 10,
-        mostrar: 'hoy' | 'mañana',
-        fecha?: string
-        ): Observable<Response> {
-        let params = new HttpParams()
-            .set('page', page.toString())
-            .set('pageSize', pageSize.toString())
-            .set('mostrar', mostrar);
-            
-
-        if (fecha) {
-            params = params.set('fecha', fecha);
-        }
-
-        const apiUrl = `${this.apiUrl}/medicos/${medicoId}/citas`;
-        return this.http.get<Response>(apiUrl, {
-            params,
-            headers: this.getAuthHeaders(),
-        });
-    }
+// Elimina este método o implementa correctamente la lógica para obtener las citas del médico.
+// Si necesitas obtener las citas del médico, crea un método que haga una petición HTTP similar a los otros métodos.
+// Por ejemplo:
+getCitasDelMedico(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/medicos/medico/citas`, {
+        headers: this.getAuthHeaders(),
+    });
+}
 
     getCitasPorDia(fecha: string): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}/citas/dia/${fecha}`, {
@@ -62,6 +49,12 @@ export class CitaService {
             {
                 headers: this.getAuthHeaders(),
             }
+            //mostrar un console.log para ver si se obtiene la respuesta correcta
+        ).pipe(
+            tap((response) => {
+                console.log('Citas del paciente:', response);
+            })
+            
         );
     }
 
@@ -84,7 +77,7 @@ export class CitaService {
         });
     }
 
-    //obtener el medico logueado a traves de la función me de auth.service.ts
+    //obtener el medico logueado a traves de la función me de auth.service.ts 
     getMedicoLogueado(): Observable<any> {
         return this.http.get(`${this.apiUrl}/auth/me`, {
             headers: this.getAuthHeaders(),
@@ -96,4 +89,18 @@ export class CitaService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    getHorariosDisponibles(): Observable<string[]> {
+        return this.http.get<string[]>(
+            `${this.apiUrl}citas/horarios-disponibles`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
+
+    actualizarCita(id: number, datos: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}citas/${id}`, datos, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }
+

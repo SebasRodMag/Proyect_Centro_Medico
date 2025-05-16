@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Cita;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use App\Models\Medico;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class CitasController extends Controller
 {
@@ -45,14 +47,14 @@ class CitasController extends Controller
 
     public function horarios() {}
 
-    public function update(Request $request, $id)
+    public function updateHoy(Request $request, $id)
     {
         $request->validate([
             'fecha_hora_cita' => 'date',
 
             // ---- Campos para guardar hora real que ha iniciado y acabado la cita ----
-            // 'fecha_hora_inicio' => 'date',
-            // 'fecha_hora_fin' => 'date|after:fecha_hora_inicio',
+            'fecha_hora_inicio' => 'date',
+            'fecha_hora_fin' => 'date|after:fecha_hora_inicio',
             'id_paciente' => 'integer|exists:pacientes,id',
             'id_medico' => 'integer|exists:medicos,id',
             'id_contrato' => 'integer|exists:users,id',
@@ -62,12 +64,56 @@ class CitasController extends Controller
         if ($request->has('fecha_hora_cita')) {
             $cita->fecha_hora_cita = $request->fecha_hora_cita;
         }
-        // if($request->has('fecha_hora_inicio')){
-        //     $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
-        // }
-        // if($request->has('fecha_hora_fin')){
-        //     $cita->fecha_hora_fin = $request->fecha_hora_fin;
-        // }
+        if($request->has('fecha_hora_inicio')){
+            $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
+        }
+        if($request->has('fecha_hora_fin')){
+            $cita->fecha_hora_fin = $request->fecha_hora_fin;
+        }
+        if ($request->has('id_paciente')) {
+            $cita->id_paciente = $request->id_paciente;
+        }
+        if ($request->has('id_medico')) {
+            $cita->id_medico = $request->id_medico;
+        }
+        if ($request->has('id_contrato')) {
+            $cita->id_contrato = $request->id_contrato;
+        }
+        if ($request->has('fecha_hora_cita')) {
+            $nuevaFecha = Carbon::parse($request->fecha_hora_cita)->toDateString();
+            $hoy = Carbon::now()->toDateString();
+            if ($nuevaFecha !== $hoy) {
+                return response()->json(['message' => 'Solo se pueden modificar citas del día actual'], 403);
+            }
+            $cita->fecha_hora_cita = $request->fecha_hora_cita;
+        }
+        $cita->save();
+        return response()->json(['message' => 'Cita actualizada con éxito'], 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'fecha_hora_cita' => 'date',
+
+            // ---- Campos para guardar hora real que ha iniciado y acabado la cita ----
+            'fecha_hora_inicio' => 'date',
+            'fecha_hora_fin' => 'date|after:fecha_hora_inicio',
+            'id_paciente' => 'integer|exists:pacientes,id',
+            'id_medico' => 'integer|exists:medicos,id',
+            'id_contrato' => 'integer|exists:users,id',
+        ]);
+
+        $cita = Cita::findOrFail($id);
+        if ($request->has('fecha_hora_cita')) {
+            $cita->fecha_hora_cita = $request->fecha_hora_cita;
+        }
+        if($request->has('fecha_hora_inicio')){
+            $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
+        }
+        if($request->has('fecha_hora_fin')){
+            $cita->fecha_hora_fin = $request->fecha_hora_fin;
+        }
         if ($request->has('id_paciente')) {
             $cita->id_paciente = $request->id_paciente;
         }
@@ -80,6 +126,8 @@ class CitasController extends Controller
         $cita->save();
         return response()->json(['message' => 'Cita actualizada con éxito'], 200);
     }
+
+
 
     // public function destroy($id){
     //     $cita = Cita::findOrFail($id);
@@ -164,49 +212,23 @@ class CitasController extends Controller
         return response()->json($citas, 200);
     }
 
-    // Función para mostrar las citas que tiene el medico logueado paginada de a 10
+public function citasPorMedicoLogueado()
+{
+    $user = Auth::user();
+    $medico = $user->medico;
 
-    public function citasPorMedico(Request $request, $medicoId)
-    {
-        $pageSize = $request->query('pageSize', 10);
-        $page = $request->query('page', 1);
-        $mostrar = $request->query('mostrar'); // puede ser 'hoy' o 'mañana'
-
-        $fecha = match ($mostrar) {
-            'mañana' => now()->addDay()->toDateString(),
-            default => now()->toDateString(),
-        };
-
-        $query = Cita::whereHas('contrato', function ($q) use ($medicoId) {
-            $q->where('medico_id', $medicoId);
-        })
-        ->with(['contrato.cliente', 'medico', 'paciente.usuario'])
-        ->whereDate('fecha_hora_cita', $fecha);
-
-        $citas = $query->paginate($pageSize, ['*'], 'page', $page);
-
-        $citasFormateadas = $citas->getCollection()->map(function ($cita) {
-            $cliente = $cita->contrato->cliente ?? null;
-            $paciente = $cita->paciente->usuario ?? null;
-            $medico = $cita->medico ?? null;
-
-            return [
-                'id' => $cita->id,
-                'contrato_id' => $cita->contrato->id ?? null,
-                'paciente' => $cita->paciente ? $cita->paciente->nombre . ' ' . $cita->paciente->apellidos : null,
-                'dni_paciente' => $cita->paciente->dni ?? null,
-                'fecha' => $cita->fecha_hora_cita,
-                'cliente' => $cliente->razon_social ?? null,
-                'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
-                'estado' => $cita->estado,
-            ];
-        });
-
-        return response()->json([
-            'total' => $citas->total(),
-            'data' => $citasFormateadas,
-        ], 200);
+    if (!$medico) {
+        return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
     }
+
+    $citas = $medico->citas()->with(['paciente', 'medico'])->get();
+
+    return response()->json($citas, 200);
+}
+
+
+
+
 
     //implementar la función para mostrar las citas de un médico
     public function citasPorDia($fecha)
@@ -266,4 +288,30 @@ class CitasController extends Controller
             'horas_disponibles' => array_values($horasDisponibles),
         ], 200);
     }
+
+    public function horariosDisponiblesMedico(Request $request)
+    {
+        $id_medico = Auth::user()->id;
+        $fecha = Carbon::now()->toDateString(); // yyyy-mm-dd
+
+        $inicio = Carbon::parse("$fecha 08:00:00");
+        $fin = Carbon::parse("$fecha 15:00:00");
+
+        $intervalos = [];
+        while ($inicio < $fin) {
+            $intervalos[] = $inicio->format('H:i');
+            $inicio->addMinutes(5);
+        }
+
+        $citas = Cita::where('id_medico', $id_medico)
+                    ->whereDate('fecha_hora_cita', $fecha)
+                    ->pluck('fecha_hora_cita')
+                    ->map(fn($c) => Carbon::parse($c)->format('H:i'))
+                    ->toArray();
+
+        $disponibles = array_values(array_diff($intervalos, $citas));
+
+        return response()->json($disponibles);
+    }
+
 }
