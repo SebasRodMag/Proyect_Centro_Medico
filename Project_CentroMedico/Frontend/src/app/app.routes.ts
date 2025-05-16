@@ -134,7 +134,25 @@ export const routes: Routes = [
     {
         path: 'cliente/dashboard/home',
         loadComponent: () =>import('./components/Cliente/Dashboard/body/home/home.component').then((m) => m.HomeComponent),
-        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: 'Cliente' },
+    },
+    {
+        path: 'cliente/dashboard/citas',
+        loadComponent: () =>import('./components/Cliente/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: 'Cliente' },
+    },
+    {
+        path: 'cliente/dashboard/pacientes',
+        loadComponent: () =>import('./components/Cliente/Dashboard/body/pacientes/pacientes.component').then((m) => m.PacientesComponent),
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: 'Cliente' },
+    },
+    {
+        path: 'cliente/dashboard/contratos',
+        loadComponent: () =>import('./components/Cliente/Dashboard/body/contratos/contratos.component').then((m) => m.ContratosComponent),
+        canActivate: [AuthGuard, RoleGuard],
         data: { role: 'Cliente' },
     },
     // Ruta por defecto, si no se encuentra ninguna ruta

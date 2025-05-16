@@ -50,9 +50,9 @@
                             </div>
                         </div>
                     </div>
-                    <div id="boton-registrar">
-                        <button type="submit" id="registrar">Registrar</button>
-                    </div>
+                    <button type="submit" id="registrar">
+                        {{ isEditMode ? "Actualizar" : "Registrar" }}
+                    </button>
                 </div>
             </form>
         </div>

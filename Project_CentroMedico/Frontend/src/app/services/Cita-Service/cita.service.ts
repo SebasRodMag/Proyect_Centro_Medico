@@ -90,4 +90,10 @@ export class CitaService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    getCitasPorId($rol_id: any): Observable<any> {
+        return this.http.get(`http://localhost:8000/api/clientes/${$rol_id}/citas`,{
+            headers: this.getAuthHeaders(),
+        });
+    }
 }

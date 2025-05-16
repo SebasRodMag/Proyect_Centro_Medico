@@ -1,14 +1,15 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CitaService } from '../../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ModalCreateComponent } from './modal-create/modal-create.component';
+import { AuthService } from '../../../../../auth/auth.service';
 
 @Component({
     selector: 'app-citas',
-    standalone: true, // Si usas Standalone Component
+    standalone: true,
     imports: [
         CommonModule,
         ModalCreateComponent,
@@ -19,40 +20,46 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
-export class CitasComponent implements OnInit {
+export class CitasComponent implements OnInit, AfterViewInit {
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
-        'contrato_id',
-        'paciente',
-        'cliente',
-        'dni_paciente',
-        'medico',
-        'fecha',
-        'hora',
-        'acciones',
+        'id_paciente',
+        'id_medico',
+        'id_contrato',
+        'fecha_hora_cita',
+        'estado',
+        'observaciones',
+        'acciones'
     ];
 
-    @ViewChild(MatPaginator)
-    paginator: MatPaginator = new MatPaginator();
-    @ViewChild(MatSort)
-    sort: MatSort = new MatSort();
+    rol_id!: number;
 
-    constructor(private citaService: CitaService) {}
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
+
+    constructor(
+        private citaService: CitaService,
+        private authService: AuthService
+    ) {}
 
     ngOnInit(): void {
-        this.getCitas();
+        this.authService
+            .me()
+            .subscribe((response: { user: { rol_id: number } }) => {
+                this.rol_id = response.user.rol_id;
+                this.getCitasPorIdRol(this.rol_id);
+            });
     }
 
-    getCitas() {
-        this.citaService.getCitas().subscribe(
-            (data) => {
-                console.log('Citas: ', data);
-                this.citasDataSource.data = data.citas;
-                this.citasDataSource.paginator = this.paginator;
-                this.citasDataSource.sort = this.sort;
-            },
-            (error) => console.error('Error al obtener las citas', error)
-        );
+    ngAfterViewInit(): void {
+        this.citasDataSource.paginator = this.paginator;
+        this.citasDataSource.sort = this.sort;
+    }
+
+    getCitasPorIdRol(rol_id: number): void {
+        this.citaService.getCitasPorId(rol_id).subscribe((response) => {
+            this.citasDataSource.data = response.citas;
+        });
     }
 }

@@ -72,8 +72,8 @@
             <th mat-header-cell *matHeaderCellDef>F. Inicio</th>
             <td mat-cell *matCellDef="let cliente">
                 {{
-                    contratosVigentes[cliente.id]?.contrato?.fecha_inicio
-                        ? (contratosVigentes[cliente.id].contrato.fecha_inicio
+                    contratosVigentes[cliente.id]?.fecha_inicio
+                        ? (contratosVigentes[cliente.id].fecha_inicio
                           | date : "dd/MM/yyyy")
                         : "-"
                 }}
@@ -84,8 +84,8 @@
             <th mat-header-cell *matHeaderCellDef>F. Fin</th>
             <td mat-cell *matCellDef="let cliente">
                 {{
-                    contratosVigentes[cliente.id]?.contrato?.fecha_fin
-                        ? (contratosVigentes[cliente.id].contrato.fecha_fin
+                    contratosVigentes[cliente.id]?.fecha_fin
+                        ? (contratosVigentes[cliente.id].fecha_fin
                           | date : "dd/MM/yyyy")
                         : "-"
                 }}

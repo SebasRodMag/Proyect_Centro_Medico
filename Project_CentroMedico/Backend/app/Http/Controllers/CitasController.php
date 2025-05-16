@@ -97,6 +97,29 @@ class CitasController extends Controller
                 ?? $cita->paciente->cliente
                 ?? $cita->contrato->cliente;
 
+            // Valor por defecto si no hay contrato
+            $numeroDeCita = null;
+
+            if ($cita->contrato && $cliente) {
+                $contrato = $cita->contrato;
+                $totalReconocimientos = $contrato->numero_reconocimientos;
+
+                // Obtener todas las citas del contrato ordenadas por fecha
+                $citasContrato = Cita::where('id_contrato', $contrato->id)
+                    ->orderBy('fecha_hora_cita')
+                    ->get();
+
+                // Encontrar la posición de esta cita
+                $posicion = $citasContrato->search(function ($c) use ($cita) {
+                    return $c->id === $cita->id;
+                });
+
+                if ($posicion !== false) {
+                    // Sumamos 1 porque search devuelve índice 0-based
+                    $numeroDeCita = ($posicion + 1) . '/' . $totalReconocimientos;
+                }
+            }
+
             return [
                 'id' => $cita->id,
                 'contrato_id' => $cita->contrato->id ?? null,
@@ -105,6 +128,7 @@ class CitasController extends Controller
                 'fecha' => $cita->fecha_hora_cita,
                 'cliente' => $cliente->razon_social ?? null,
                 'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
+                'numero_de_cita' => $numeroDeCita, // e.g., "3/80"
             ];
         });
 
@@ -112,6 +136,8 @@ class CitasController extends Controller
             'citas' => $citasFormateadas,
         ], 200);
     }
+
+
 
 
     public function show($id)

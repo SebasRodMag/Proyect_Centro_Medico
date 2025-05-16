@@ -22,5 +22,5 @@ import { AuthGuard } from './auth/auth.guard';
   providers: [AuthGuard]
 })
 export class AppComponent {
-  title = 'Frontend';
+  title = 'Centro Médico';
 }

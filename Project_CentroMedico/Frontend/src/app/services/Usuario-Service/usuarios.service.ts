@@ -23,9 +23,21 @@ export class UsuariosService {
         });
     }
 
+    getUsuarioById(usuarioId: number): Observable<any>{
+        return this.http.get(`${this.usuariosUrl}/${usuarioId}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
     crearUsuario(userData: { email: string; password: string; rol: string; }): Observable<any> {
         return this.http.post<any>(this.usuariosUrl, userData, {
-            headers: this.getAuthHeaders(), // Pass the headers here
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    actualizarUsuario(usuarioId: number, userData: { email: string; password: string; rol: string; }): Observable<any> {
+        return this.http.put<any>(this.usuariosUrl, userData, {
+            headers: this.getAuthHeaders(),
         });
     }
 }

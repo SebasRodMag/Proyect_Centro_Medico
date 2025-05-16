@@ -24,6 +24,7 @@ class MedicosController extends Controller
         }
 
         $medico = new Medico();
+        $medico->email = $request->email;
         $medico->nombre = $request->nombre;
         $medico->apellidos = $request->apellidos;
         $medico->dni = $request->dni;
