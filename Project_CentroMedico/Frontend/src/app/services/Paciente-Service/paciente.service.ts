@@ -17,9 +17,15 @@ export class PacienteService {
         });
     }
 
-    getPacientesDelCliente(clienteId: string): Observable<any[]> {
+    getPacientesDelCliente(clienteId: number): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/${clienteId}/pacientes`, {
             headers: this.getAuthHeaders(),
         });
+    }
+
+    createPaciente(pacienteData: any, clienteId: string): Observable<any>{
+        return this.http.post<any>(`${this.apiUrl}/${clienteId}/pacientes`, pacienteData, {
+            headers: this.getAuthHeaders(),
+        })
     }
 }

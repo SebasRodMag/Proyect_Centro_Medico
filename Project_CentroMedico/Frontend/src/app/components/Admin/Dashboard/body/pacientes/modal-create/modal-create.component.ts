@@ -22,4 +22,6 @@ export class ModalCreateComponent {
         this.isVisible = false;
         this.closed.emit();
     }
+
+    
 }

@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { AuthService } from '../../../../../auth/auth.service';
+import { data } from 'jquery';
 
 @Component({
     selector: 'app-pacientes',
@@ -17,10 +19,10 @@ export class PacientesComponent implements OnInit, AfterViewInit {
     pacientes: any[] = [];
     clienteId!: string;
     clienteNombre: string = '';
+    rol_id!: string;
 
     displayedColumns = [
         'id',
-        'cliente',
         'nombreCompleto',
         'dni',
         'email',
@@ -32,18 +34,21 @@ export class PacientesComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
+    
 
     constructor(
         private clienteService: ClienteService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute, 
+        private authService: AuthService,
     ) {}
 
     ngOnInit(): void {
-        this.route.params.subscribe((params) => {
-            this.clienteId = params['id_cliente'];
-            console.log('Cliente ID:', this.clienteId);
-            this.getPacientes();
-        });
+        this.authService
+            .me()
+            .subscribe((response: { user: { rol_id: string } }) => {
+                this.rol_id = response.user.rol_id;
+                this.getPacientes(this.rol_id);
+            });
     }
 
     ngAfterViewInit(): void {
@@ -51,8 +56,8 @@ export class PacientesComponent implements OnInit, AfterViewInit {
         this.pacientesDataSource.sort = this.sort;
     }
 
-    getPacientes(): void {
-        this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(
+    getPacientes(rol_id:string): void {
+        this.clienteService.getPacientesDelCliente(this.rol_id).subscribe(
             (data: any) => {
                 this.pacientes = data.pacientes;
                 this.clienteNombre = data.cliente;
@@ -64,8 +69,7 @@ export class PacientesComponent implements OnInit, AfterViewInit {
         );
     }
 
-    eliminarPaciente(id: number) {
-        // Aquí puedes agregar la lógica para eliminar paciente
-        console.log('Eliminar paciente con id:', id);
+    eliminarPaciente(pacienteId: number) {
+        console.log('Eliminar paciente con id:', pacienteId);
     }
 }

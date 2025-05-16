@@ -45,29 +45,33 @@
     height: 18px;
 }
 
-#tabla-medicos{
+table{
     margin-top: 10px;
     width: 100%;
 }
-
-#tabla-medicos th{
-    background-color: #376AA8;
-    color: white;
-    padding: 10px 0 10px 0;
-}
-
-#tabla-medicos th,td{
-    font-size: 12px;
+table th, table td{
     text-align: center;
 }
 
-#tabla-medicos tr:nth-child(odd){
-    background-color: #fff;
-}
-#tabla-medicos tr:nth-child(even){
-    background-color: #376aa860;
+mat-paginator {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
-#tabla-medicos th:last-child,td:last-child{
-    border-right: 0;
+mat-paginator .mat-paginator-range-label {
+    font-size: 7px;
+}
+
+mat-paginator button {
+    font-size: 7px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+mat-paginator button:hover {
+    background-color: #45a049;
 }

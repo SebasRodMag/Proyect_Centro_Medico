@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //Contratos
         Route::get('contratos', [ContratosController::class, 'index']);
         Route::post('contratos', [ContratosController::class, 'store']);
-        Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
+        // Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         Route::get('clientes/pacientes/cif/{cif}', [ClientesController::class, 'pacientesByCIF']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
@@ -67,13 +67,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:Administrador|Cliente'])->group(function () {
         Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::put('clientes/{cliente}', [ClientesController::class, 'update']);
-        Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratos']);
+        Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ContratosController::class, 'contratoVigente']);
         // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
         Route::get('clientes/{id_cliente}/pacientes', [ClientesController::class, 'pacientes']);
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
+        Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
     });
     
     //Rutas que solo los administradores y médicos pueden acceder

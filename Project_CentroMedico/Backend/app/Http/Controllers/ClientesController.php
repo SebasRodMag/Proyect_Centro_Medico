@@ -8,6 +8,7 @@ use App\Models\Paciente;
 use App\Models\Cita;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ClientesController extends Controller
@@ -218,7 +219,10 @@ class ClientesController extends Controller
         if ($pacientes->isEmpty()) {
             return response()->json(['message' => 'Este cliente no tiene pacientes asociados.'], 200);
         }
-
+        $pacientes->transform(function ($paciente) {
+            $paciente->nombre_paciente = $paciente->nombre . ' ' . $paciente->apellidos;
+            return $paciente;
+        });
         // Retornar la lista de pacientes
         return response()->json([
             'cliente' => $cliente->razon_social,
@@ -229,29 +233,29 @@ class ClientesController extends Controller
     //Función para buscar citas por cliente
     public function citas($id)
     {
-        $user = Auth::user();
-
-        if (!$user || !$user->hasRole(['Cliente', 'Administrador'])) {
-            return response()->json(['message' => 'No autorizado'], 403);
-        }
-        // Buscar el cliente por ID
         $cliente = Cliente::find($id);
 
-        // Si el cliente no existe
         if (!$cliente) {
-            return response()->json([
-                'error' => 'Cliente no encontrado.'
-            ], 404);
+            return response()->json(['error' => 'Cliente no encontrado.'], 404);
         }
 
-        // Obtener todas las citas a través de los contratos asociados al cliente
         $citas = $cliente->contratos()
-            ->with('citas') // carga las citas de cada contrato
+            ->with(['citas.paciente', 'citas.medico'])
             ->get()
             ->pluck('citas')
-            ->flatten();
+            ->flatten()
+            ->map(function ($cita) {
+                $fechaHora = Carbon::parse($cita->fecha_hora_cita);
+                return [
+                    'id' => $cita->id,
+                    'fecha' => $fechaHora->toDateString(),
+                    'hora' => $fechaHora->format('H:i'),
+                    'observaciones' => $cita->observaciones,
+                    'nombre_paciente' => $cita->paciente->nombre . ' ' . $cita->paciente->apellidos,
+                    'nombre_medico' => $cita->medico->nombre . ' ' . $cita->medico->apellidos,
+                ];
+            });
 
-        // Si no hay citas
         if ($citas->isEmpty()) {
             return response()->json([
                 'cliente' => $cliente,
@@ -259,12 +263,13 @@ class ClientesController extends Controller
             ], 200);
         }
 
-        // Respuesta exitosa con datos
         return response()->json([
             'cliente' => $cliente,
             'citas' => $citas
         ], 200);
     }
+
+
 
     public function pacientesByCIF($cif)
     {
