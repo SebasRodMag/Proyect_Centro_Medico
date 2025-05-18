@@ -16,7 +16,6 @@ import  Swal from 'sweetalert2';
 @Component({
     selector: 'app-citas',
     standalone: true,
-    standalone: true,
     imports: [
         CommonModule,
         MatTableModule,
