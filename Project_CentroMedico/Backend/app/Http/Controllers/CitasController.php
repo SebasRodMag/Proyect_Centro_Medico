@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cita;
+use App\Models\Cliente;
+use App\Models\Contrato;
+use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Medico;
@@ -175,6 +178,7 @@ class CitasController extends Controller
                 'dni_paciente' => $cita->paciente ? $cita->paciente->dni : null,
                 'fecha' => $cita->fecha_hora_cita,
                 'cliente' => $cliente->razon_social ?? null,
+                'id_medico' => $cita->medico->id,
                 'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
                 'numero_de_cita' => $numeroDeCita, // e.g., "3/80"
             ];

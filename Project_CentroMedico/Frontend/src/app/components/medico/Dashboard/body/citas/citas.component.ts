@@ -16,6 +16,7 @@ import  Swal from 'sweetalert2';
 @Component({
     selector: 'app-citas',
     standalone: true,
+    standalone: true,
     imports: [
         CommonModule,
         MatTableModule,
@@ -31,6 +32,7 @@ import  Swal from 'sweetalert2';
 })
 export class CitasComponent implements OnInit, AfterViewInit {
     citasDataSource = new MatTableDataSource<any>();
+
     displayedColumns: string[] = [
         'id',
         'nombre_paciente',
@@ -262,3 +264,4 @@ export class CitasComponent implements OnInit, AfterViewInit {
         });
     }
 }
+

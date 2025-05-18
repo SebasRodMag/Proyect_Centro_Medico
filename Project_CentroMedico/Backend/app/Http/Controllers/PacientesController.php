@@ -38,6 +38,7 @@ class PacientesController extends Controller
         $paciente->email = $request->email;
         $paciente->id_cliente = $id_cliente;
         $paciente->id_usuario = $user->id;
+        $paciente->save();
         return response()->json(['message' => 'Paciente creado con éxito'], 201);
     }
 

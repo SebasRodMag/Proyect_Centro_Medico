@@ -4,24 +4,21 @@
             <button (click)="modal.open()">Registrar cliente</button>
         </div>
         <app-modal-create #modal></app-modal-create>
+
         <div id="contenedor-filtros">
             <label for="razon-social">Razón Social:</label>
             <input type="text" id="razon-social" placeholder="" />
             <label for="municipio">Municipio:</label>
             <input type="text" id="municipio" placeholder="" />
         </div>
+
         <div id="contenedor-busqueda">
             <input type="text" placeholder="Búsqueda..." />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
 
-    <table
-        mat-table
-        [dataSource]="clientesDataSource"
-        class="mat-elevation-z1"
-        matSort
-    >
+    <table mat-table [dataSource]="clientesDataSource" class="mat-elevation-z1" matSort>
         <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>Id</th>
             <td mat-cell *matCellDef="let cliente">{{ cliente.id }}</td>
@@ -30,9 +27,9 @@
         <ng-container matColumnDef="razon_social">
             <th mat-header-cell *matHeaderCellDef>Razón social</th>
             <td mat-cell *matCellDef="let cliente">
-                <a [routerLink]="['/admin/dashboard/clientes', cliente.id, 'pacientes']">{{
-                    cliente.razon_social
-                }}</a>
+                <a [routerLink]="['/admin/dashboard/clientes', cliente.id, 'pacientes']">
+                    {{ cliente.razon_social }}
+                </a>
             </td>
         </ng-container>
 
@@ -60,10 +57,7 @@
             <th mat-header-cell *matHeaderCellDef>Contrato</th>
             <td mat-cell *matCellDef="let cliente">
                 <a [routerLink]="['/admin/dashboard/clientes', cliente.id, 'contratos']">
-                    {{
-                        contratosVigentes[cliente.id]?.contrato?.id ??
-                            "Sin contrato"
-                    }}
+                    {{ cliente.contrato_vigente?.id ?? 'Sin contrato' }}
                 </a>
             </td>
         </ng-container>
@@ -72,9 +66,8 @@
             <th mat-header-cell *matHeaderCellDef>F. Inicio</th>
             <td mat-cell *matCellDef="let cliente">
                 {{
-                    contratosVigentes[cliente.id]?.fecha_inicio
-                        ? (contratosVigentes[cliente.id].fecha_inicio
-                          | date : "dd/MM/yyyy")
+                    cliente.contrato_vigente?.fecha_inicio
+                        ? (cliente.contrato_vigente.fecha_inicio | date : "dd/MM/yyyy")
                         : "-"
                 }}
             </td>
@@ -84,9 +77,8 @@
             <th mat-header-cell *matHeaderCellDef>F. Fin</th>
             <td mat-cell *matCellDef="let cliente">
                 {{
-                    contratosVigentes[cliente.id]?.fecha_fin
-                        ? (contratosVigentes[cliente.id].fecha_fin
-                          | date : "dd/MM/yyyy")
+                    cliente.contrato_vigente?.fecha_fin
+                        ? (cliente.contrato_vigente.fecha_fin | date : "dd/MM/yyyy")
                         : "-"
                 }}
             </td>
@@ -95,7 +87,7 @@
         <ng-container matColumnDef="reconocimientos">
             <th mat-header-cell *matHeaderCellDef>R. restantes</th>
             <td mat-cell *matCellDef="let cliente">
-                {{ contratosVigentes[cliente.id]?.reconocimientos_restantes ?? 'N/A' }}
+                {{ cliente.contrato_vigente?.reconocimientos_restantes ?? 'N/A' }}
             </td>
         </ng-container>
 
@@ -115,9 +107,5 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
-    <mat-paginator
-        [length]="clientes.length"
-        [pageSize]="5"
-        [pageSizeOptions]="[10, 20, 50]"
-    ></mat-paginator>
+    <mat-paginator [length]="clientes.length" [pageSize]="5" [pageSizeOptions]="[10, 20, 50]"></mat-paginator>
 </div>

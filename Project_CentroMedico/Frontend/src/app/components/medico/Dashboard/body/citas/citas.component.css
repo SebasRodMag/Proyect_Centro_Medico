@@ -59,9 +59,8 @@
     height: 18px;
 }
 
-#tabla-citas {
-    margin-top: 10px;
-    width: 100%;
+table th, table td{
+    text-align: start;
 }
 
 mat-header-cell{

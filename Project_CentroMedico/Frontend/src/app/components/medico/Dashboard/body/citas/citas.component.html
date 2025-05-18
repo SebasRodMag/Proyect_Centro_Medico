@@ -6,6 +6,7 @@
             <label for="fecha-hasta">Fecha hasta:</label>
             <input type="date" id="fecha-hasta" [(ngModel)]="fechaHasta" (change)="filtrarPorFechas()" />
         </div>
+
         <div id="contenedor-busqueda">
             <input type="text" placeholder="Búsqueda..." (input)="aplicarFiltro($event)" />
             <i class="bi bi-search" id="icono-search"></i>
