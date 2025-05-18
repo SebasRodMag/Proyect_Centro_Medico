@@ -86,7 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/citas/{cita}', [CitasController::class, 'updateHoy']);
         Route::put('citas/{cita}/cancelar', [CitasController::class, 'cancelarCita']);
         Route::get('pacientes/medico/listar', [PacientesController::class, 'pacientesByMedico']);//Listar pacientes por id_medico
-        
+        Route::delete('eliminar/cita/medico/{id}', [CitasController::class, 'eliminarCitaMedico']);//Eliminar(softDelete) la cita por un medico logueado
     });
     
 
@@ -100,7 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('medicos/medico/citas', [CitasController::class, 'citasPorMedicoLogueado']);//corregir la función citasPorMedico
         Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);//correcto
         Route::get('medicos/perfil/yo' , [MedicosController::class, 'medicoLogueado']);//correcto
-        Route::get('citasdisponibles', [CitasController::class, 'horariosDisponiblesMedico']);//buscar las horas disponibles para un medico logueado en una fecha
+        Route::get('citasdisponibles', [CitasController::class, 'obtenerHorasDisponiblesHoy']);//buscar las horas disponibles para un medico logueado en una fecha
     });
     //Rutas que solo los clientes pueden acceder
     Route::middleware(['role:Cliente'])->group(function () {

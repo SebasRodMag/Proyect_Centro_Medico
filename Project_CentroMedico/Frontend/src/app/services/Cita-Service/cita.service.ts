@@ -85,20 +85,40 @@ getCitasDelMedico(): Observable<any> {
     }
 
     getCitasPorId($rol_id: any): Observable<any> {
-        return this.http.get(`http://localhost:8000/api/clientes/${$rol_id}/citas`,{
+        return this.http.get(`${this.apiUrl}/clientes/${$rol_id}/citas`, {
             headers: this.getAuthHeaders(),
         });
+
     }
 
-    getHorariosDisponibles(): Observable<string[]> {
+/*     getHorariosDisponiblesParaHoy(): Observable<string[]> {
         return this.http.get<string[]>(
             `${this.apiUrl}/citasdisponibles`,
             { headers: this.getAuthHeaders() }
         );
-    }
+    } */
+
+    getHorariosDisponiblesParaHoy(): Observable<{ horas_disponibles: string[] }> {
+    return this.http.get<{ horas_disponibles: string[] }>(
+        `${this.apiUrl}/citasdisponibles`,
+        { headers: this.getAuthHeaders() }
+    );
+}
+
 
     actualizarCita(id: number, datos: any): Observable<any> {
-        return this.http.put(`${this.apiUrl}citas/${id}`, datos, {
+        return this.http.put(`${this.apiUrl}/citas/${id}`, datos, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    eliminarCita(id: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/eliminar/cita/medico/${id}`,
+        { headers: this.getAuthHeaders() }
+    )}
+
+    cambiarEstadoCita(id: number, datos: any) : Observable<any> {
+        return this.http.put(`${this.apiUrl}/citas/${id}/cancelar`, datos, {
             headers: this.getAuthHeaders(),
         });
     }
