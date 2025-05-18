@@ -23,7 +23,7 @@ export class CitaService {
 // Si necesitas obtener las citas del médico, crea un método que haga una petición HTTP similar a los otros métodos.
 // Por ejemplo:
 getCitasDelMedico(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/medicos/medico/citas`, {
+    return this.http.get<any>(`${this.apiUrl}/medico/medicos/citas`, {
         headers: this.getAuthHeaders(),
     });
 }

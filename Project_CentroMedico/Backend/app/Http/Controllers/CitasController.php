@@ -8,7 +8,6 @@ use App\Models\Contrato;
 use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\Medico;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
