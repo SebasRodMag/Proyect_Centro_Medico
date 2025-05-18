@@ -28,4 +28,11 @@ export class PacienteService {
             headers: this.getAuthHeaders(),
         })
     }
+
+    //Obtener los pacientes para el medico logueado
+    getPacientesDelMedicoLogueado(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}pacientes/medico/listar`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }
