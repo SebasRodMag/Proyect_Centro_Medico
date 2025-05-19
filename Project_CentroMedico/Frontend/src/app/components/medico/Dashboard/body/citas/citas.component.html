@@ -79,6 +79,7 @@
     <button
         class="boton-cambiar"
         id="edit-button"
+        [disabled]="cita.estado !== 'pendiente' || !esHoy(cita.fecha_hora_cita)"
         (click)="openModal(cita)"
         title="Cambiar hora de la cita"
     >
