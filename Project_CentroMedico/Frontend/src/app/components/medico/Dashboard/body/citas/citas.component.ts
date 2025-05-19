@@ -173,7 +173,7 @@ export class CitasComponent implements OnInit, AfterViewInit {
         hoy.getFullYear() === fechaCita.getFullYear() &&
         hoy.getMonth() === fechaCita.getMonth() &&
         hoy.getDate() === fechaCita.getDate()
-    );
+        );
     }
     eliminarCita(cita: any): void {
         if (cita.estado === 'realizada') {
