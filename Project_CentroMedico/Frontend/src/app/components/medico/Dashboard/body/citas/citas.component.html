@@ -79,6 +79,7 @@
     <button
         class="boton-cambiar"
         id="edit-button"
+        [disabled]="cita.estado !== 'pendiente' || !esHoy(cita.fecha_hora_cita)"
         (click)="openModal(cita)"
         title="Cambiar hora de la cita"
     >
@@ -86,14 +87,14 @@
     </button>
 
     <!-- Botón eliminar -->
-    <button
+<!--     <button
         class="boton-eliminar"
         id="delete-button"
         (click)="eliminarCita(cita)"
         title="Eliminar la cita"
     >
         <i class="bi bi-trash-fill"></i>
-    </button>
+    </button> -->
 
     <!-- Botón cambiar estado -->
     <button

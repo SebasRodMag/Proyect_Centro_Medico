@@ -260,6 +260,10 @@ public function citasPorMedicoLogueado()
     // Método para obtener las horas disponibles de un médico para un día
     public function horariosDisponibles(Request $request, $id_medico, $fecha)
     {
+        //verificar el formato de la fecha y la hora:
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+        return response()->json(['error' => 'Formato de fecha inválido. Se espera YYYY-MM-DD.'], 400);
+        }
         // Definir el rango de horas en el que se puede reservar (09:00 a 15:00)
         $horaInicio = Carbon::createFromFormat('Y-m-d H:i', "$fecha 09:00");
         $horaFin = Carbon::createFromFormat('Y-m-d H:i', "$fecha 15:00");

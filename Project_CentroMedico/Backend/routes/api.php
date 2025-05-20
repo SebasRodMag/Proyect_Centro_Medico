@@ -42,7 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('medicos/{medico}', [MedicosController::class, 'show']);
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
         Route::delete('medicos/{medico}', [MedicosController::class, 'destroy']);
-        Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
         
         
         Route::get('citas', [CitasController::class, 'index']);
@@ -88,6 +87,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
+        /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
+        Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
 
         Route::delete('citas/{id}', [CitasController::class, 'destroy']);
         

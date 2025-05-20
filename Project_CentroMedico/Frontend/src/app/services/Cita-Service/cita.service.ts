@@ -107,6 +107,13 @@ export class CitaService {
         );
     }
 
+    getHorariosDisponibles(id_medico: number, fecha: string): Observable<any> {
+        return this.http.get<{ horas_disponibles: string[] }>(
+            `${this.apiUrl}/horariosdisponibles/medico/${id_medico}/${fecha}`,
+            { headers: this.getAuthHeaders() 
+        });
+    }
+
     actualizarCita(id: number, datos: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/citas/${id}`, datos, {
             headers: this.getAuthHeaders(),
