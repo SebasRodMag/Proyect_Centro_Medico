@@ -25,9 +25,10 @@ button:hover{
     background-color: #009975;
     border: 0;
     border-radius: 5px;
-    color: white;
+    color: black;
 
 }
+
 
 #edit-button{
     background-color: #e0b227;
@@ -45,6 +46,15 @@ button:hover{
     padding: 5px 10px 5px 10px;
     margin-left: 10px;
 } */
+
+#estado-button{
+    background-color: #376cff;
+    color: rgba(0, 0, 0, 0.7);
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 5px 10px 5px 10px;
+    margin-left: 10px;
+}
 
 /* Spinner Container */
 .spinner-container {
@@ -111,3 +121,4 @@ button[disabled] {
 .boton-estado:hover {
     background-color: #fdd835;
 }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
