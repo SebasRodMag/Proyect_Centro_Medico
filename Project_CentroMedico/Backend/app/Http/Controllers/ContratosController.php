@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 
 class ContratosController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'fecha_inicio' => 'required|date',
             'numero_reconocimientos' => 'required|integer',
@@ -32,7 +33,8 @@ class ContratosController extends Controller
         return response()->json(['message' => 'Contrato creado con éxito'], 201);
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'fecha_inicio' => 'date',
             'numero_reconocimientos' => 'integer',
@@ -41,97 +43,103 @@ class ContratosController extends Controller
         ]);
 
         $contrato = Contrato::findOrFail($id);
-        if($request->has('fecha_inicio')){
+        if ($request->has('fecha_inicio')) {
             $contrato->fecha_inicio = Carbon::parse($request->fecha_inicio);
             $contrato->fecha_fin = $contrato->fecha_inicio->copy()->addYear();
         }
-        if($request->has('numero_reconocimientos')){
+        if ($request->has('numero_reconocimientos')) {
             $contrato->numero_reconocimientos = $request->numero_reconocimientos;
         }
-        if($request->has('autorenovacion')){
+        if ($request->has('autorenovacion')) {
             $contrato->autorenovacion = $request->autorenovacion;
         }
-        if($request->has('id_cliente')){
+        if ($request->has('id_cliente')) {
             $contrato->id_cliente = $request->id_cliente;
         }
         $contrato->save();
         return response()->json(['message' => 'Contrato actualizado con éxito'], 200);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $contrato = Contrato::findOrFail($id);
         $contrato->delete();
         return response()->json(['message' => 'Contrato eliminado con éxito'], 200);
     }
 
-    public function index(){
+    public function index()
+    {
         $contratos = Contrato::all();
         return response()->json($contratos, 200);
     }
 
-public function contratosPorCliente($id_cliente)
-{
-    // Obtén todos los contratos del cliente
-    $contratos = Contrato::where('id_cliente', $id_cliente)->get();
-    
-    // Si no hay contratos, devuelve una respuesta vacía
-    if ($contratos->isEmpty()) {
-        return response()->json(['message' => 'No contracts found'], 404);
+    public function contratosPorCliente($id_cliente)
+    {
+        // Obtén todos los contratos del cliente
+        $contratos = Contrato::where('id_cliente', $id_cliente)->get();
+
+        // Si no hay contratos, devuelve una respuesta vacía
+        if ($contratos->isEmpty()) {
+            return response()->json(['message' => 'No contracts found'], 404);
+        }
+
+        // Recorremos los contratos y obtenemos los datos
+        $contratosData = $contratos->map(function ($contrato) {
+            $cliente = $contrato->cliente;
+
+            return [
+                'contrato' => $contrato->id,
+                'empresa' => $cliente->razon_social,
+                'num_reconocimientos' => $contrato->numero_reconocimientos,
+                'reconocimientos_restantes' => $contrato->numero_reconocimientos - Cita::where('id_contrato', $contrato->id)->count(),
+                'fecha_inicio' => $contrato->fecha_inicio,
+                'fecha_fin' => $contrato->fecha_fin,
+            ];
+        });
+
+        // Devuelve el array de contratos
+        return response()->json([
+            'contratos' => $contratosData,
+        ], 200);
     }
 
-    // Recorremos los contratos y obtenemos los datos
-    $contratosData = $contratos->map(function($contrato) {
-        $cliente = $contrato->cliente;
 
-        return [
-            'contrato' => $contrato->id,
-            'empresa' => $cliente->razon_social,
-            'num_reconocimientos' => $contrato->numero_reconocimientos,
-            'reconocimientos_restantes' => $contrato->numero_reconocimientos - Cita::where('id_contrato', $contrato->id)->count(),
-            'fecha_inicio' => $contrato->fecha_inicio,
-            'fecha_fin' => $contrato->fecha_fin,
-        ];
-    });
-
-    // Devuelve el array de contratos
-    return response()->json([
-        'contratos' => $contratosData,
-    ], 200);
-}
-
-
-    public function show($id){
+    public function show($id)
+    {
         $contrato = Contrato::findOrFail($id);
         return response()->json($contrato, 200);
     }
 
-    public function showAllContratos(){
+    public function showAllContratos()
+    {
         $contratos = Contrato::withTrashed()->get();
         return response()->json($contratos, 200);
     }
 
-    public function showTrashedContratos(){
+    public function showTrashedContratos()
+    {
         $contratos = Contrato::onlyTrashed()->get();
         return response()->json($contratos, 200);
     }
 
 
-    public function contratoVigente($id_cliente){
+    public function contratoVigente($id_cliente)
+    {
         $unAnyoPrev = Carbon::now()->subYear();
         $cliente = Cliente::findOrFail($id_cliente);
 
-        if(!$cliente){
+        if (!$cliente) {
             return response()->json([
-                'message'=>'Cliente no encontrado',
+                'message' => 'Cliente no encontrado',
             ], 404);
         }
         $contratoVigente = Contrato::where('id_cliente', $cliente->id)
             ->where('fecha_inicio', '>=', $unAnyoPrev)
             ->orderByDesc('fecha_incio')->first();
 
-        if(!$contratoVigente){
+        if (!$contratoVigente) {
             return response()->json([
-                'message'=>'No hay contrato vigente para este cliente.',
+                'message' => 'No hay contrato vigente para este cliente.',
             ], 404);
         }
 
@@ -166,5 +174,4 @@ public function contratosPorCliente($id_cliente)
             'contrato' => $contrato
         ], 200);
     }
-
 }

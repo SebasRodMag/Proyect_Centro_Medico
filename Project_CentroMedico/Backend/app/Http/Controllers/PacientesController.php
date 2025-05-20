@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use App\Models\User;
+use App\Models\Auth;
+use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -49,11 +51,6 @@ class PacientesController extends Controller
             'apellidos' => 'string|max:255',
             'dni' => 'string|min:9|max:9',
             'fecha_nacimiento' => 'date',
-            'email' => 'email|max:255|unique:pacientes,email,' . $id,
-            // 'telefono' => 'string|max:15',
-            // 'direccion' => 'string|max:255',
-            'id_cliente' => 'integer|exists:clientes,id',
-            'id_usuario' => 'integer|exists:users,id',
         ]);
 
         $paciente = Paciente::findOrFail($id);
@@ -69,25 +66,17 @@ class PacientesController extends Controller
         if ($request->has('fecha_nacimiento')) {
             $paciente->fecha_nacimiento = $request->fecha_nacimiento;
         }
-        if ($request->has('email')) {
-            $paciente->email = $request->email;
-        }
-        if ($request->has('id_cliente')) {
-            $paciente->id_cliente = $request->id_cliente;
-        }
-        if ($request->has('id_usuario')) {
-            $paciente->id_usuario = $request->id_usuario;
-        }
         $paciente->save();
         return response()->json(['message' => 'Paciente actualizado con éxito'], 200);
     }
 
-    // public function destroy($id)
-    // {
-    //     $paciente = Paciente::findOrFail($id);
-    //     $paciente->delete();
-    //     return response()->json(['message' => 'Paciente eliminado con éxito'], 200);
-    // }
+    public function destroy($clienteId, $pacienteId)
+    {
+
+        $paciente = Paciente::findOrFail($pacienteId);
+        $paciente->delete();
+        return response()->json(['message' => 'Paciente eliminado con éxito'], 200);
+    }
 
     public function index(){
         $pacientes = Paciente::all();

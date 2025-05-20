@@ -19,7 +19,7 @@ button:hover{
     transition: all 0.2s ease-in-out;
 }
 
-#boton-registrar button{
+/* #boton-registrar button{
     width: 100%;
     padding: 10px 35px 10px 35px;
     background-color: #009975;
@@ -44,7 +44,7 @@ button:hover{
     border-radius: 3px;
     padding: 5px 10px 5px 10px;
     margin-left: 10px;
-}
+} */
 
 /* Spinner Container */
 .spinner-container {
@@ -70,3 +70,44 @@ button:hover{
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.boton-cambiar {
+    background-color: #69ff7a;
+}
+
+.boton-eliminar {
+    background-color: #ff7e68;
+}
+
+.boton-estado {
+    background-color: #fce14a;
+}
+
+.boton-cambiar,
+.boton-eliminar,
+.boton-estado {
+    border: 1px solid rgb(65, 62, 62);
+    color: black;
+    font-size: 16px;
+    padding: 7px;
+    border-radius: 5px;
+    margin-left: 2px;
+}
+
+.boton-cambiar:hover {
+    background-color: #4cd964;
+}
+
+.boton-eliminar:hover {
+    background-color: #e53935;
+}
+
+.boton-estado:hover {
+    background-color: #fdd835;
+}

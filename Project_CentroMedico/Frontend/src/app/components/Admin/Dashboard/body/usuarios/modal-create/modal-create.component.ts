@@ -61,7 +61,7 @@ export class ModalCreateComponent {
 
         if (this.isEditMode && this.usuarioId !== null) {
             this.usuarioService
-                .actualizarUsuario(this.usuarioId, userData)
+                .updateUsuario(this.usuarioId, userData)
                 .subscribe(
                     () => {
                         this.userEdited.emit();

@@ -35,4 +35,16 @@ export class PacienteService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    deletePaciente(clienteId:any,pacienteId: any): Observable<any>{
+        return this.http.delete<any[]>(`${this.apiUrl}/${clienteId}/pacientes/${pacienteId}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    updatePaciente( pacienteId: number, pacienteData: any) {
+        return this.http.put(`${this.apiUrl}/pacientes/${pacienteId}`, pacienteData, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }

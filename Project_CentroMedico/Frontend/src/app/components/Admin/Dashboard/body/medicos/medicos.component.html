@@ -3,17 +3,34 @@
         <div>
             <button (click)="modal.open()">Registrar médico</button>
         </div>
+        <!-- Modal de creación -->
         <app-modal-create #modal></app-modal-create>
 
         <div id="contenedor-filtros">
             <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" placeholder="" />
+            <input
+                type="text"
+                id="nombre"
+                [(ngModel)]="nombreFiltro"
+                (input)="applyFilters()"
+            />
+
             <label for="dni">DNI:</label>
-            <input type="text" id="dni" placeholder="" />
+            <input
+                type="text"
+                id="dni"
+                [(ngModel)]="dniFiltro"
+                (input)="applyFilters()"
+            />
         </div>
 
         <div id="contenedor-busqueda">
-            <input type="text" placeholder="Búsqueda..." (keyup)="applyFilter($event)" />
+            <input
+                type="text"
+                placeholder="Búsqueda..."
+                [(ngModel)]="busquedaGlobal"
+                (input)="applyFilters()"
+            />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
@@ -44,22 +61,35 @@
         <ng-container matColumnDef="fecha_inicio">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Inicio</th>
             <td mat-cell *matCellDef="let medico">
-                {{ medico.fecha_inicio ? (medico.fecha_inicio | date: 'dd/MM/yyyy') : '-' }}
+                {{
+                    medico.fecha_inicio
+                        ? (medico.fecha_inicio | date : "dd/MM/yyyy")
+                        : "-"
+                }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="fecha_fin">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Fin</th>
             <td mat-cell *matCellDef="let medico">
-                {{ medico.fecha_fin ? (medico.fecha_fin | date: 'dd/MM/yyyy') : '-' }}
+                {{
+                    medico.fecha_fin
+                        ? (medico.fecha_fin | date : "dd/MM/yyyy")
+                        : "-"
+                }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
             <td mat-cell *matCellDef="let medico">
-                <button id="edit-button"  (click)="modal.open(medico)"><i class="bi bi-pencil-square"></i></button>
-                <button id="delete-button"><i class="bi bi-trash-fill"></i></button>
+                <button class="boton-cambiar" (click)="modalEditarOpen(medico)">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+
+                <button class="boton-eliminar" (click)="eliminarMedico(medico)">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
             </td>
         </ng-container>
 

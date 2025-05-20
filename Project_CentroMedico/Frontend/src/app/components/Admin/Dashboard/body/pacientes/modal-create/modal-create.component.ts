@@ -15,6 +15,8 @@ export class ModalCreateComponent implements OnInit{
     isVisible = false;
 
     @Output() closed = new EventEmitter<void>();
+    @Output() pacienteCreado = new EventEmitter<void>();
+
 
     formData = {
         nombre: '',
@@ -62,6 +64,7 @@ export class ModalCreateComponent implements OnInit{
                 next: (res) => {
                     console.log('Paciente creado:', res);
                     this.close();
+                    this.pacienteCreado.emit();
                 },
                 error: (err) => {
                     console.error('Error al crear paciente:', err);

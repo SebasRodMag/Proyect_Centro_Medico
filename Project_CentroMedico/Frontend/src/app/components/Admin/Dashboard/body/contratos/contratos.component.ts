@@ -1,20 +1,52 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { ModalCreateComponent } from './modal-create/modal-create.component';
 import { ClienteService } from '../../../../../services/Cliente-Service/cliente.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
     selector: 'app-contratos',
-    imports: [ModalCreateComponent, CommonModule],
     templateUrl: './contratos.component.html',
     styleUrls: ['./contratos.component.css'],
+    standalone: true,
+    imports: [
+        ModalCreateComponent,
+        CommonModule,
+        FormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatIconModule,
+        MatButtonModule,
+        MatInputModule,
+        MatFormFieldModule,
+    ],
 })
-export class ContratosComponent {
-    contratos: any = [];
-    filteredContratos: any = [];
+export class ContratosComponent implements OnInit {
+    contratos: any[] = [];
+    filteredContratosDataSource = new MatTableDataSource<any>();
+    displayedColumns: string[] = [
+        'contrato',
+        'empresa',
+        'num_reconocimientos',
+        'reconocimientos_restantes',
+        'fecha_inicio',
+        'fecha_fin',
+        'acciones',
+    ];
     clienteId!: string;
     searchQuery: string = '';
+
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
 
     constructor(
         private clienteService: ClienteService,
@@ -24,50 +56,34 @@ export class ContratosComponent {
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.clienteId = params['id_cliente'];
-            console.log('Cliente ID:', this.clienteId);
             this.getContratos();
         });
     }
 
     getContratos() {
         this.clienteService.getContratos(this.clienteId).subscribe(
-            (data) => {
-                console.log('Contratos: ', data);
+            (data: any) => {
                 this.contratos = data.contratos;
-                this.filteredContratos = this.contratos; // Inicia con todos los contratos
+                this.filteredContratosDataSource.data = this.contratos;
+                this.filteredContratosDataSource.paginator = this.paginator;
+                this.filteredContratosDataSource.sort = this.sort;
             },
             (error) => console.error('Error al obtener los contratos', error)
         );
     }
 
-    // Filtra los contratos según la búsqueda
     filterContratos() {
-        if (this.searchQuery.trim() === '') {
-            this.filteredContratos = this.contratos;
-        } else {
-            this.filteredContratos = this.contratos.filter(
-                (contrato: any) =>
-                    contrato.contrato
-                        .toLowerCase()
-                        .includes(this.searchQuery.toLowerCase()) ||
-                    contrato.empresa
-                        .toLowerCase()
-                        .includes(this.searchQuery.toLowerCase())
-            );
-        }
+        const filterValue = this.searchQuery.trim().toLowerCase();
+        this.filteredContratosDataSource.filter = filterValue;
     }
 
-    // Método para eliminar un contrato
-    // deleteContrato(contratoId: number) {
-    //     // Aquí puedes llamar al servicio para eliminar el contrato
-    //     this.clienteService.deleteContrato(contratoId).subscribe(
-    //         (response) => {
-    //             console.log('Contrato eliminado con éxito', response);
-    //             this.getContratos(); // Actualiza la lista de contratos después de la eliminación
-    //         },
-    //         (error) => {
-    //             console.error('Error al eliminar el contrato', error);
-    //         }
-    //     );
-    // }
+    editarContrato(contrato: any) {
+        console.log('Editar contrato:', contrato);
+        // Aquí abrir modal editar
+    }
+
+    eliminarContrato(contrato: any) {
+        console.log('Eliminar contrato:', contrato);
+        // Aquí abrir confirmación y eliminar
+    }
 }

@@ -19,14 +19,14 @@ export class CitaService {
         });
     }
 
-// Elimina este método o implementa correctamente la lógica para obtener las citas del médico.
-// Si necesitas obtener las citas del médico, crea un método que haga una petición HTTP similar a los otros métodos.
-// Por ejemplo:
-getCitasDelMedico(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/medico/medicos/citas`, {
-        headers: this.getAuthHeaders(),
-    });
-}
+    // Elimina este método o implementa correctamente la lógica para obtener las citas del médico.
+    // Si necesitas obtener las citas del médico, crea un método que haga una petición HTTP similar a los otros métodos.
+    // Por ejemplo:
+    getCitasDelMedico(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/medico/medicos/citas`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 
     getCitasPorDia(fecha: string): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}/citas/dia/${fecha}`, {
@@ -44,18 +44,19 @@ getCitasDelMedico(): Observable<any> {
     }
 
     getCitasPorPaciente(pacienteId: number): Observable<any> {
-        return this.http.get<any>(
-            `${this.apiUrl}/pacientes/${pacienteId}/citas`,
-            {
-                headers: this.getAuthHeaders(),
-            }
-            //mostrar un console.log para ver si se obtiene la respuesta correcta
-        ).pipe(
-            tap((response) => {
-                console.log('Citas del paciente:', response);
-            })
-            
-        );
+        return this.http
+            .get<any>(
+                `${this.apiUrl}/pacientes/${pacienteId}/citas`,
+                {
+                    headers: this.getAuthHeaders(),
+                }
+                //mostrar un console.log para ver si se obtiene la respuesta correcta
+            )
+            .pipe(
+                tap((response) => {
+                    console.log('Citas del paciente:', response);
+                })
+            );
     }
 
     getCitas(): Observable<any> {
@@ -77,7 +78,7 @@ getCitasDelMedico(): Observable<any> {
         });
     }
 
-    //obtener el medico logueado a traves de la función me de auth.service.ts 
+    //obtener el medico logueado a traves de la función me de auth.service.ts
     getMedicoLogueado(): Observable<any> {
         return this.http.get(`${this.apiUrl}/auth/me`, {
             headers: this.getAuthHeaders(),
@@ -88,23 +89,23 @@ getCitasDelMedico(): Observable<any> {
         return this.http.get(`${this.apiUrl}/clientes/${$rol_id}/citas`, {
             headers: this.getAuthHeaders(),
         });
-
     }
 
-/*     getHorariosDisponiblesParaHoy(): Observable<string[]> {
+    /*     getHorariosDisponiblesParaHoy(): Observable<string[]> {
         return this.http.get<string[]>(
             `${this.apiUrl}/citasdisponibles`,
             { headers: this.getAuthHeaders() }
         );
     } */
 
-    getHorariosDisponiblesParaHoy(): Observable<{ horas_disponibles: string[] }> {
-    return this.http.get<{ horas_disponibles: string[] }>(
-        `${this.apiUrl}/citasdisponibles`,
-        { headers: this.getAuthHeaders() }
-    );
-}
-
+    getHorariosDisponiblesParaHoy(): Observable<{
+        horas_disponibles: string[];
+    }> {
+        return this.http.get<{ horas_disponibles: string[] }>(
+            `${this.apiUrl}/citasdisponibles`,
+            { headers: this.getAuthHeaders() }
+        );
+    }
 
     actualizarCita(id: number, datos: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/citas/${id}`, datos, {
@@ -113,14 +114,14 @@ getCitasDelMedico(): Observable<any> {
     }
 
     eliminarCita(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/eliminar/cita/medico/${id}`,
-        { headers: this.getAuthHeaders() }
-    )}
+        return this.http.delete(`${this.apiUrl}/citas/${id}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 
-    cambiarEstadoCita(id: number, datos: any) : Observable<any> {
+    cambiarEstadoCita(id: number, datos: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/citas/${id}/cancelar`, datos, {
             headers: this.getAuthHeaders(),
         });
     }
 }
-

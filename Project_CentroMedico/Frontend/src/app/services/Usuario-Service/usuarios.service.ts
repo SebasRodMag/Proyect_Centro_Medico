@@ -35,9 +35,18 @@ export class UsuariosService {
         });
     }
 
-    actualizarUsuario(usuarioId: number, userData: { email: string; password: string; rol: string; }): Observable<any> {
-        return this.http.put<any>(this.usuariosUrl, userData, {
+    updateUsuario(usuarioId: number, usuario:any): Observable<any> {
+        return this.http.put<any>(`${this.usuariosUrl}/${usuarioId}`, usuario, {
             headers: this.getAuthHeaders(),
         });
     }
+
+    deleteUsuario(usuarioId:number): Observable<any>{
+        return this.http.delete<any>(`${this.usuariosUrl}/${usuarioId}`, 
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
+    }
+
 }
