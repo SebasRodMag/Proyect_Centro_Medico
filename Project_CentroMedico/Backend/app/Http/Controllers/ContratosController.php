@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use App\Models\Contrato;
 use App\Models\Cita;
 use Carbon\Carbon;
+use Date;
 use Illuminate\Http\Request;
 
 class ContratosController extends Controller
@@ -94,6 +95,7 @@ class ContratosController extends Controller
                 'reconocimientos_restantes' => $contrato->numero_reconocimientos - Cita::where('id_contrato', $contrato->id)->count(),
                 'fecha_inicio' => $contrato->fecha_inicio,
                 'fecha_fin' => $contrato->fecha_fin,
+                'autorenovacion' => $contrato->autorenovacion,
             ];
         });
 
@@ -149,6 +151,65 @@ class ContratosController extends Controller
             'contrato_vigente' => $contratoVigente,
         ], 200);
     }
+
+    private function obtenerContratoVigente($id_cliente)
+    {
+        $unAnyoPrev = Carbon::now()->subYear();
+        $cliente = Cliente::find($id_cliente); // no uses findOrFail si puedes retornar null
+
+        if (!$cliente) {
+            return null;
+        }
+
+        return Contrato::where('id_cliente', $cliente->id)
+            ->where('fecha_inicio', '>=', $unAnyoPrev)
+            ->orderByDesc('fecha_inicio') // corregido "fecha_incio" por "fecha_inicio"
+            ->first();
+    }
+
+    public function renovarContrato($id_cliente)
+    {
+        $contratoVigente = $this->obtenerContratoVigente($id_cliente);
+        $hoy = Carbon::now();
+        
+        if (!$contratoVigente) {
+            return response()->json([
+                'message' => 'No se puede renovar porque no hay contrato vigente.',
+            ], 404);
+        }
+
+        $contratoExistente = Contrato::where('id_cliente', $id_cliente)
+            ->where('fecha_inicio', '>=', $hoy)
+            ->exists();
+
+        if ($contratoExistente) {
+            return response()->json([
+                'message' => 'Ya existe un contrato activo o futuro para este cliente.',
+            ], 409);
+        }
+
+
+        
+        if ($hoy <= $contratoVigente->fecha_fin) {
+            return response()->json([
+                'message' => 'El contrato aún está vigente, no se puede renovar.',
+            ], 400);
+        }
+
+        $nuevoContrato = Contrato::create([
+            'id_cliente' => $id_cliente,
+            'fecha_inicio' => $hoy,
+            'fecha_fin' => $hoy->copy()->addYear(),
+            'numero_reconocimientos' => $contratoVigente->numero_reconocimientos,
+            'autorenovacion' => false,
+        ]);
+
+        return response()->json([
+            'message' => 'Contrato renovado exitosamente.',
+            'nuevo_contrato' => $nuevoContrato,
+        ], 201);
+    }
+
 
     //Función para obtener las citas de un contrato
     public function citas($id_contrato)

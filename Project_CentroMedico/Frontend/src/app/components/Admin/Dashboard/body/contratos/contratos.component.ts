@@ -44,6 +44,7 @@ export class ContratosComponent implements OnInit {
     ];
     clienteId!: string;
     searchQuery: string = '';
+    autorenovacion: boolean = false;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -86,4 +87,6 @@ export class ContratosComponent implements OnInit {
         console.log('Eliminar contrato:', contrato);
         // Aquí abrir confirmación y eliminar
     }
+
+    
 }

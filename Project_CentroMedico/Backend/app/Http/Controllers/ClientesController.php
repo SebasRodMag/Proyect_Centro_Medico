@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ClientesController extends Controller
 {
@@ -18,6 +19,7 @@ class ClientesController extends Controller
     {
         $request->validate([
             'email' => 'email|required',
+            'password' => 'required|string|min:8',
             'razon_social' => 'required|string|max:255',
             'cif' => 'required|string|min:9|max:9|unique:clientes',
             'direccion' => 'required|string|max:255',
@@ -26,11 +28,17 @@ class ClientesController extends Controller
             'reconocimientos' => 'required|integer',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado'], 404);
-        }
-
+        // $user = User::where('email', $request->email)->first();
+        // if (!$user) {
+        //     return response()->json(['message' => 'Usuario no encontrado'], 404);
+        // }
+        //Requisito: al crear el cliente, se debe de crear automáticamente el usuario
+        $user = new User();
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->save();
+        $user->assignRole('Cliente');
+        
         $cliente = new Cliente();
         $cliente->razon_social = $request->razon_social;
         $cliente->cif = $request->cif;

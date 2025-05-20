@@ -3,7 +3,7 @@
         <div>
             <button (click)="modal.open()">Registrar cliente</button>
         </div>
-        <app-modal-create #modal></app-modal-create>
+        <app-modal-create #modal  (usuarioCreado)="getClientes()"></app-modal-create>
 
         <div id="contenedor-filtros">
             <label for="razon-social">Razón Social:</label>
