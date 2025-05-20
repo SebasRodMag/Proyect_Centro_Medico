@@ -28,7 +28,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         MatPaginatorModule,
         MatSortModule,
         FormsModule,
-        ModalEditComponent,
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
@@ -271,11 +270,11 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     filtrarPorFechas(): void {
-        const desde = this.fechaDesde ? new Date(this.fechaDesde) : null;
-        const hasta = this.fechaHasta ? new Date(this.fechaHasta) : null;
+        const desde = this.fechaDesde;
+        const hasta = this.fechaHasta;
 
         this.citasDataSource.filterPredicate = (data: any) => {
-            const fechaCita = new Date(data.fecha);
+            const fechaCita = this.formatearFecha(data.fecha); // convierte a 'YYYY-MM-DD'
 
             const cumpleDesde = !desde || fechaCita >= desde;
             const cumpleHasta = !hasta || fechaCita <= hasta;
@@ -283,7 +282,16 @@ export class CitasComponent implements OnInit, AfterViewInit {
             return cumpleDesde && cumpleHasta;
         };
 
-        this.citasDataSource.filter = '' + Math.random(); // Forzar refresco del filtro
+        this.citasDataSource.filter = '' + Math.random(); // fuerza la actualización del filtro
+    }
+
+    // Función auxiliar para extraer solo la fecha en formato 'YYYY-MM-DD'
+    private formatearFecha(fechaStr: string): string {
+        const fecha = new Date(fechaStr);
+        const yyyy = fecha.getFullYear();
+        const mm = (fecha.getMonth() + 1).toString().padStart(2, '0');
+        const dd = fecha.getDate().toString().padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
     }
 
     applyFilter(event: Event) {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,6 +57,11 @@ class MedicosController extends Controller
         }
         if ($request->has('fecha_fin')) {
             $medico->fecha_fin = $request->fecha_fin;
+            $fechaFin = Carbon::parse($request->fecha_fin);
+            $fechaHoy = Carbon::today();
+            if($fechaFin->lt($fechaHoy)){
+                $medico->delete();
+            }
         }
         $medico->save();
 

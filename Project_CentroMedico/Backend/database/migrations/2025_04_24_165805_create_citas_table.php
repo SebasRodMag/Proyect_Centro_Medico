@@ -18,7 +18,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('id_medico')
                 ->constrained('medicos')
-                ->onDelete('cascade');
+                ->onDelete('set null');
             $table->foreignId('id_contrato')
                 ->constrained('contratos')
                 ->onDelete('cascade');

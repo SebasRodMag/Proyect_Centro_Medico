@@ -31,6 +31,12 @@ export class MedicoService {
         });
     }
 
+    getAllMedicos():Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/todos`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
     getMedicoById(medicoId: number): Observable<any> {
         return this.http.get(`${this.apiUrl}/${medicoId}`,{
             headers: this.getAuthHeaders(),
