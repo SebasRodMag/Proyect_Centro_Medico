@@ -8,16 +8,17 @@ import { ModalCreateComponent } from './modal-create/modal-create.component';
 import { AuthService } from '../../../../../auth/auth.service';
 import { FormsModule } from '@angular/forms';
 
+
 @Component({
     selector: 'app-citas',
     standalone: true,
     imports: [
         CommonModule,
-        ModalCreateComponent,
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
         FormsModule,
+        ModalCreateComponent
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
@@ -37,6 +38,8 @@ export class CitasComponent implements OnInit, AfterViewInit {
     rol_id!: number;
     fechaDesde: string = '';
     fechaHasta: string = '';
+    mostrarModal: boolean = false;
+    modalVisible = false;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -67,18 +70,25 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     filtrarPorFechas(): void {
-        const desde = this.fechaDesde ? new Date(this.fechaDesde) : null;
-        const hasta = this.fechaHasta ? new Date(this.fechaHasta) : null;
+        //se definen de esta forma para que no presente errores al comparar las fechas no haya diferencias por horas
+        const desde = this.fechaDesde ? new Date(this.fechaDesde + 'T00:00:00') : null;
+        const hasta = this.fechaHasta ? new Date(this.fechaHasta + 'T23:59:59') : null;
 
-        this.citasDataSource.filterPredicate = (data: any) => {
-            const fechaCita = new Date(data.fecha);
+        const citasFiltradas = this.citasDataSource.data.filter((cita: any) => {
+            const fechaCita = new Date(cita.fecha_hora_cita);
+            if (desde && fechaCita < desde) return false;
+            if (hasta && fechaCita > hasta) return false;
+            return true;
+        });
 
-            const cumpleDesde = !desde || fechaCita >= desde;
-            const cumpleHasta = !hasta || fechaCita <= hasta;
+        this.citasDataSource.data = citasFiltradas;
+    }
 
-            return cumpleDesde && cumpleHasta;
-        };
-
-        this.citasDataSource.filter = '' + Math.random(); // Forzar refresco del filtro
+    aplicarFiltro(event: Event): void {
+        const filtroValor = (event.target as HTMLInputElement).value;
+        this.citasDataSource.filter = filtroValor.trim().toLowerCase();
+    }
+    abrirModal() {
+        this.modalVisible = true;
     }
 }

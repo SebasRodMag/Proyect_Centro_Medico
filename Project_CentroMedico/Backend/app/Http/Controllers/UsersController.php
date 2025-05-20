@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-
+use Illuminate\Support\Facades\Auth;
 class UsersController extends Controller
 {
     public function store(Request $request)

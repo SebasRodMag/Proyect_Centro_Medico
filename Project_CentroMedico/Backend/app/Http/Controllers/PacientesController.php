@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Cliente;
 use App\Models\Paciente;
 use App\Models\User;
-use App\Models\Auth;
 use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PacientesController extends Controller
 {
@@ -110,6 +110,21 @@ class PacientesController extends Controller
             return response()->json(['error' => 'No autorizado'], 403);
         }
         $pacientes = Paciente::where('id_medico', medico)->get();
+        return response()->json($pacientes, 200);
+    }
+
+    //Listar los pacientes en función del contrato
+    public function pacientesPorCliente(Request $request)
+    {
+        $user = Auth::user();
+        $cliente = Cliente::where('id_usuario', $user->id)->first();
+        if (!$cliente) {
+            return response()->json(['message' => 'Cliente no encontrado para el usuario autenticado.'], 404);
+        }
+        $pacientes = $cliente->pacientes;
+        if ($pacientes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron pacientes para este cliente.'], 200);
+        }
         return response()->json($pacientes, 200);
     }
 }

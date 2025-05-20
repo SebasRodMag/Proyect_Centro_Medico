@@ -18,8 +18,6 @@ class CitasController extends Controller
     {
         $request->validate([
             'fecha_hora_cita' => 'required|date',
-            // 'fecha_hora_inicio' => 'required|date',
-            // 'fecha_hora_fin' => 'required|date|after:fecha_hora_inicio',
             'id_paciente' => 'required|integer|exists:pacientes,id',
             'id_medico' => 'required|integer|exists:medicos,id',
             'id_contrato' => 'required|integer|exists:contratos,id',
@@ -37,8 +35,6 @@ class CitasController extends Controller
 
         $cita = new Cita();
 
-        // $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
-        // $cita->fecha_hora_fin = $request->fecha_hora_fin;
         $cita->id_paciente = $request->id_paciente;
         $cita->id_medico = $request->id_medico;
         $cita->id_contrato = $request->id_contrato;

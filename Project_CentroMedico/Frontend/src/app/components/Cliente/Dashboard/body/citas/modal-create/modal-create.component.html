@@ -1,86 +1,67 @@
-<div class="modal-backdrop" *ngIf="isVisible">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>CREAR CITA</h2>
-            <i class="bi bi-x-circle close-button" (click)="close()"></i>
-        </div>
-        <div>
-            <form [formGroup]="form" (ngSubmit)="onSubmit()">
-                <div id="contenedor-principal">
-                    <div id="columnas">
-                        <div id="primer-contenedor">
-                            <div>
-                                <label for="cif">CIF:</label>
-                                <input type="text" formControlName="cif" id="cif" />
-                                <div *ngIf="form.get('cif')?.invalid && form.get('cif')?.touched" class="error">
-                                    El CIF es obligatorio y debe tener 9 caracteres.
+<div class="modal-backdrop" *ngIf="visible">
+    <div class="modal-container" *ngIf="visible">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear nueva cita</h5>
+                <i class="bi bi-x-circle close-button" (click)="cerrar()"></i>
+            </div>
+            <div>
+                
+                <form [formGroup]="formulario" (ngSubmit)="crearCita()">
+                    <!-- Selección de paciente (obtenido por el cliente autenticado) -->
+                    <div id="contenedor-principal">
+                        <div id="columnas">
+                            <div id="primer-contenedor">
+                                <div>
+                                    <label for="paciente" class="form-label">Paciente</label>
+                                    <select id="paciente" class="form-select" formControlName="id_paciente" required>
+                                        <option value="" disabled selected>Selecciona un paciente</option>
+                                        <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+                                            {{ paciente.nombre }} {{ paciente.apellidos }}
+                                        </option>
+                                    </select>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label *ngIf="pacientes.length > 0" for="pacientes">Paciente:</label>
-                                <select *ngIf="pacientes.length > 0" formControlName="paciente" id="paciente">
-                                    <option *ngFor="let paciente of pacientes" [value]="paciente.id">
-                                        {{ paciente.nombre }} {{ paciente.apellidos }}
-                                    </option>
-                                </select>
-                                <div *ngIf="form.get('paciente')?.invalid && form.get('paciente')?.touched" class="error">
-                                    El paciente es obligatorio.
+                                <div>
+                                    <label for="paciente" class="form-label">Paciente</label>
+                                    <select id="paciente" class="form-select" formControlName="id_paciente" required>
+                                        <option value="" disabled selected>Selecciona un paciente</option>
+                                        <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+                                            {{ paciente.nombre }} {{ paciente.apellidos }}
+                                        </option>
+                                    </select>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label for="medico">Médico asignado:</label>
-                                <select formControlName="medico" id="medico">
-                                    <option value="" selected disabled>Selecciona un médico</option>
-                                    <option *ngFor="let medico of medicos" [value]="medico.id">
-                                        {{ medico.nombre }} {{ medico.apellidos }}
-                                    </option>
-                                </select>
-                                <div *ngIf="form.get('medico')?.invalid && form.get('medico')?.touched" class="error">
-                                    El médico es obligatorio.
+                                <!-- Selección de médico -->
+                                <div>
+                                    <label for="medico" class="form-label">Médico</label>
+                                    <select id="medico" class="form-select" formControlName="id_medico" required>
+                                        <option value="" disabled selected>Selecciona un médico</option>
+                                        <option *ngFor="let medico of medicos" [value]="medico.id">
+                                            {{ medico.nombre }} {{ medico.apellidos }}
+                                        </option>
+                                    </select>
                                 </div>
-                            </div>
-
-                            <!-- Fecha con Angular Material Datepicker -->
-                            <div>
-                                <mat-form-field appearance="fill" class="full-width">
-                                    <mat-label>Fecha</mat-label>
-                                    <input
-                                        matInput
-                                        [matDatepicker]="picker"
-                                        formControlName="fecha"
-                                        [matDatepickerFilter]="filtrarDiasHabiles"
-                                    />
-                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                    <mat-datepicker #picker startView="month"></mat-datepicker>
-                                </mat-form-field>
-                                <div *ngIf="form.get('fecha')?.invalid && form.get('fecha')?.touched" class="error">
-                                    La fecha es obligatoria.
+                                <!-- Fecha y hora -->
+                                <div>
+                                    <label for="fecha_hora_cita" class="form-label">Fecha y hora</label>
+                                    <input type="datetime-local" id="fecha_hora_cita" class="form-control"
+                                        formControlName="fecha_hora_cita" required />
                                 </div>
-                            </div>
-
-                            <!-- Selector de hora -->
-                            <div>
-                                <label for="hora">Hora:</label>
-                                <select id="hora" formControlName="hora">
-                                    <option value="" disabled selected>Horas disponibles</option>
-                                    <!-- <option *ngIf="availableHours.length === 0" disabled>No hay horas disponibles</option> -->
-                                    <option *ngFor="let hora of availableHours" [value]="hora">{{ hora }}</option>
-                                </select>
-                                <div *ngIf="form.get('hora')?.invalid && form.get('hora')?.touched" class="error">
-                                    La hora es obligatoria.
+                                <!-- Observaciones -->
+                                <div>
+                                    <label for="observaciones" class="form-label">Observaciones</label>
+                                    <textarea id="observaciones" class="form-control" formControlName="observaciones"
+                                        rows="3"></textarea>
                                 </div>
                             </div>
                         </div>
+                        <div id="boton-registrar">
+                            <button class="btn btn-secondary" (click)="cerrar()">Cancelar</button>
+                            <button class="btn btn-primary" (click)="crearCita()">Guardar</button>
+                        </div>
                     </div>
-                    <div id="boton-registrar">
-                        <button [disabled]="form.invalid" type="submit" id="reservar">
-                            Reservar
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </div> 
+        
     </div>
 </div>
