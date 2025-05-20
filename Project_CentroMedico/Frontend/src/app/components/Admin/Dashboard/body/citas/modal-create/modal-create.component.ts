@@ -25,7 +25,7 @@ import { MatInputModule } from '@angular/material/input';
         MatDatepickerModule,
         MatFormFieldModule,
         MatInputModule,
-        MatNativeDateModule
+        MatNativeDateModule,
     ],
     templateUrl: './modal-create.component.html',
     styleUrls: ['./modal-create.component.css'],

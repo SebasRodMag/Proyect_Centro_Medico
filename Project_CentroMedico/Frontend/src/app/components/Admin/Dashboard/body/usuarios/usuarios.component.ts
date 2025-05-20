@@ -6,6 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalEditComponent } from './modal-edit/modal-edit.component';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-usuarios',
@@ -30,7 +33,8 @@ export class UsuariosComponent implements OnInit {
 
     constructor(
         private usuarioService: UsuariosService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit(): void {
@@ -59,4 +63,53 @@ export class UsuariosComponent implements OnInit {
             this.usuariosDataSource.paginator.firstPage();
         }
     }
+    openEditRolModal(usuario: any): void {
+        const dialogRef = this.dialog.open(ModalEditComponent, {
+            width: '400px',
+            data: { usuario },
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.getUsuarios(); // refresca la tabla si hubo cambio
+            }
+        });
+    }
+
+    eliminarUsuario(usuario: any): void {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text:
+                    'Esta acción eliminará al médico: ' +
+                    usuario.email,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.usuarioService.deleteUsuario(usuario.id).subscribe({
+                        next: () => {
+                            Swal.fire(
+                                'Eliminado',
+                                'El médico ha sido eliminado correctamente.',
+                                'success'
+                            );
+                            this.usuarios = this.usuarios.filter(
+                                (m) => m.id !== usuario.id
+                            );
+                            this.usuariosDataSource.data = this.usuarios;
+                        },
+                        error: (error:any) => {
+                            Swal.fire(
+                                'Error',
+                                error.error?.message ||
+                                    'No se pudo eliminar el médico.',
+                                'error'
+                            );
+                        },
+                    });
+                }
+            });
+        }
 }

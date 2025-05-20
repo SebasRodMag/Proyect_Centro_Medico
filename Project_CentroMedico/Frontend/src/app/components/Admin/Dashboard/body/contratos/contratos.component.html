@@ -1,48 +1,104 @@
-<div class="container-medicos">
-    <div class="header-medicos">
-        <!-- <div>
-            <button (click)="modal.open()">Agregar contrato</button>
-        </div> -->
+<div class="container-contratos">
+    <div class="header-contratos">
         <app-modal-create #modal></app-modal-create>
+
         <div id="contenedor-busqueda">
             <input
                 type="text"
-                placeholder="Búsqueda..."
+                [(ngModel)]="searchQuery"
                 (input)="filterContratos()"
+                placeholder="Búsqueda..."
             />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
 
-    <table id="tabla-medicos">
-        <thead>
-            <tr>
-                <th>Nº Contrato</th>
-                <th>Empresa</th>
-                <th>Reconocimientos <br />contratados</th>
-                <th>Reconocimientos <br />restantes</th>
-                <th>Fecha inicio</th>
-                <th>Fecha fin</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let contrato of filteredContratos">
-                <td>{{ contrato.contrato }}</td>
-                <td>{{ contrato.empresa }}</td>
-                <td>{{ contrato.num_reconocimientos }}</td>
-                <td>{{ contrato.reconocimientos_restantes }}</td>
-                <td>{{ contrato.fecha_inicio }}</td>
-                <td>{{ contrato.fecha_fin }}</td>
-                <td>
-                    <button id="edit-button">Editar</button>
-                    <button
-                        id="delete-button"
-                    >
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+    <table
+        mat-table
+        [dataSource]="filteredContratosDataSource"
+        matSort
+        class="mat-elevation-z1"
+    >
+        <!-- Nº Contrato -->
+        <ng-container matColumnDef="contrato">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Nº Contrato
+            </th>
+            <td mat-cell *matCellDef="let contrato">{{ contrato.contrato }}</td>
+        </ng-container>
+
+        <!-- Empresa -->
+        <ng-container matColumnDef="empresa">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Empresa</th>
+            <td mat-cell *matCellDef="let contrato">{{ contrato.empresa }}</td>
+        </ng-container>
+
+        <!-- Reconocimientos contratados -->
+        <ng-container matColumnDef="num_reconocimientos">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Reconocimientos contratados
+            </th>
+            <td mat-cell *matCellDef="let contrato">
+                {{ contrato.num_reconocimientos }}
+            </td>
+        </ng-container>
+
+        <!-- Reconocimientos restantes -->
+        <ng-container matColumnDef="reconocimientos_restantes">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Reconocimientos restantes
+            </th>
+            <td mat-cell *matCellDef="let contrato">
+                {{ contrato.reconocimientos_restantes }}
+            </td>
+        </ng-container>
+
+        <!-- Fecha inicio -->
+        <ng-container matColumnDef="fecha_inicio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Fecha inicio
+            </th>
+            <td mat-cell *matCellDef="let contrato">
+                {{ contrato.fecha_inicio | date : "dd/MM/yyyy" }}
+            </td>
+        </ng-container>
+
+        <!-- Fecha fin -->
+        <ng-container matColumnDef="fecha_fin">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha fin</th>
+            <td mat-cell *matCellDef="let contrato">
+                {{ contrato.fecha_fin | date : "dd/MM/yyyy" }}
+            </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let contrato">
+                <!-- <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="editarContrato(contrato)"
+                >
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="eliminarContrato(contrato)"
+                >
+                    <mat-icon>delete</mat-icon>
+                </button> -->
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
+
+    <mat-paginator
+        [length]="contratos.length"
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 20]"
+    ></mat-paginator>
 </div>

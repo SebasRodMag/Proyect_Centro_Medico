@@ -12,7 +12,7 @@ export class ClienteService {
     constructor(private http: HttpClient) {}
 
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token'); // ⚠️ Asegúrate que el token esté en localStorage
+        const token = localStorage.getItem('token');
         return new HttpHeaders({
             Authorization: `Bearer ${token}`,
         });
@@ -61,5 +61,19 @@ export class ClienteService {
         return this.http.post(this.apiUrl, cliente, {
             headers: this.getAuthHeaders(),
         });
+    }
+
+    deleteCliente(clienteId: number) {
+        return this.http.delete(`${this.apiUrl}/${clienteId}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    updateCliente(id: number, datos: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/${id}`, datos,
+            {
+                headers: this.getAuthHeaders(),
+            }
+        );
     }
 }

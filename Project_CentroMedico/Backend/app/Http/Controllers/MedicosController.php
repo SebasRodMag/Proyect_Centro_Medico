@@ -17,14 +17,13 @@ class MedicosController extends Controller
             'dni' => 'required|string|min:9|max:9',
             'email' => 'required|email',
         ]);
-        
+
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
         $medico = new Medico();
-        $medico->email = $request->email;
         $medico->nombre = $request->nombre;
         $medico->apellidos = $request->apellidos;
         $medico->dni = $request->dni;
@@ -42,7 +41,7 @@ class MedicosController extends Controller
             'nombre' => 'string|max:255',
             'apellidos' => 'string|max:255',
             'dni' => 'string|min:9|max:9',
-            'id_usuario' => 'integer|exists:users,id',
+            'fecha_fin' => 'date|nullable',
         ]);
 
         $medico = Medico::findOrFail($id);
@@ -55,26 +54,20 @@ class MedicosController extends Controller
         if ($request->has('dni')) {
             $medico->dni = $request->dni;
         }
-        if ($request->has('fecha_inicio')) {
-            $medico->fecha_inicio = $request->fecha_inicio;
-        }
         if ($request->has('fecha_fin')) {
             $medico->fecha_fin = $request->fecha_fin;
-        }
-        if ($request->has('id_usuario')) {
-            $medico->id_usuario = $request->id_usuario;
         }
         $medico->save();
 
         return response()->json(['message' => 'Médico actualizado con éxito'], 200);
     }
 
-    // public function destroy($id)
-    // {
-    //     $medico = Medico::findOrFail($id);
-    //     $medico->delete();
-    //     return response()->json(['message' => 'Médico eliminado con éxito'], 200);
-    // }
+    public function destroy($id)
+    {
+        $medico = Medico::findOrFail($id);
+        $medico->delete();
+        return response()->json(['message' => 'Médico eliminado con éxito'], 200);
+    }
     public function index()
     {
         $medicos = Medico::all();
@@ -85,13 +78,15 @@ class MedicosController extends Controller
         $medico = Medico::findOrFail($id);
         return response()->json($medico, 200);
     }
-    
-    public function showAllMedicos(){
+
+    public function showAllMedicos()
+    {
         $medicos = Medico::withTrashed()->get();
         return response()->json($medicos, 200);
     }
 
-    public function showTrashedMedicos(){
+    public function showTrashedMedicos()
+    {
         $medicos = Medico::onlyTrashed()->get();
         return response()->json($medicos, 200);
     }
@@ -120,5 +115,4 @@ class MedicosController extends Controller
             'id' => $medico->id,
         ], 200);
     }
-    
 }

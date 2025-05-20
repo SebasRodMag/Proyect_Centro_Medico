@@ -7,6 +7,7 @@ use App\Models\Contrato;
 use App\Models\Paciente;
 use App\Models\Cita;
 use App\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -57,7 +58,6 @@ class ClientesController extends Controller
             'direccion' => 'string|max:255',
             'municipio' => 'string|max:255',
             'provincia' => 'string|max:255',
-            'id_usuario' => 'integer|exists:users,id',
         ]);
         $cliente = Cliente::findOrFail($id);
         if ($request->has('razon_social')) {
@@ -74,9 +74,6 @@ class ClientesController extends Controller
         }
         if ($request->has('provincia')) {
             $cliente->provincia = $request->provincia;
-        }
-        if ($request->has('id_usuario')) {
-            $cliente->id_usuario = $request->id_usuario;
         }
         $cliente->save();
         return response()->json(['message' => 'Cliente actualizado con éxito'], 200);
@@ -96,14 +93,25 @@ class ClientesController extends Controller
                 ->orderBy('fecha_inicio', 'desc');
         }])->get();
 
-        // O bien, si quieres solo el contrato vigente como una propiedad extra:
         foreach ($clientes as $cliente) {
-            $cliente->contrato_vigente = $cliente->contratos->first();
-            unset($cliente->contratos); // opcional si no quieres todos
+            // Obtener el contrato vigente (el primero más reciente del último año)
+            $contratoVigente = $cliente->contratos->first();
+
+            if ($contratoVigente) {
+                // Calcular reconocimientos restantes
+                $citasRealizadas = Cita::where('id_contrato', $contratoVigente->id)->count();
+                $contratoVigente->reconocimientos_restantes = $contratoVigente->numero_reconocimientos - $citasRealizadas;
+
+                // Adjuntar el contrato completo al cliente como contrato_vigente
+                $cliente->contrato_vigente = $contratoVigente;
+            } else {
+                $cliente->contrato_vigente = null;
+            }
         }
 
         return response()->json($clientes, 200);
     }
+
 
 
     //Funcon para mostrar un cliente por Id
@@ -112,6 +120,13 @@ class ClientesController extends Controller
         $cliente = Cliente::findOrFail($id);
         return response()->json($cliente, 200);
     }
+
+    public function destroy($id){
+        $cliente = Cliente::findOrFail($id);
+        $cliente->delete();
+        return response()->json(['message' => 'Cliente eliminado con éxito'], 200);
+    }
+    
 
     //Función para mostrar todos los usuarios, tanto activos como eliminados
     public function showAllUsers()
