@@ -1,17 +1,17 @@
 <div class="container-citas">
     <div class="header-citas">
         <div>
-            <button (click)="modalVisible = true" id="edit-button">Crear cita</button>
+            <button (click)="modalVisible = true" id="boton-registrar">Crear cita</button>
         </div>
         <app-modal-create [visible]="modalVisible" (cerrarModal)="modalVisible = false"></app-modal-create>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
-            <input type="date" id="fecha-desde" placeholder="" [(ngModel)]="fechaDesde" (change)="filtrarPorFechas()" />
+            <input type="date" id="fecha-desde" placeholder="" [(ngModel)]="fechaDesde" (change)="aplicarTodosLosFiltros()" />
             <label for="fecha-hasta">Fecha hasta:</label>
-            <input type="date" id="fecha-hasta" placeholder="" [(ngModel)]="fechaHasta" (change)="filtrarPorFechas()" />
+            <input type="date" id="fecha-hasta" placeholder="" [(ngModel)]="fechaHasta" (change)="aplicarTodosLosFiltros()" />
         </div>
         <div id="contenedor-busqueda">
-            <input type="text" placeholder="Búsqueda..." />
+            <input type="text" placeholder="Búsqueda..." [(ngModel)]="filtroBusqueda" (keyup)="aplicarTodosLosFiltros()" />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
@@ -70,6 +70,9 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="6">No se encontraron citas que coincidan con la búsqueda.</td>
+        </tr>
     </table>
 
     <mat-paginator [length]="citasDataSource.data.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
