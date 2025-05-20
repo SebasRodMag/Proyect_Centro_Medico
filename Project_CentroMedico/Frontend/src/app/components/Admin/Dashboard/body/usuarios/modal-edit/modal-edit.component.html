@@ -1,0 +1,39 @@
+<div class="modal-header">
+    <h5 class="modal-title">Editar rol</h5>
+    <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar"
+        (click)="close()"
+    ></button>
+</div>
+
+<div class="modal-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Rol</mat-label>
+            <mat-select formControlName="rol">
+                <mat-option *ngFor="let rol of roles" [value]="rol">
+                    {{ rol | titlecase }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('rol')?.hasError('required')"
+                >El rol es obligatorio</mat-error
+            >
+        </mat-form-field>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button
+                type="button"
+                mat-stroked-button
+                color="warn"
+                (click)="close()"
+            >
+                Cancelar
+            </button>
+            <button type="submit" mat-flat-button color="primary" class="ms-2">
+                Guardar
+            </button>
+        </div>
+    </form>
+</div>

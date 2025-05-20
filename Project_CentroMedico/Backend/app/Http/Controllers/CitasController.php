@@ -18,8 +18,6 @@ class CitasController extends Controller
     {
         $request->validate([
             'fecha_hora_cita' => 'required|date',
-            // 'fecha_hora_inicio' => 'required|date',
-            // 'fecha_hora_fin' => 'required|date|after:fecha_hora_inicio',
             'id_paciente' => 'required|integer|exists:pacientes,id',
             'id_medico' => 'required|integer|exists:medicos,id',
             'id_contrato' => 'required|integer|exists:contratos,id',
@@ -37,8 +35,6 @@ class CitasController extends Controller
 
         $cita = new Cita();
 
-        // $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
-        // $cita->fecha_hora_fin = $request->fecha_hora_fin;
         $cita->id_paciente = $request->id_paciente;
         $cita->id_medico = $request->id_medico;
         $cita->id_contrato = $request->id_contrato;
@@ -99,43 +95,43 @@ class CitasController extends Controller
             'fecha_hora_cita' => 'date',
 
             // ---- Campos para guardar hora real que ha iniciado y acabado la cita ----
-            'fecha_hora_inicio' => 'date',
-            'fecha_hora_fin' => 'date|after:fecha_hora_inicio',
-            'id_paciente' => 'integer|exists:pacientes,id',
+            // 'fecha_hora_inicio' => 'date',
+            // 'fecha_hora_fin' => 'date|after:fecha_hora_inicio',
+            // 'id_paciente' => 'integer|exists:pacientes,id',
             'id_medico' => 'integer|exists:medicos,id',
-            'id_contrato' => 'integer|exists:users,id',
+            // 'id_contrato' => 'integer|exists:users,id',
         ]);
 
         $cita = Cita::findOrFail($id);
         if ($request->has('fecha_hora_cita')) {
             $cita->fecha_hora_cita = $request->fecha_hora_cita;
         }
-        if($request->has('fecha_hora_inicio')){
-            $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
-        }
-        if($request->has('fecha_hora_fin')){
-            $cita->fecha_hora_fin = $request->fecha_hora_fin;
-        }
-        if ($request->has('id_paciente')) {
-            $cita->id_paciente = $request->id_paciente;
-        }
+        // if($request->has('fecha_hora_inicio')){
+        //     $cita->fecha_hora_inicio = $request->fecha_hora_inicio;
+        // }
+        // if($request->has('fecha_hora_fin')){
+        //     $cita->fecha_hora_fin = $request->fecha_hora_fin;
+        // }
+        // if ($request->has('id_paciente')) {
+        //     $cita->id_paciente = $request->id_paciente;
+        // }
         if ($request->has('id_medico')) {
             $cita->id_medico = $request->id_medico;
         }
-        if ($request->has('id_contrato')) {
-            $cita->id_contrato = $request->id_contrato;
-        }
+        // if ($request->has('id_contrato')) {
+        //     $cita->id_contrato = $request->id_contrato;
+        // }
         $cita->save();
         return response()->json(['message' => 'Cita actualizada con éxito'], 200);
     }
 
 
 
-    // public function destroy($id){
-    //     $cita = Cita::findOrFail($id);
-    //     $cita->delete();
-    //     return response()->json(['message' => 'Cita eliminada con éxito'], 200);
-    // }
+    public function destroy($id){
+        $cita = Cita::findOrFail($id);
+        $cita->delete();
+        return response()->json(['message' => 'Cita eliminada con éxito'], 200);
+    }
 
     public function index()
     {
@@ -180,6 +176,7 @@ class CitasController extends Controller
                 'id_medico' => $cita->medico->id,
                 'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
                 'numero_de_cita' => $numeroDeCita, // e.g., "3/80"
+                'estado' => $cita->estado,
             ];
         });
 
@@ -369,7 +366,7 @@ public function citasPorMedicoLogueado()
         }
 
         $validated = $request->validate([
-            'estado' => ['required', Rule::in(['cancelado', 'realizada'])],
+            'estado' => ['required', Rule::in(['cancelado', 'realizado'])],
         ]);
 
         $cita = Cita::findOrFail($id);

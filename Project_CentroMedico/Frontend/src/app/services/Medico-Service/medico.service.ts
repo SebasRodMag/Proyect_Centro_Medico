@@ -44,7 +44,13 @@ export class MedicoService {
     }
 
     updateMedico(medicoId: number, medico: any ){
-        return this.http.put(this.apiUrl, data, {
+        return this.http.put(`${this.apiUrl}/${medicoId}`, medico, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    deleteMedico(medicoId: number): Observable<any>{
+        return this.http.delete(`${this.apiUrl}/${medicoId}`, {
             headers: this.getAuthHeaders(),
         });
     }
