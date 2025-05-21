@@ -20,9 +20,12 @@ import Swal from 'sweetalert2';
 })
 export class ModalCreateComponent implements OnInit, OnDestroy {
     @Input() mostrarModal = false;
+    @Input() cita: any | null = null;
+    @Input() visible: boolean = false;
+
     @Output() cerrarModal = new EventEmitter<void>();
     @Output() citaCreada = new EventEmitter<void>();
-    @Input() visible: boolean = false;
+    @Output() citaActualizada = new EventEmitter<void>();
 
     formulario!: FormGroup;
     todayMinDate: string;
@@ -30,6 +33,9 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
     medicos: any[] = [];
     idContrato: number | null = null;
     horariosDisponibles: string[] = [];
+    isEditMode: boolean = false;
+    citaId: number | null = null;
+
     private destroy$ = new Subject<void>();
 
     private fb = inject(FormBuilder);
@@ -53,16 +59,12 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
         this.todayMinDate = `${year}-${month}-${day}`;
     }
     ngOnInit(): void {
-        this.formulario = this.fb.group({
-            id_paciente: [null, Validators.required],
-            id_medico: [null, Validators.required],
-            fecha_cita: [null, Validators.required],
-            hora_cita: [null, Validators.required],
-        });
+        this.initForm(); // Inicializa el formulario
 
         this.cargarPacientesDelCliente();
         this.cargarContratoDelCliente();
         this.cargarMedicos();
+
 
         // Suscripción a los cambios en id_medico y fecha_cita
         this.formulario.get('id_medico')?.valueChanges
@@ -72,6 +74,35 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
         this.formulario.get('fecha_cita')?.valueChanges
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.cargarHorariosDisponibles());
+    }
+
+    initForm(): void {
+        this.formulario = this.fb.group({
+            id_paciente: [null, Validators.required],
+            id_medico: [null, Validators.required],
+            fecha_cita: [null, Validators.required],
+            hora_cita: [null, Validators.required],
+        });
+
+        // Si se recibió una cita, estamos en modo edición
+        if (this.cita) {
+            this.isEditMode = true;
+            this.citaId = this.cita.id;
+            // Pre-rellenar el formulario con los datos de la cita existente
+            // Asegúrate de que los nombres de las propiedades coincidan con tu objeto 'cita'
+            this.formulario.patchValue({
+                id_paciente: this.cita.paciente_id, // Asumiendo que viene el ID del paciente
+                id_medico: this.cita.medico_id,     // Asumiendo que viene el ID del médico
+                fecha_cita: this.cita.fecha,        // La fecha ya debe venir en formato YYYY-MM-DD
+                hora_cita: this.cita.hora,          // La hora ya debe venir en formato HH:mm
+            });
+            // Una vez que los valores están parcheados, cargar horarios disponibles
+            // Esto es crucial para que el selector de hora se actualice
+            this.cargarHorariosDisponibles(); 
+        } else {
+            this.isEditMode = false;
+            this.citaId = null;
+        }
     }
 
     ngOnDestroy(): void {
@@ -141,7 +172,7 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
         }
     }
 
-    crearCita(): void {
+    onSubmit(): void {
         if (this.formulario.invalid) {
             console.warn('Formulario inválido. Revise los campos obligatorios.');
             Swal.fire('Advertencia', 'Por favor, rellene todos los campos obligatorios.', 'warning');
@@ -149,14 +180,12 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
         }
 
         if (!this.idContrato) {
-            console.error('No se encontró el contrato del cliente. No se puede crear la cita.');
+            console.error('No se encontró el contrato del cliente. No se puede crear/actualizar la cita.');
             Swal.fire('Error', 'No se pudo asociar la cita a un contrato. Contacte con soporte.', 'error');
             return;
         }
 
         const rawFormValue = this.formulario.value;
-
-        // Construir fecha_hora_cita a partir de fecha_cita y hora_cita
         const fechaHoraCitaFinal = `${rawFormValue.fecha_cita} ${rawFormValue.hora_cita}:00`;
 
         const datosCita = {
@@ -164,39 +193,68 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
             id_medico: Number(rawFormValue.id_medico),
             fecha_hora_cita: fechaHoraCitaFinal,
             id_contrato: this.idContrato,
-            estado: 'pendiente'
+            // 'estado' solo se envía al crear, no al actualizar (el backend lo maneja)
+            ...(this.isEditMode ? {} : { estado: 'pendiente' }) 
         };
 
         console.log('Datos de la cita a enviar:', datosCita);
 
-        this.citaService.storeCita(datosCita).subscribe({
-            next: () => {
-                this.cerrar();
-                this.citaCreada.emit();
-                this.refreshService.triggerRefreshCitas();
-                console.log('Cita creada con éxito.');
-                Swal.fire('¡Éxito!', 'La cita ha sido creada correctamente.', 'success');
-            },
-            error: (err: HttpErrorResponse) => {
-                console.error('Error al crear cita:', err);
-                let errorMessage = 'Ocurrió un error al crear la cita. Por favor, inténtelo de nuevo.';
-
-                if (err.error && err.error.errors) {
-                    const validationErrors = Object.values(err.error.errors).flat();
-                } else if (err.error && err.error.message) {
-                    errorMessage = err.error.message;
-                    Swal.fire('Error', errorMessage, 'error'); // Errores del servidor
-                } else {
-                    Swal.fire('Error', errorMessage, 'error'); // Error genérico
+        if (this.isEditMode && this.citaId) {
+            // **Modo Edición**
+            this.citaService.actualizarCita(this.citaId, datosCita).subscribe({ // Necesitas un método updateCita en tu servicio
+                next: () => {
+                    this.cerrar();
+                    this.citaActualizada.emit(); // Emite que la cita fue actualizada
+                    this.refreshService.triggerRefreshCitas();
+                    console.log('Cita actualizada con éxito.');
+                    Swal.fire('¡Éxito!', 'La cita ha sido actualizada correctamente.', 'success');
+                },
+                error: (err: HttpErrorResponse) => {
+                    console.error('Error al actualizar cita:', err);
+                    let errorMessage = 'Ocurrió un error al actualizar la cita. Por favor, inténtelo de nuevo.';
+                    if (err.error && err.error.errors) {
+                        const validationErrors = Object.values(err.error.errors).flat();
+                        errorMessage = validationErrors.join('<br>'); // Muestra todos los errores de validación
+                    } else if (err.error && err.error.message) {
+                        errorMessage = err.error.message;
+                    }
+                    Swal.fire('Error', errorMessage, 'error');
                 }
-            }
-        });
+            });
+        } else {
+            // **Modo Creación**
+            this.citaService.storeCita(datosCita).subscribe({
+                next: () => {
+                    this.cerrar();
+                    this.citaCreada.emit();
+                    this.refreshService.triggerRefreshCitas();
+                    console.log('Cita creada con éxito.');
+                    Swal.fire('¡Éxito!', 'La cita ha sido creada correctamente.', 'success');
+                },
+                error: (err: HttpErrorResponse) => {
+                    console.error('Error al crear cita:', err);
+                    let errorMessage = 'Ocurrió un error al crear la cita. Por favor, inténtelo de nuevo.';
+
+                    if (err.error && err.error.errors) {
+                        const validationErrors = Object.values(err.error.errors).flat();
+                        errorMessage = validationErrors.join('<br>');
+                    } else if (err.error && err.error.message) {
+                        errorMessage = err.error.message;
+                    } 
+                    Swal.fire('Error', errorMessage, 'error');
+                }
+            });
+        }
     }
 
-    cerrar() {
+    cerrar(): void {
         this.cerrarModal.emit();
         this.formulario.reset();
         this.horariosDisponibles = [];
+        this.isEditMode = false; // Resetear el modo a creación
+        this.citaId = null; // Resetear el ID de la cita
+        // Es importante re-inicializar el formulario para el siguiente uso
+        this.initForm(); 
         // Desmarcar todos los controles para que no muestren errores al reabrirse
         Object.keys(this.formulario.controls).forEach(key => {
             this.formulario.get(key)?.markAsUntouched();

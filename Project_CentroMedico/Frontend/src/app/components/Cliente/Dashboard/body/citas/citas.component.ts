@@ -52,6 +52,7 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
     mostrarModal: boolean = false;
     modalVisible = false;
     filtroBusqueda: string = '';
+    citaParaEditar: any | null = null; 
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -147,12 +148,25 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
         };
     }
 
-    abrirModal() {
+    abrirModalCreacion(): void {
+        this.citaParaEditar = null; // Asegurarse de que no hay cita de edición
+        this.modalVisible = true;
+    }
+
+    modificaCita(cita: any): void {
+        if (cita.estado !== 'pendiente') {
+            Swal.fire('No permitido', 'Solo puedes modificar citas pendientes.', 'info');
+            console.log('Estado actual:', cita.estado);
+            return;
+        }
+        this.citaParaEditar = { ...cita }; // Pasamos una copia de la cita
         this.modalVisible = true;
     }
 
     cerrarModalCita(): void {
         this.modalVisible = false;
+        this.citaParaEditar = null; // Limpiar la cita de edición al cerrar
+        this.cargarCitasPorRol(); // Recargar las citas para reflejar cualquier cambio
     }
 
     cancelarCita(cita: any): void {
@@ -177,8 +191,8 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
                     next: (response) => {
                         Swal.fire('¡Éxito!', 'La cita ha sido cancelada correctamente.', 'success');
                         console.log('Respuesta del backend:', response);
-                        cita.estado = nuevoEstado;
-                        this.cargarCitasPorRol();
+                        // No necesitas 'cita.estado = nuevoEstado;' aquí porque 'cargarCitasPorRol()' lo actualizará
+                        this.cargarCitasPorRol(); // Recargar las citas para reflejar el cambio
                     },
                     error: (error) => {
                         console.error('Error al cancelar la cita:', error);
