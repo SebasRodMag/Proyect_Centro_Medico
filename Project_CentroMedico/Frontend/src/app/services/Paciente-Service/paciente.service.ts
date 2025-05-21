@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -8,7 +9,7 @@ import { Observable } from 'rxjs/internal/Observable';
 export class PacienteService {
     private apiUrl = 'http://localhost:8000/api/clientes';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getAuthHeaders(): HttpHeaders {
         const token = localStorage.getItem('token');
@@ -29,8 +30,8 @@ export class PacienteService {
         });
     }
 
-    createPaciente(pacienteData: any, clienteId: string): Observable<any>{
-        return this.http.post<any>(`${this.apiUrl}/${clienteId}/pacientes`, pacienteData, {
+    createPaciente(pacienteData: any, id_cliente: string): Observable<any>{
+        return this.http.post<any>(`${this.apiUrl}/${id_cliente}/pacientes`, pacienteData, {
             headers: this.getAuthHeaders(),
         })
     }
@@ -48,8 +49,8 @@ export class PacienteService {
         });
     }
 
-    updatePaciente( pacienteId: number, pacienteData: any) {
-        return this.http.put(`${this.apiUrl}/pacientes/${pacienteId}`, pacienteData, {
+    updatePaciente( Id: number, pacienteData: any) {
+        return this.http.put(`${this.apiUrl}/pacientes/${Id}`, pacienteData, {
             headers: this.getAuthHeaders(),
         });
     }

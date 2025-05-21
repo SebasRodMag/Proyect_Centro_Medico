@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('clientes/{clienteId}', [ClientesController::class, 'destroy']);
 
         Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']); 
-        Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
+        
 
         //Médicos
         
@@ -79,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('medicos', [MedicosController::class, 'index']);
         Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
-        Route::get('listarpacientes/clientes', [PacientesController::class, 'pacientesPorCliente']);//Listar los pacientes de un Cliente
+        Route::get('listarpacientes/clientes/{id_cliente}', [PacientesController::class, 'pacientesPorClienteConId']);//Listar los pacientes de un Cliente
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ContratosController::class, 'contratoVigente']);
         // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
@@ -89,6 +89,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
         /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
         Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
+        Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
+        Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']);
 
         Route::delete('citas/{id}', [CitasController::class, 'destroy']);
         
