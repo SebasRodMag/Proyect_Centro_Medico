@@ -14,7 +14,7 @@ interface Medico {
     providedIn: 'root',
 })
 export class MedicoService {
-    private apiUrl = 'http://localhost:8000/api/medicos';
+    private apiUrl = '/api/medicos';
 
     constructor(private http: HttpClient) {}
 
