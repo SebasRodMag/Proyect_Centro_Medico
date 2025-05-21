@@ -1,198 +1,206 @@
-import { Component, EventEmitter, Output, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, Output, EventEmitter, inject, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NgSelectModule } from '@ng-select/ng-select';
-
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ClienteService } from '../../../../../../services/Cliente-Service/cliente.service';
-import { MedicoService } from '../../../../../../services/Medico-Service/medico.service';
 import { CitaService } from '../../../../../../services/Cita-Service/cita.service';
-
-import dayjs from 'dayjs';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { PacienteService } from '../../../../../../services/Paciente-Service/paciente.service';
+import { ContratoService } from '../../../../../../services/Contrato-Service/contrato.service';
+import { MedicoService } from '../../../../../../services/Medico-Service/medico.service';
+import { RefreshService } from '../../../../../../services/Comunicacion/refresh.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-modal-create',
     standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        NgSelectModule,
-        MatDatepickerModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatNativeDateModule,
-    ],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule],
     templateUrl: './modal-create.component.html',
     styleUrls: ['./modal-create.component.css'],
 })
-export class ModalCreateComponent implements OnInit {
-    isVisible = false;
-    form: FormGroup;
+export class ModalCreateComponent implements OnInit, OnDestroy {
+    @Input() mostrarModal = false;
+    @Output() cerrarModal = new EventEmitter<void>();
+    @Output() citaCreada = new EventEmitter<void>();
+    @Input() visible: boolean = false;
+
+    formulario!: FormGroup;
+    todayMinDate: string;
     pacientes: any[] = [];
     medicos: any[] = [];
-    availableHours: string[] = [];
     idContrato: number | null = null;
+    horariosDisponibles: string[] = [];
+    private destroy$ = new Subject<void>();
 
-    @Output() closed = new EventEmitter<void>();
-
-    private clienteService = inject(ClienteService);
-    private medicoService = inject(MedicoService);
-    private citaService = inject(CitaService);
     private fb = inject(FormBuilder);
+    private citaService = inject(CitaService);
+    private pacienteService = inject(PacienteService);
+    private contratoService = inject(ContratoService);
+    private medicoService = inject(MedicoService);
+    private refreshService = inject(RefreshService);
 
+
+    /**
+     * Implementar restricción para que el cliente no pueda crear una cita en una fecha fuera a la de su contrato
+     * o cuando no tienes mas citas disponibles.
+     * 
+     */
     constructor() {
-        this.form = this.fb.group({
-            cif: [
-                '',
-                [
-                    Validators.required,
-                    Validators.minLength(9),
-                    Validators.maxLength(9),
-                ],
-            ],
-            paciente: ['', Validators.required],
-            medico: ['', Validators.required],
-            fecha: ['', Validators.required],
-            hora: ['', Validators.required],
-        });
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        this.todayMinDate = `${year}-${month}-${day}`;
     }
-
-    ngOnInit() {
-        this.form
-            .get('cif')
-            ?.valueChanges.pipe(debounceTime(500), distinctUntilChanged())
-            .subscribe((cif) => {
-                if (cif && cif.length === 9) {
-                    this.buscarPacientesPorCif(cif);
-                } else {
-                    this.pacientes = [];
-                    this.idContrato = null;
-                    this.form.get('paciente')?.reset();
-                }
-            });
-
-        this.form.get('fecha')?.valueChanges.subscribe((fecha) => {
-            if (fecha && this.form.get('medico')?.value) {
-                this.actualizarHorasDisponibles(fecha); // Actualiza las horas disponibles cuando cambia la fecha
-            }
+    ngOnInit(): void {
+        this.formulario = this.fb.group({
+            id_paciente: [null, Validators.required],
+            id_medico: [null, Validators.required],
+            fecha_cita: [null, Validators.required],
+            hora_cita: [null, Validators.required],
         });
 
-        this.form.get('medico')?.valueChanges.subscribe(() => {
-            const fecha = this.form.get('fecha')?.value;
-            if (fecha) {
-                this.actualizarHorasDisponibles(fecha); // Actualiza las horas disponibles cuando cambia el médico
-            }
-        });
-    }
-
-    open() {
-        this.isVisible = true;
+        this.cargarPacientesDelCliente();
+        this.cargarContratoDelCliente();
         this.cargarMedicos();
+
+        // Suscripción a los cambios en id_medico y fecha_cita
+        this.formulario.get('id_medico')?.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.cargarHorariosDisponibles());
+
+        this.formulario.get('fecha_cita')?.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.cargarHorariosDisponibles());
     }
 
-    close() {
-        this.isVisible = false;
-        this.closed.emit();
-        this.form.reset();
-        this.pacientes = [];
-        this.medicos = [];
-        this.idContrato = null;
-        this.availableHours = [];
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
-    buscarPacientesPorCif(cif: string) {
-        this.clienteService.getPacientesPorCif(cif).subscribe({
-            next: (data: any) => {
-                this.pacientes = data.pacientes || [];
-                this.idContrato = data.cliente?.id ?? null;
-
-                if (this.pacientes.length === 0) {
-                    this.form.get('paciente')?.reset();
-                }
+    cargarPacientesDelCliente(): void {
+        this.pacienteService.getPacientesPorCliente().subscribe({
+            next: (pacientes) => {
+                this.pacientes = pacientes;
             },
-            error: (err) => {
-                console.error('Error al obtener pacientes por CIF:', err);
-                this.pacientes = [];
+            error: (err: HttpErrorResponse) => {
+                console.error('Error al cargar pacientes:', err);
+                Swal.fire('Error', 'No se pudieron cargar los pacientes.', 'error');
+            }
+        });
+    }
+
+    cargarContratoDelCliente(): void {
+        this.contratoService.getContratoCliente().subscribe({
+            next: (contrato) => {
+                this.idContrato = contrato.id;
+            },
+            error: (err: HttpErrorResponse) => {
+                console.error('Error al obtener contrato:', err);
                 this.idContrato = null;
-                this.form.get('paciente')?.reset();
-            },
+                Swal.fire('Error', 'No se pudo obtener el contrato del cliente.', 'error');
+            }
         });
     }
 
-    cargarMedicos() {
+    cargarMedicos(): void {
         this.medicoService.getMedicos().subscribe({
-            next: (data: any) => {
-                this.medicos = data;
+            next: (medicos) => {
+                this.medicos = medicos;
             },
-            error: (err) => {
-                console.error('Error al obtener médicos:', err);
-                this.medicos = [];
-            },
+            error: (err: HttpErrorResponse) => {
+                console.error('Error al cargar médicos:', err);
+                Swal.fire('Error', 'No se pudieron cargar los médicos.', 'error');
+            }
         });
     }
 
-    onSubmit() {
-        if (this.form.valid && this.idContrato) {
-            const { paciente, medico, fecha, hora } = this.form.value;
+    cargarHorariosDisponibles(): void {
+        const idMedico = this.formulario.get('id_medico')?.value;
+        const fechaCita = this.formulario.get('fecha_cita')?.value;
 
-            const citaPayload = {
-                id_paciente: paciente,
-                id_medico: medico,
-                id_contrato: this.idContrato,
-                fecha_hora_cita: `${dayjs(fecha).format('YYYY-MM-DD')}T${hora}`,
-            };
-
-            // Enviar la solicitud al backend para crear la cita
-            this.citaService.storeCita(citaPayload).subscribe({
-                next: (response: any) => {
-                    console.log('Cita creada con éxito:', response);
-                    // Después de crear la cita, actualizamos las horas disponibles
-                    this.actualizarHorasDisponibles(fecha); // Refrescar las horas disponibles
-
-                    // Cerrar el modal de creación de cita
-                    this.close();
+        if (idMedico && fechaCita) {
+            this.citaService.getHorasDisponibles(fechaCita, idMedico).subscribe({
+                next: (response: { horas_disponibles: string[] }) => { 
+                    this.horariosDisponibles = response.horas_disponibles;
+                    if (this.formulario.get('hora_cita')?.value && !this.horariosDisponibles.includes(this.formulario.get('hora_cita')?.value)) {
+                        this.formulario.get('hora_cita')?.setValue(null);
+                    }
                 },
-                error: (error: any) => {
-                    console.error('Error al crear cita:', error);
-                },
+                error: (err: HttpErrorResponse) => {
+                    console.error('Error al cargar horarios disponibles:', err);
+                    this.horariosDisponibles = [];
+                    this.formulario.get('hora_cita')?.setValue(null);
+                    Swal.fire('Error', 'No se pudieron cargar los horarios disponibles.', 'error');
+                }
             });
         } else {
-            this.form.markAllAsTouched();
+            this.horariosDisponibles = [];
+            this.formulario.get('hora_cita')?.setValue(null);
         }
     }
 
-    actualizarHorasDisponibles(fecha: string | Date) {
-        const dia = dayjs(fecha);
-        const diaSemana = dia.day(); // 0 = domingo, 6 = sábado
-
-        if (diaSemana === 0 || diaSemana === 6) {
-            this.availableHours = [];
+    crearCita(): void {
+        if (this.formulario.invalid) {
+            console.warn('Formulario inválido. Revise los campos obligatorios.');
+            Swal.fire('Advertencia', 'Por favor, rellene todos los campos obligatorios.', 'warning');
             return;
         }
 
-        const medicoId = this.form.get('medico')?.value;
-        if (!medicoId) return;
+        if (!this.idContrato) {
+            console.error('No se encontró el contrato del cliente. No se puede crear la cita.');
+            Swal.fire('Error', 'No se pudo asociar la cita a un contrato. Contacte con soporte.', 'error');
+            return;
+        }
 
-        this.citaService
-            .getHorasDisponibles(dia.format('YYYY-MM-DD'), medicoId)
-            .subscribe({
-                next: (response: any) => {
-                    this.availableHours = response.horas_disponibles || [];
-                },
-                error: () => {
-                    console.error('Error al obtener las horas disponibles');
-                },
-            });
+        const rawFormValue = this.formulario.value;
+
+        // Construir fecha_hora_cita a partir de fecha_cita y hora_cita
+        const fechaHoraCitaFinal = `${rawFormValue.fecha_cita} ${rawFormValue.hora_cita}:00`;
+
+        const datosCita = {
+            id_paciente: Number(rawFormValue.id_paciente),
+            id_medico: Number(rawFormValue.id_medico),
+            fecha_hora_cita: fechaHoraCitaFinal,
+            id_contrato: this.idContrato,
+            estado: 'pendiente'
+        };
+
+        console.log('Datos de la cita a enviar:', datosCita);
+
+        this.citaService.storeCita(datosCita).subscribe({
+            next: () => {
+                this.cerrar();
+                this.citaCreada.emit();
+                this.refreshService.triggerRefreshCitas();
+                console.log('Cita creada con éxito.');
+                Swal.fire('¡Éxito!', 'La cita ha sido creada correctamente.', 'success');
+            },
+            error: (err: HttpErrorResponse) => {
+                console.error('Error al crear cita:', err);
+                let errorMessage = 'Ocurrió un error al crear la cita. Por favor, inténtelo de nuevo.';
+
+                if (err.error && err.error.errors) {
+                    const validationErrors = Object.values(err.error.errors).flat();
+                } else if (err.error && err.error.message) {
+                    errorMessage = err.error.message;
+                    Swal.fire('Error', errorMessage, 'error'); // Errores del servidor
+                } else {
+                    Swal.fire('Error', errorMessage, 'error'); // Error genérico
+                }
+            }
+        });
     }
-    
-    filtrarDiasHabiles = (fecha: Date | null): boolean => {
-        if (!fecha) return false;
-        const dia = fecha.getDay(); // 0: domingo, 6: sábado
-        return dia !== 0 && dia !== 6;
-    };
+
+    cerrar() {
+        this.cerrarModal.emit();
+        this.formulario.reset();
+        this.horariosDisponibles = [];
+        // Desmarcar todos los controles para que no muestren errores al reabrirse
+        Object.keys(this.formulario.controls).forEach(key => {
+            this.formulario.get(key)?.markAsUntouched();
+            this.formulario.get(key)?.markAsPristine();
+        });
+    }
 }

@@ -1,130 +1,208 @@
+/* Fondo oscuro que cubre toda la pantalla */
 .modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-.modal-content {
+/* Contenedor principal del modal (la caja blanca) */
+.modal-container {
     background: white;
-    padding: 20px;
-    border-radius: 8px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-width: 600px;
     position: relative;
+    max-width: 500px;
+    width: 90%;
+    box-sizing: border-box;
 }
 
+.modal-content-custom {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Encabezado del modal (título y botón de cerrar) */
 .modal-header {
-    width: 65%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
 }
 
+.modal-title {
+    font-size: 1.5em;
+    color: #333;
+    margin: 0;
+}
+
+.close-button {
+    font-size: 28px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.close-button:hover {
+    color: #333;
+}
 
 #contenedor-principal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 100%;
+
 }
+
 
 #columnas {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    gap: 20px;
+    gap: 30px;
     width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
-#segundo-contenedor {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
 
 #primer-contenedor,
 #segundo-contenedor {
     flex: 1;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
 }
 
-#primer-contenedor div,
-#segundo-contenedor div {
+#primer-contenedor > div,
+#segundo-contenedor > div {
     display: flex;
     flex-direction: column;
-    margin: 5px 0;
-}
-
-
-
-#boton-registrar {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
+    margin-bottom: 0;
     width: 100%;
 }
 
-input,
-select {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid black;
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px; 
+    color: #555;
+    font-size: 0.95em;
 }
 
-i {
-    font-size: 25px;
+
+input.form-control,
+select.form-select {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Estilo básico para que ng-select se integre con tu diseño */
+input.form-control:focus,
+select.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+.modal-actions {
+    margin-top: 30px; /* Espacio encima de los botones */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    display: flex; /* Convierte este contenedor en un flex container */
+    flex-direction: row; /* Asegura que sus hijos (los divs de los botones) estén en fila */
+    justify-content: center; /* Centra los grupos de botones horizontalmente */
+    gap: 20px; /* Espacio entre los dos divs de los botones */
+}
+
+.btn {
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 1.05em;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    min-width: 120px;
+    box-sizing: border-box;
+    width: auto;
+}
+
+.btn-secondary {
+    background-color: #46a2f3;
+    border-color: #46a2f3;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #3784c7;
+    border-color: #3784c7;
+}
+
+.btn-primary {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+
+abbr {
+    cursor: help;
+    text-decoration: none;
+    border-bottom: 1px dotted #007bff;
+    color: #007bff;
+}
+
+
 ng-select {
     width: 100%;
     font-size: 16px;
 }
 
-.ng-select {
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    background-color: #fff;
-    box-shadow: none;
-}
-
-.ng-select .ng-select-container {
-    border-radius: 5px;
-    min-height: 38px;
-    padding: 4px 8px;
-    border: 1px solid #ced4da;
+.ng-select.ng-select-single .ng-select-container {
+    height: 40px;
     align-items: center;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 0 12px;
+}
+.ng-select.ng-select-single .ng-value-container {
+    padding: 0;
+}
+.ng-select.ng-select-single .ng-placeholder {
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.ng-select.ng-select-multiple .ng-select-container {
-    min-height: 38px;
+.ng-select .ng-select-container:focus,
+.ng-select.ng-select-focused .ng-select-container {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    outline: none;
 }
 
-.ng-select.ng-select-multiple .ng-value {
-    background-color: #007bff;
-    color: white;
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin-right: 4px;
-}
-
-.ng-select .ng-value-icon {
-    margin-left: 4px;
-}
 
 .ng-dropdown-panel {
     border: 1px solid #ced4da;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 1050 !important;
-    /* Para que se superponga en modales */
 }
 
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
@@ -135,7 +213,29 @@ ng-select {
     background-color: #e9ecef;
 }
 
-/* Asegura que en el modal no se corte */
-.modal-content {
-    overflow: visible;
+i.bi {
+    font-size: 25px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .modal-container {
+        padding: 20px;
+        max-width: 95%;
+    }
+
+    #columnas {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    #primer-contenedor,
+    #segundo-contenedor {
+        min-width: 100%;
+    }
+
+    #boton-registrar {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Date;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
 class ContratosController extends Controller
 {
     public function store(Request $request)
@@ -234,5 +235,24 @@ class ContratosController extends Controller
         return response()->json([
             'contrato' => $contrato
         ], 200);
+    }
+
+    //Buscar un contrato por el id_cliente
+    public function buscarContratoCliente()
+    {
+        $user = Auth::user();
+
+        $cliente = Cliente::where('id_usuario', $user->id)->first();
+
+        if (!$cliente) {
+            return response()->json(['message' => 'Cliente no encontrado para el usuario autenticado.'], 404);
+        }
+        $contrato = Contrato::where('id_cliente', $cliente->id)->first();
+
+        if (!$contrato) {
+            return response()->json(['message' => 'No se encontró ningún contrato para este cliente.'], 404);
+        }
+
+        return response()->json($contrato, 200);
     }
 }

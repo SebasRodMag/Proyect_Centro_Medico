@@ -165,16 +165,17 @@ export class CitasComponent implements OnInit, AfterViewInit {
         });
     }
 //función para comparar la fecha de la cita con el dia presente y saber sii se puede modificar una cita.
-    esHoy(fecha: string): boolean {
-    const hoy = new Date();
-    const fechaCita = new Date(fecha);
+    esHoy(fechaHora: string): boolean {
+        const fechaCita = new Date(fechaHora);
+        const hoy = new Date();
 
-    return (
-        hoy.getFullYear() === fechaCita.getFullYear() &&
-        hoy.getMonth() === fechaCita.getMonth() &&
-        hoy.getDate() === fechaCita.getDate()
+        return (
+            fechaCita.getFullYear() === hoy.getFullYear() &&
+            fechaCita.getMonth() === hoy.getMonth() &&
+            fechaCita.getDate() === hoy.getDate()
         );
     }
+
     eliminarCita(cita: any): void {
         if (cita.estado === 'realizada') {
         Swal.fire('No permitido', 'No se puede eliminar una cita ya realizada.', 'info');

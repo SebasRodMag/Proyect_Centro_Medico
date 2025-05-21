@@ -16,9 +16,15 @@ export class PacienteService {
             Authorization: `Bearer ${token}`,
         });
     }
-
+    //este método espera el idCliente
     getPacientesDelCliente(clienteId: number): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/${clienteId}/pacientes`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getPacientesPorCliente(): Observable<any[]>{
+        return this.http.get<any[]>(`http://localhost:8000/api/listarpacientes/clientes`, {
             headers: this.getAuthHeaders(),
         });
     }

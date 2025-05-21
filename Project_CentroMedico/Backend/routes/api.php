@@ -39,13 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
         //Médicos
         Route::get('medicos', [MedicosController::class, 'index']);
         Route::get('medicos/todos', [MedicosController::class, 'showAllMedicos']);
+
         Route::post('medicos', [MedicosController::class, 'store']);
         Route::get('medicos/{medico}', [MedicosController::class, 'show']);
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
         Route::delete('medicos/{medico}', [MedicosController::class, 'destroy']);
-        Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
         
-        Route::post('citas', [CitasController::class, 'store']);
+        
         Route::get('citas', [CitasController::class, 'index']);
         Route::delete('citas/{cita}', [CitasController::class, 'destroy']);
 
@@ -78,15 +78,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Rutas que solo los administradores y clientes pueden acceder
     Route::middleware(['role:Administrador|Cliente'])->group(function () {
+        Route::post('citas', [CitasController::class, 'store']);
+        Route::get('medicos', [MedicosController::class, 'index']);
         Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
+        Route::get('listarpacientes/clientes', [PacientesController::class, 'pacientesPorCliente']);//Listar los pacientes de un Cliente
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ContratosController::class, 'contratoVigente']);
         // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
-        Route::get('clientes/{id_cliente}/pacientes', [ClientesController::class, 'pacientes']);
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
+        Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
+        /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
+        Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
 
         Route::delete('citas/{id}', [CitasController::class, 'destroy']);
         

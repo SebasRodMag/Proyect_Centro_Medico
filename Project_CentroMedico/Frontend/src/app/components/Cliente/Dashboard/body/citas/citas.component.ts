@@ -1,28 +1,39 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CitaService } from '../../../../../services/Cita-Service/cita.service';
+import { RefreshService } from '../../../../../services/Comunicacion/refresh.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ModalCreateComponent } from './modal-create/modal-create.component';
 import { AuthService } from '../../../../../auth/auth.service';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-citas',
     standalone: true,
     imports: [
         CommonModule,
-        ModalCreateComponent,
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
         FormsModule,
+        ModalCreateComponent,
     ],
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
-export class CitasComponent implements OnInit, AfterViewInit {
+export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    private destroy$ = new Subject<void>();
+    private citaService = inject(CitaService);
+    private refreshService = inject(RefreshService);
+    private authService = inject(AuthService)
+
     citasDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
@@ -37,22 +48,33 @@ export class CitasComponent implements OnInit, AfterViewInit {
     rol_id!: number;
     fechaDesde: string = '';
     fechaHasta: string = '';
+    mostrarModal: boolean = false;
+    modalVisible = false;
+    filtroBusqueda: string = '';
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
 
-    constructor(
-        private citaService: CitaService,
-        private authService: AuthService
-    ) {}
-
     ngOnInit(): void {
-        this.authService
-            .me()
-            .subscribe((response: { user: { rol_id: number } }) => {
+        this.authService.me().subscribe({
+            next: (response: { user: { rol_id: number } }) => {
                 this.rol_id = response.user.rol_id;
-                this.getCitasPorIdRol(this.rol_id);
-            });
+                this.cargarCitasPorRol();
+            },
+            error: (err: HttpErrorResponse) => {
+                console.error('Error al obtener el rol del usuario:', err);
+                Swal.fire('Error', 'No se pudo obtener la información del usuario. Por favor, intente de nuevo.', 'error');
+            }
+        });
+
+        this.refreshService.refreshCitas$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                console.log('Señal de refresco recibida en CitasComponent. Recargando citas...');
+                this.cargarCitasPorRol();
+        });
+
+        this.citasDataSource.filterPredicate = this.crearFiltroPersonalizado();
     }
 
     ngAfterViewInit(): void {
@@ -60,25 +82,75 @@ export class CitasComponent implements OnInit, AfterViewInit {
         this.citasDataSource.sort = this.sort;
     }
 
-    getCitasPorIdRol(rol_id: number): void {
-        this.citaService.getCitasPorId(rol_id).subscribe((response) => {
-            this.citasDataSource.data = response.citas;
-        });
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
-    filtrarPorFechas(): void {
-        const desde = this.fechaDesde ? new Date(this.fechaDesde) : null;
-        const hasta = this.fechaHasta ? new Date(this.fechaHasta) : null;
 
-        this.citasDataSource.filterPredicate = (data: any) => {
-            const fechaCita = new Date(data.fecha);
+    cargarCitasPorRol(): void {
+        if (this.rol_id) {
+            this.citaService.getCitasPorId(this.rol_id).subscribe({
+                next: (response: { citas: any[] }) => {
+                    console.log('Respuesta de la API de citas:', response);
+                    const citasConSearchString = response.citas.map(cita => {
+                        const fechaHoraCompletaStr = `${cita.fecha} ${cita.hora}`;
+                        const fechaCitaForFilter = new Date(fechaHoraCompletaStr); //Para el filtro de rango de fechas
+                        return {
+                            ...cita,
+                            search_string: `${cita.id} ${cita.nombre_paciente || ''} ${cita.nombre_medico || ''} ${cita.observaciones || ''} ${cita.fecha || ''} ${cita.hora || ''}`.toLowerCase()
+                        };
+                    });
+                    this.citasDataSource.data = citasConSearchString;
+                    this.aplicarTodosLosFiltros();
+                    console.log('Citas cargadas con éxito para rol:', this.rol_id);
+                },
+                error: (err: HttpErrorResponse) => {
+                    console.error('Error al cargar citas por rol:', err);
+                    Swal.fire('Error', 'No se pudieron cargar las citas.', 'error');
+                }
+            });
+        } else {
+            console.warn('Rol de usuario no disponible para cargar citas.');
+            this.citasDataSource.data = [];
+            Swal.fire('Información', 'No se pudo determinar el rol del usuario para cargar las citas.', 'info');
+        }
+    }
 
-            const cumpleDesde = !desde || fechaCita >= desde;
-            const cumpleHasta = !hasta || fechaCita <= hasta;
+    aplicarTodosLosFiltros(): void {
+        this.citasDataSource.filter = 'custom_filter_trigger';
+        if (this.citasDataSource.paginator) {
+            this.citasDataSource.paginator.firstPage();
+        }
+    }
 
-            return cumpleDesde && cumpleHasta;
+    crearFiltroPersonalizado(): (data: any, filter: string) => boolean {
+        return (data: any, filter: string): boolean => {
+            const desde = this.fechaDesde ? new Date(this.fechaDesde + 'T00:00:00') : null;
+            const hasta = this.fechaHasta ? new Date(this.fechaHasta + 'T23:59:59') : null;
+
+            const fechaHoraForComparison = new Date(`${data.fecha} ${data.hora}`);
+
+            let matchesDateRange = true;
+            if (desde && fechaHoraForComparison < desde) {
+                matchesDateRange = false;
+            }
+            if (hasta && fechaHoraForComparison > hasta) {
+                matchesDateRange = false;
+            }
+
+            const textFilter = this.filtroBusqueda.trim().toLowerCase();
+            const matchesText = data.search_string.includes(textFilter);
+
+            return matchesDateRange && matchesText;
         };
+    }
 
-        this.citasDataSource.filter = '' + Math.random(); // Forzar refresco del filtro
+    abrirModal() {
+        this.modalVisible = true;
+    }
+
+    cerrarModalCita(): void {
+        this.modalVisible = false;
     }
 }
