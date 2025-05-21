@@ -45,7 +45,6 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita creada con éxito'], 201);
     }
 
-    public function horarios() {}
 
     public function updateHoy(Request $request, $id)
     {
@@ -212,19 +211,19 @@ class CitasController extends Controller
         return response()->json($citas, 200);
     }
 
-public function citasPorMedicoLogueado()
-{
-    $user = Auth::user();
-    $medico = $user->medico;
+    public function citasPorMedicoLogueado()
+    {
+        $user = Auth::user();
+        $medico = $user->medico;
 
-    if (!$medico) {
-        return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+        if (!$medico) {
+            return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+        }
+
+        $citas = $medico->citas()->with(['paciente', 'medico'])->get();
+
+        return response()->json($citas, 200);
     }
-
-    $citas = $medico->citas()->with(['paciente', 'medico'])->get();
-
-    return response()->json($citas, 200);
-}
 
 
 
@@ -353,20 +352,14 @@ public function citasPorMedicoLogueado()
     }
 
     //función para cancelar una cita recibiendo como parámetro el id de la cita y el campo que 'estado' que se desea modificar.
-    public function cancelarCita(Request $request, $id)
+    public function cambiarEstadoCita(Request $request, $id)
     {
         $user = Auth::user();
-        $medico = Medico::where('id', $user->id)->first();
 
-        Log::info('Solicitud recibida para cambiar estado de cita', [
-            'user_id' => $user->id,
-            'cita_id' => $id,
-            'datos' => $request->all()
-        ]);
-        
-
-        if (!$medico) {
-            return response()->json(['error' => 'El usuario no es un Médico autenticado.'], 403);
+        if (!$user->hasAnyRole(['Medico', 'Administrador', 'cliente'])) {
+            return response()->json([
+                'error' => 'No tienes permiso para realizar esta acción.'
+            ], 403);
         }
 
         $validated = $request->validate([
@@ -376,12 +369,12 @@ public function citasPorMedicoLogueado()
         $cita = Cita::findOrFail($id);
 
         if ($cita->estado !== 'pendiente') {
-            return response()->json(['error' => 'Solo se pueden modificar citas pendientes.'], 403);
+            return response()->json(['error' => 'Solo se pueden modificar citas que están en estado "pendiente".'], 403);
         }
 
         $cita->estado = $validated['estado'];
         $cita->save();
 
-        return response()->json(['message' => 'Cita actualizada con éxito'], 200);
+        return response()->json(['message' => 'Estado de la cita actualizado con éxito.'], 200);
     }
 }

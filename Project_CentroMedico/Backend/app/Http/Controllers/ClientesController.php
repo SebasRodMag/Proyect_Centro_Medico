@@ -280,6 +280,8 @@ class ClientesController extends Controller
                     'observaciones' => $cita->observaciones,
                     'nombre_paciente' => $cita->paciente->nombre . ' ' . $cita->paciente->apellidos,
                     'nombre_medico' => $cita->medico->nombre . ' ' . $cita->medico->apellidos,
+                    'estado' => $cita->estado,
+
                 ];
             });
 

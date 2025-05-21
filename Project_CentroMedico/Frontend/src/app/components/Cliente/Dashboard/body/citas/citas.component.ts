@@ -41,6 +41,7 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
         'nombre_medico',
         'fecha',
         'hora',
+        'estado',
         'observaciones',
         'acciones',
     ];
@@ -72,7 +73,7 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(() => {
                 console.log('Señal de refresco recibida en CitasComponent. Recargando citas...');
                 this.cargarCitasPorRol();
-        });
+            });
 
         this.citasDataSource.filterPredicate = this.crearFiltroPersonalizado();
     }
@@ -153,4 +154,45 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
     cerrarModalCita(): void {
         this.modalVisible = false;
     }
+
+    cancelarCita(cita: any): void {
+        if (cita.estado !== 'pendiente') {
+            Swal.fire('No permitido', 'Solo puedes cambiar el estado de citas pendientes.', 'info');
+            console.log('Estado actual:', cita.estado);
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cancelar cita',
+            text: 'Va a cancelar la cita. Esto deja la cita disponible para otros usuarios',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Cancelar cita',
+            cancelButtonText: 'Abortar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const nuevoEstado = 'cancelado';
+                console.log(`Solicitando cambio de estado para cita ID ${cita.id} a:`, nuevoEstado);
+                this.citaService.cambiarEstadoCita(cita.id, { estado: nuevoEstado }).subscribe({
+                    next: (response) => {
+                        Swal.fire('¡Éxito!', 'La cita ha sido cancelada correctamente.', 'success');
+                        console.log('Respuesta del backend:', response);
+                        cita.estado = nuevoEstado;
+                        this.cargarCitasPorRol();
+                    },
+                    error: (error) => {
+                        console.error('Error al cancelar la cita:', error);
+                        let errorMessage = 'Ha ocurrido un error al cancelar la cita.';
+                        if (error.error && error.error.message) { 
+                            errorMessage = error.error.message;
+                        } else if (error.error && error.error.error) {
+                            errorMessage = error.error.error; 
+                        }
+                        Swal.fire('Error', errorMessage, 'error');
+                    }
+                });
+            }
+        })
+    }
+
 }
