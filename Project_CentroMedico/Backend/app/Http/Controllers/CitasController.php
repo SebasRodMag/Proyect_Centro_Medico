@@ -125,12 +125,10 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita actualizada con éxito'], 200);
     }
 
-
-
-    public function destroy($id){
-        $cita = Cita::findOrFail($id);
+    public function destroy($id_cliente){
+        $cita = Cita::findOrFail($id_cliente);
         $cita->delete();
-        return response()->json(['message' => 'Cita eliminada con éxito'], 200);
+        return response()->json(['message' => 'Cita eliminada correctamente'], 200);
     }
 
     public function index()
@@ -138,30 +136,25 @@ class CitasController extends Controller
         $citas = Cita::with(['paciente.cliente', 'medico', 'contrato.cliente'])->get();
 
         $citasFormateadas = $citas->map(function ($cita) {
-            // Intenta sacar el cliente desde paciente o contrato
             $cliente = $cita->cliente
                 ?? $cita->paciente->cliente
                 ?? $cita->contrato->cliente;
 
-            // Valor por defecto si no hay contrato
             $numeroDeCita = null;
 
             if ($cita->contrato && $cliente) {
                 $contrato = $cita->contrato;
                 $totalReconocimientos = $contrato->numero_reconocimientos;
 
-                // Obtener todas las citas del contrato ordenadas por fecha
                 $citasContrato = Cita::where('id_contrato', $contrato->id)
                     ->orderBy('fecha_hora_cita')
                     ->get();
 
-                // Encontrar la posición de esta cita
                 $posicion = $citasContrato->search(function ($c) use ($cita) {
                     return $c->id === $cita->id;
                 });
 
                 if ($posicion !== false) {
-                    // Sumamos 1 porque search devuelve índice 0-based
                     $numeroDeCita = ($posicion + 1) . '/' . $totalReconocimientos;
                 }
             }
@@ -173,9 +166,9 @@ class CitasController extends Controller
                 'dni_paciente' => $cita->paciente ? $cita->paciente->dni : null,
                 'fecha' => $cita->fecha_hora_cita,
                 'cliente' => $cliente->razon_social ?? null,
-                'id_medico' => $cita->medico->id,
+                'id_medico' => $cita->medico ? $cita->medico->id : null,
                 'medico' => $cita->medico ? $cita->medico->nombre . ' ' . $cita->medico->apellidos : null,
-                'numero_de_cita' => $numeroDeCita, // e.g., "3/80"
+                'numero_de_cita' => $numeroDeCita,
                 'estado' => $cita->estado,
             ];
         });
@@ -184,6 +177,7 @@ class CitasController extends Controller
             'citas' => $citasFormateadas,
         ], 200);
     }
+
 
 
 
@@ -212,19 +206,19 @@ class CitasController extends Controller
         return response()->json($citas, 200);
     }
 
-public function citasPorMedicoLogueado()
-{
-    $user = Auth::user();
-    $medico = $user->medico;
+    public function citasPorMedicoLogueado()
+    {
+        $user = Auth::user();
+        $medico = $user->medico;
 
-    if (!$medico) {
-        return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+        if (!$medico) {
+            return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+        }
+
+        $citas = $medico->citas()->with(['paciente', 'medico'])->get();
+
+        return response()->json($citas, 200);
     }
-
-    $citas = $medico->citas()->with(['paciente', 'medico'])->get();
-
-    return response()->json($citas, 200);
-}
 
 
 
@@ -294,7 +288,7 @@ public function citasPorMedicoLogueado()
     }
 
     public function obtenerHorasDisponiblesHoy(Request $request)
-        {
+    {
         // Asegurarse de que el usuario esté autenticado y sea médico
         $user = Auth::user();
         $medico = Medico::where('id', $user->id)->first();
@@ -363,7 +357,7 @@ public function citasPorMedicoLogueado()
             'cita_id' => $id,
             'datos' => $request->all()
         ]);
-        
+
 
         if (!$medico) {
             return response()->json(['error' => 'El usuario no es un Médico autenticado.'], 403);

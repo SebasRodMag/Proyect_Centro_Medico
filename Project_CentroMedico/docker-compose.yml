@@ -1,0 +1,73 @@
+services:
+  app:
+  build:
+    context: ./backend
+  container_name: laravel_app
+  volumes:
+    - ./backend:/var/www/html
+  depends_on:
+    - db
+  networks:
+    - laravel
+  ports:
+    - "8000:8000"
+
+
+  angular:
+    build:
+      context: ./frontend
+    container_name: angular_app
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_web
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend:/var/www/html
+      - ./frontend/dist/frontend/browser:/usr/share/nginx/html
+    depends_on:
+      - app
+      - angular
+    networks:
+      - laravel
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+volumes:
+  mysql_data:
+
+networks:
+  laravel:

@@ -12,9 +12,11 @@ import { FormsModule, NgForm } from '@angular/forms';
     styleUrls: ['./modal-create.component.css'],
 })
 export class ModalCreateComponent {
+    mostrarPassword: boolean = false;
     isVisible = false;
     cliente = {
         email: '',
+        password: '',
         razon_social: '',
         cif: '',
         direccion: '',
@@ -26,6 +28,7 @@ export class ModalCreateComponent {
     };
 
     @Output() closed = new EventEmitter<void>();
+    @Output() usuarioCreado = new EventEmitter<void>();
 
     constructor(private clienteService: ClienteService) {}
 
@@ -41,11 +44,10 @@ export class ModalCreateComponent {
     // Método llamado al enviar el formulario
     onSubmit() {
         // Validamos que el formulario sea válido
-        if (!this.cliente.email || !this.cliente.razon_social || !this.cliente.cif || !this.cliente.direccion 
-          || !this.cliente.municipio || !this.cliente.provincia || !this.cliente.reconocimientos) {
+        if (!this.cliente.email || !this.cliente.password || !this.cliente.razon_social || !this.cliente.cif || !this.cliente.direccion 
+        || !this.cliente.municipio || !this.cliente.provincia || !this.cliente.reconocimientos) {
             return;
         }
-        
         // Llamamos al servicio para crear el cliente
         this.createCliente(this.cliente);
     }
@@ -55,6 +57,7 @@ export class ModalCreateComponent {
         this.clienteService.createCliente(cliente).subscribe(
             (response) => {
                 console.log('Cliente creado con éxito: ', response);
+                this.usuarioCreado.emit();
                 this.close();
             },
             (error) => {

@@ -53,7 +53,7 @@ export class MedicosComponent implements OnInit {
     }
 
     loadMedicos() {
-        this.medicoService.getMedicos().subscribe({
+        this.medicoService.getAllMedicos().subscribe({
             next: (data) => {
                 this.medicos = data;
                 this.medicosDataSource.data = this.medicos;
@@ -140,5 +140,5 @@ export class MedicosComponent implements OnInit {
                 });
             }
         });
-    }
+    }    
 }

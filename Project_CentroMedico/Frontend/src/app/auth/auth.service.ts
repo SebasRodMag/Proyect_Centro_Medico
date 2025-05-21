@@ -23,7 +23,7 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    private apiUrl = 'http://localhost:8000/api/auth';
+    private apiUrl = '/api/auth';
 
     // Estado de autenticación reactivo. Va a servir para que el header se actualice sin recargar la página
     private authState = new BehaviorSubject<boolean>(this.isLoggedIn());
