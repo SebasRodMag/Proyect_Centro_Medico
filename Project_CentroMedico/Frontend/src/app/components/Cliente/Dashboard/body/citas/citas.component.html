@@ -4,8 +4,13 @@
     <button (click)="abrirModalCreacion()" id="boton-registrar">Crear cita</button>
 </div>
         <app-modal-create
-    [visible]="modalVisible"
-    [cita]="citaParaEditar"(cerrarModal)="cerrarModalCita()"(citaCreada)="cerrarModalCita()"(citaActualizada)="cerrarModalCita()"></app-modal-create>
+            *ngIf="modalVisible" 
+            [visible]="modalVisible"
+            [cita]="citaParaEditar"
+            (cerrarModal)="cerrarModalCita()"
+            (citaCreada)="cerrarModalCita()"
+            (citaActualizada)="cerrarModalCita()"
+        ></app-modal-create>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
             <input type="date" id="fecha-desde" placeholder="" [(ngModel)]="fechaDesde" (change)="aplicarTodosLosFiltros()" />

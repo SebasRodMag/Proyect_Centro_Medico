@@ -19,7 +19,6 @@ import Swal from 'sweetalert2';
     styleUrls: ['./modal-create.component.css'],
 })
 export class ModalCreateComponent implements OnInit, OnDestroy {
-    @Input() mostrarModal = false;
     @Input() cita: any | null = null;
     @Input() visible: boolean = false;
 
@@ -65,6 +64,22 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
         this.cargarContratoDelCliente();
         this.cargarMedicos();
 
+        if (this.cita) {
+            this.isEditMode = true;
+            this.citaId = this.cita.id;
+            this.formulario.patchValue({
+                id_paciente: this.cita.paciente_id,
+                id_medico: this.cita.medico_id,
+                fecha_cita: this.cita.fecha,
+                hora_cita: this.cita.hora,
+            });
+        } else {
+            // Si no hay cita, aseguramos que esté en modo creación
+            this.isEditMode = false;
+            this.citaId = null;
+        }
+
+        this.cargarHorariosDisponibles();
 
         // Suscripción a los cambios en id_medico y fecha_cita
         this.formulario.get('id_medico')?.valueChanges
@@ -155,8 +170,13 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
             this.citaService.getHorasDisponibles(fechaCita, idMedico).subscribe({
                 next: (response: { horas_disponibles: string[] }) => { 
                     this.horariosDisponibles = response.horas_disponibles;
+                    const currentHora = this.cita?.hora;
                     if (this.formulario.get('hora_cita')?.value && !this.horariosDisponibles.includes(this.formulario.get('hora_cita')?.value)) {
                         this.formulario.get('hora_cita')?.setValue(null);
+                    }
+                    if (this.isEditMode && currentHora && !this.horariosDisponibles.includes(currentHora)) {
+                        this.horariosDisponibles.push(currentHora);
+                        this.horariosDisponibles.sort();
                     }
                 },
                 error: (err: HttpErrorResponse) => {
@@ -249,16 +269,12 @@ export class ModalCreateComponent implements OnInit, OnDestroy {
 
     cerrar(): void {
         this.cerrarModal.emit();
-        this.formulario.reset();
+        // Con *ngIf, el componente se destruye, por lo que no es estrictamente necesario resetear aquí,
+        // pero es una buena práctica por si acaso el modal se mantiene en el DOM por alguna razón.
+        this.formulario?.reset();
         this.horariosDisponibles = [];
-        this.isEditMode = false; // Resetear el modo a creación
-        this.citaId = null; // Resetear el ID de la cita
-        // Es importante re-inicializar el formulario para el siguiente uso
-        this.initForm(); 
-        // Desmarcar todos los controles para que no muestren errores al reabrirse
-        Object.keys(this.formulario.controls).forEach(key => {
-            this.formulario.get(key)?.markAsUntouched();
-            this.formulario.get(key)?.markAsPristine();
-        });
+        this.isEditMode = false;
+        this.citaId = null;
+        this.cita = null; // Limpiar la cita del input
     }
 }
