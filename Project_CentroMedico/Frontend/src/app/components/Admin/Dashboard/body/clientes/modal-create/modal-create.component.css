@@ -111,7 +111,24 @@ i{
     display: flex;
     justify-content: space-between;
 }
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 
+
+    i {
+        position: absolute;
+        right: 10px;
+        cursor: pointer;
+        color: #555;
+        font-size: 1.2rem;
+    }
+
+    i:hover {
+        color: #000;
+    }
+}
 
 #contenedor-principal {
     display: flex;

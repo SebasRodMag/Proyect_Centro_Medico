@@ -37,7 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
         
 
         //Médicos
-        
+        Route::get('medicos', [MedicosController::class, 'index']);
+        Route::get('medicos/todos', [MedicosController::class, 'showAllMedicos']);
+
         Route::post('medicos', [MedicosController::class, 'store']);
         Route::get('medicos/{medico}', [MedicosController::class, 'show']);
         Route::put('medicos/{medico}', [MedicosController::class, 'update']);
@@ -45,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
         
         
         Route::get('citas', [CitasController::class, 'index']);
+        Route::delete('citas/{cita}', [CitasController::class, 'destroy']);
 
         Route::get('usuarios', [UsersController::class, 'index']);
         Route::post('usuarios', [UsersController::class, 'store']);

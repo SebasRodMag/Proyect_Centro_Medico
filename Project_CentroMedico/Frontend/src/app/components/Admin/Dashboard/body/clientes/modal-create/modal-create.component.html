@@ -11,7 +11,38 @@
                         <div id="primer-contenedor">
                             <div>
                                 <label for="email">Email:</label>
-                                <input type="email" name="email" id="email" [(ngModel)]="cliente.email" required />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    [(ngModel)]="cliente.email"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label for="password">Contraseña:</label>
+                                <div class="password-wrapper">
+                                    <input
+                                        [type]="mostrarPassword ? 'text' : 'password'"
+                                        name="password"
+                                        id="password"
+                                        [(ngModel)]="cliente.password"
+                                        required
+                                        minlength="6"
+                                        #passwordField="ngModel"
+                                    />
+                                    <i
+                                        class="bi"
+                                        [ngClass]="
+                                            mostrarPassword
+                                                ? 'bi-eye-fill'
+                                                : 'bi-eye-slash-fill'
+                                        "
+                                        (click)="
+                                            mostrarPassword = !mostrarPassword
+                                        "
+                                    ></i>
+                                </div>
                             </div>
                             <div>
                                 <label for="razon_social">Razón social:</label>
@@ -25,10 +56,18 @@
                             </div>
                             <div>
                                 <label for="cif">CIF:</label>
-                                <input type="text" name="cif" id="cif" [(ngModel)]="cliente.cif" required />
+                                <input
+                                    type="text"
+                                    name="cif"
+                                    id="cif"
+                                    [(ngModel)]="cliente.cif"
+                                    required
+                                />
                             </div>
                             <div>
-                                <label for="reconocimientos">Nº de reconocimientos:</label>
+                                <label for="reconocimientos"
+                                    >Nº de reconocimientos:</label
+                                >
                                 <input
                                     type="number"
                                     name="reconocimientos"

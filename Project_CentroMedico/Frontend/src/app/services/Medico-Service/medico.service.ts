@@ -14,7 +14,7 @@ interface Medico {
     providedIn: 'root',
 })
 export class MedicoService {
-    private apiUrl = 'http://localhost:8000/api/medicos';
+    private apiUrl = '/api/medicos';
 
     constructor(private http: HttpClient) {}
 
@@ -27,6 +27,12 @@ export class MedicoService {
 
     getMedicos(): Observable<any[]> {
         return this.http.get<any[]>(this.apiUrl, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getAllMedicos():Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/todos`, {
             headers: this.getAuthHeaders(),
         });
     }
