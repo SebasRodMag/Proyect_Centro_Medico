@@ -25,7 +25,7 @@ export class PacienteService {
     }
 
     getPacientesPorCliente(): Observable<any[]>{
-        return this.http.get<any[]>(`http://localhost:8000/api/listarpacientes/clientes`, {
+        return this.http.get<any[]>(`${this.apiUrl}/listarpacientes`, {
             headers: this.getAuthHeaders(),
         });
     }

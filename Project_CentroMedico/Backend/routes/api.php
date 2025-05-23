@@ -15,6 +15,7 @@ use App\Http\Controllers\ContratosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\CitasController;
 use App\Models\Contrato;
+use App\Models\Paciente;
 
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
@@ -34,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('clientes/{clienteId}', [ClientesController::class, 'destroy']);
 
         Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']); 
-        
+        Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
 
         //Médicos
         Route::get('medicos', [MedicosController::class, 'index']);
@@ -80,20 +81,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:Administrador|Cliente'])->group(function () {
         Route::post('citas', [CitasController::class, 'store']);
         Route::get('medicos', [MedicosController::class, 'index']);
-        Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
+        // Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
-        Route::get('listarpacientes/clientes/{id_cliente}', [PacientesController::class, 'pacientesPorClienteConId']);//Listar los pacientes de un Cliente
+        // Route::get('clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);
+
+        Route::get('clientes/listarpacientes', [PacientesController::class, 'pacientesPorCliente']);//Listar los pacientes de un Cliente
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ContratosController::class, 'contratoVigente']);
         // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
         Route::put('pacientes/{paciente}', [PacientesController::class, 'update']);
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
+        // Route::get('clientes/{cliente}/pacientes', [PacientesController::class, 'pacientesPorCliente']);
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
         /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
         Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
-        Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
-        Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']);
 
         Route::delete('citas/{id}', [CitasController::class, 'destroy']);
         

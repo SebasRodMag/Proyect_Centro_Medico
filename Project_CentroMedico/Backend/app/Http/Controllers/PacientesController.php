@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Cliente;
 use App\Models\Paciente;
 use App\Models\User;
@@ -130,7 +131,6 @@ class PacientesController extends Controller
             return response()->json([
                 'message' => 'Paciente eliminado con éxito'
             ], 200);
-            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Paciente o Cliente no encontrado.'
@@ -150,38 +150,43 @@ class PacientesController extends Controller
     }
 
 
-    public function index(){
+    public function index()
+    {
         $pacientes = Paciente::all();
         return response()->json($pacientes, 200);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $paciente = Paciente::findOrFail($id);
         return response()->json($paciente, 200);
     }
 
-    public function showAllPacientes(){
+    public function showAllPacientes()
+    {
         $pacientes = Paciente::withTrashed()->get();
         return response()->json($pacientes, 200);
     }
 
-    public function showTrashedPacientes(){
+    public function showTrashedPacientes()
+    {
         $pacientes = Paciente::onlyTrashed()->get();
         return response()->json($pacientes, 200);
     }
 
     //listar los pacientes de un medico logueado
-    public function pacientesByMedico(Request $request){
+    public function pacientesByMedico(Request $request)
+    {
         $user = Auth::user();
-        $medico = Medico::where('id', $user->id)->first();
+        $medico = Medico::where('id_usuario', $user->id)->first();
 
         if (!$medico) {
             return response()->json(['message' => 'Médico no encontrado'], 404);
         }
-        if( $medico->rol !== 'medico'){
+        if ($medico->rol !== 'medico') {
             return response()->json(['error' => 'No autorizado'], 403);
         }
-        $pacientes = Paciente::where('id_medico', medico)->get();
+        $pacientes = Paciente::where('id_medico', $medico->id)->get();
         return response()->json($pacientes, 200);
     }
 
@@ -189,9 +194,28 @@ class PacientesController extends Controller
     public function pacientesPorCliente(Request $request)
     {
         $user = Auth::user();
+
         $cliente = Cliente::where('id_usuario', $user->id)->first();
+
         if (!$cliente) {
             return response()->json(['message' => 'Cliente no encontrado para el usuario autenticado.'], 404);
+        }
+
+        $pacientes = $cliente->pacientes;
+
+        if ($pacientes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron pacientes para este cliente.'], 404);
+        }
+
+        return response()->json($pacientes, 200);
+    }
+
+    //listar los pacientes de un cliente, recibiendo el id del cliente como parámetro
+    public function pacientesPorClienteConId(Request $request, $id)
+    {
+        $cliente = Cliente::where('id', $id)->first();
+        if (!$cliente) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
         $pacientes = $cliente->pacientes;
         if ($pacientes->isEmpty()) {
@@ -199,20 +223,4 @@ class PacientesController extends Controller
         }
         return response()->json($pacientes, 200);
     }
-
-    //listar los pacientes de un cliente, recibiendo el id del cliente como parámetro
-    public function pacientesPorClienteConId(Request $request, $id)
-    {
-        $cliente = Cliente::where('id', $id)->
-        first();
-        if (!$cliente) {
-            return response()->json(['message' =>'Cliente no encontrado'], 404);
-        }
-        $pacientes = $cliente-> pacientes;
-            if ($pacientes->isEmpty()) {
-                return response()->json(['message' =>'No se encontraron pacientes para este cliente.'], 200);
-            }
-            return response()->json($pacientes, 200);
-    }
-            
 }

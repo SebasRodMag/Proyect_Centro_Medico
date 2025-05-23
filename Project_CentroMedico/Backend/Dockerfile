@@ -1,9 +1,9 @@
 FROM php:8.4-fpm
 
-# Dependencias
+# Dependencias necesarias
 RUN apt-get update && apt-get install -y \
     libpng-dev libonig-dev libxml2-dev zip unzip curl git \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd 
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -18,7 +18,6 @@ RUN composer install
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage
 
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["entrypoint.sh"]
+# No copiar entrypoint ni hacer ENTRYPOINT en modo desarrollo (puedes agregarlo si quieres)
+# CMD para arrancar Laravel en modo desarrollo (por ejemplo puerto 8000)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

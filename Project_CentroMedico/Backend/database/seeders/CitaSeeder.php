@@ -31,7 +31,7 @@ class CitaSeeder extends Seeder
         // Inicia el cursor de tiempo a las 08:00 de hoy
         $fecha = Carbon::today()->setHour(8)->setMinute(0);
         $finDia = Carbon::today()->setHour(14)->setMinute(0); // Fin de jornada
-        $totalCitas = 400;// Total de citas a crear
+        $totalCitas = 100;// Total de citas a crear
 
         for ($i = 0; $i < $totalCitas; $i++) {
             // Si ya es hora de cerrar, salta al día siguiente a las 08:00

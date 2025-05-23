@@ -5,8 +5,8 @@ sleep 5
 
 # Ejecutar migraciones y seeders
 
-# php artisan migrate --force
-# php artisan migrate:fresh --seed --force
+php artisan migrate --force
+php artisan migrate:fresh --seed --force
 
 
 

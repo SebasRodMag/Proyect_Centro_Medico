@@ -108,7 +108,7 @@ export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
             console.warn('ID de cliente no disponible para cargar pacientes.');
             return;
         }
-        this.clienteService.getPacientesDelCliente(idParam).subscribe(
+        this.pacienteService.getPacientesPorCliente().subscribe(
             (data: any) => {
                 if (Array.isArray(data)) {
                     this.pacientes = data;
