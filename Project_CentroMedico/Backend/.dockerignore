@@ -1,0 +1,18 @@
+.git
+.gitignore
+.vscode/
+.env
+.env.example
+node_modules/
+vendor/             # Esto es CRÍTICO: Si no lo incluyes aquí, Docker intentará copiar TODO el directorio vendor LOCAL, que es enorme. Composer lo instalará DENTRO del contenedor.
+npm-debug.log
+*.log
+*.sql
+*.sqlite
+public/hot
+public/storage/     # Asegúrate de que esta línea esté presente si aún sospechas de enlaces simbólicos.
+storage/*.log
+storage/framework/
+storage/app/public/ # Si tu public/storage es un symlink, no quieres copiar el contenido real del storage/app/public
+.DS_Store           # Archivos de macOS
+Thumbs.db           # Archivos de Windows
