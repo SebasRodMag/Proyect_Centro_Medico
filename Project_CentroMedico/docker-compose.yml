@@ -1,26 +1,31 @@
+version: "3.8"
+
 services:
   app:
-  build:
-    context: ./backend
-  container_name: laravel_app
-  volumes:
-    - ./backend:/var/www/html
-  depends_on:
-    - db
-  networks:
-    - laravel
-  ports:
-    - "8000:8000"
-
+    build:
+      context: ./backend
+    container_name: laravel_app
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - laravel
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
 
   angular:
     build:
       context: ./frontend
     container_name: angular_app
-    depends_on:
-      - app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # evita conflictos con node_modules host
     networks:
       - laravel
+    ports:
+      - "4200:4200"
 
   nginx:
     image: nginx:latest

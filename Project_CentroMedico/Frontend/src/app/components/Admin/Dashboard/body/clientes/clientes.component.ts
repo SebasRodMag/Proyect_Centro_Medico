@@ -67,7 +67,8 @@ export class ClientesComponent implements OnInit {
                 this.clientesDataSource.paginator = this.paginator;
                 this.clientesDataSource.sort = this.sort;
 
-                this.clientesDataSource.filterPredicate = this.customFilterPredicate();
+                this.clientesDataSource.filterPredicate =
+                    this.customFilterPredicate();
 
                 console.log('Lista de clientes recibida: ', this.clientes);
             },
@@ -109,6 +110,7 @@ export class ClientesComponent implements OnInit {
                 ?.toLowerCase()
                 .includes(filtro.municipio);
             const matchGlobal = Object.values(data)
+                .map((v) => v ?? '') // 🛡️ Protege contra undefined/null
                 .join(' ')
                 .toLowerCase()
                 .includes(filtro.global);

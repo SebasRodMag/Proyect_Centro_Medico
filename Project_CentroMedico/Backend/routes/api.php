@@ -15,6 +15,7 @@ use App\Http\Controllers\ContratosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\CitasController;
 use App\Models\Contrato;
+use App\Models\Paciente;
 
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
@@ -89,6 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
+        Route::get('clientes/{cliente}/pacientes', [PacientesController::class, 'pacientesPorCliente']);
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
         /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
         Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);

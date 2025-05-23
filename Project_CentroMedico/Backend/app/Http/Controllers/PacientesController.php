@@ -101,7 +101,7 @@ class PacientesController extends Controller
     //listar los pacientes de un medico logueado
     public function pacientesByMedico(Request $request){
         $user = Auth::user();
-        $medico = Medico::where('id', $user->id)->first();
+        $medico = Medico::where('id_usuario', $user->id)->first();
 
         if (!$medico) {
             return response()->json(['message' => 'Médico no encontrado'], 404);
@@ -109,15 +109,15 @@ class PacientesController extends Controller
         if( $medico->rol !== 'medico'){
             return response()->json(['error' => 'No autorizado'], 403);
         }
-        $pacientes = Paciente::where('id_medico', medico)->get();
+        $pacientes = Paciente::where('id_medico', $medico->id)->get();
         return response()->json($pacientes, 200);
     }
 
     //Listar los pacientes en función del contrato
-    public function pacientesPorCliente(Request $request)
+    public function pacientesPorCliente($id_cliente)
     {
         $user = Auth::user();
-        $cliente = Cliente::where('id_usuario', $user->id)->first();
+        $cliente = Cliente::where('id', $id_cliente)->first();
         if (!$cliente) {
             return response()->json(['message' => 'Cliente no encontrado para el usuario autenticado.'], 404);
         }
