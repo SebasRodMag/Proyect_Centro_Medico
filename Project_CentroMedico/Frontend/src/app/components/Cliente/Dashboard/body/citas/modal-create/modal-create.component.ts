@@ -191,6 +191,8 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
     cargarPacientesDelCliente(): void {
         this.pacienteService.getPacientesPorCliente().subscribe({
             next: (pacientes) => {
+                console.log("Lista de pacientes: "+pacientes);
+                
                 this.pacientes = pacientes;
             },
             error: (err: HttpErrorResponse) => {
