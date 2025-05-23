@@ -27,9 +27,12 @@ services:
     ports:
       - "80:80"
     volumes:
+      - ./frontend/dist/frontend/browser:/usr/share/nginx/html:ro # :ro para solo lectura (buena práctica)
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./backend:/var/www/html
       - ./frontend/dist/frontend/browser:/usr/share/nginx/html
+    command: ["/bin/sh", "-c", "chmod -R 755 /usr/share/nginx/html && nginx -g 'daemon off;'"]
     depends_on:
       - app
       - angular

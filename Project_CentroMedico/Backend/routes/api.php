@@ -3,9 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
@@ -15,6 +13,10 @@ use App\Http\Controllers\ContratosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\CitasController;
 use App\Models\Contrato;
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
@@ -133,12 +135,5 @@ Route::middleware('auth:sanctum')->group(function () {
         // Rutas para que los clientes consulten sus citas (habría que darle más lógica aquí)
         // Route::get('/clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);
     });
-
-    Route::post('/login', [AuthController::class, 'login']);
-
-    //Ruta de prueba para comprobar error al resolver el middleware
-    Route::get('/test', function () {
-        return response()->json(['message' => 'Rol autorizado']);
-    })->middleware('auth:sanctum', 'role:administrador');
 
 });

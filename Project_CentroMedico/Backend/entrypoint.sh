@@ -26,6 +26,7 @@ echo "Base de datos ${DB_HOST}:${DB_PORT} está lista."
 # El "--force" es crucial para ejecutar migraciones en entornos de producción (o no interactivos)
 echo "Ejecutando migraciones de la base de datos..."
 php artisan migrate --force
+php artisan db:seed
 
 # Opcional: Ejecutar seeders después de las migraciones
 # Descomenta la siguiente línea si quieres que los seeders se ejecuten cada vez que levantas el contenedor
@@ -45,7 +46,7 @@ php artisan view:cache
 
 # Crear enlace de almacenamiento (si lo usas)
 echo "Creando enlace de almacenamiento para Laravel..."
-php artisan storage:link
+# php artisan storage:link
 
 # Ejecutar cualquier otro comando de inicialización que necesites
 # ...

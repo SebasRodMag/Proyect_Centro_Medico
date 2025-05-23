@@ -13,6 +13,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /var/www/html
 
+# Crear el directorio 'storage' en 'public' como un directorio real
+# Esto evita problemas de symlinks en Windows durante el build context
+RUN mkdir -p public/storage
+
 # Copia TODO el código fuente de Laravel al directorio de trabajo
 # Esto incluye composer.json, composer.lock y el archivo artisan
 COPY . .
