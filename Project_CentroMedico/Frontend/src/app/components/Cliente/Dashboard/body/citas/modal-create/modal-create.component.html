@@ -2,12 +2,11 @@
     <div class="modal-container" *ngIf="visible" (click)="$event.stopPropagation()">
         <div class="modal-content-custom">
             <div class="modal-header">
-                <h5 class="modal-title">Crear nueva cita</h5>
+                <h5 class="modal-title">{{ isEditMode ? 'Editar cita' : 'Crear nueva cita' }}</h5>
                 <i class="bi bi-x-circle close-button" (click)="cerrar()"></i>
             </div>
             <div>
-                <form [formGroup]="formulario" (ngSubmit)="crearCita()">
-                    <!-- Selección de paciente (obtenido por el cliente autenticado) -->
+                <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
                     <div id="contenedor-principal">
                         <div id="columnas">
                             <div id="primer-contenedor">
@@ -35,6 +34,11 @@
                                     <label for="fecha_cita" class="form-label">Fecha</label>
                                     <input type="date" id="fecha_cita" class="form-control" formControlName="fecha_cita"
                                         [min]="todayMinDate" required />
+                                    <div *ngIf="formulario.get('fecha_cita')?.invalid && formulario.get('fecha_cita')?.touched" class="text-danger">
+                                        <div *ngIf="formulario.get('fecha_cita')?.errors?.['required']">La fecha es obligatoria.</div>
+                                        <div *ngIf="formulario.get('fecha_cita')?.errors?.['finDeSemana']">No se pueden agendar citas los sábados ni domingos.</div>
+                                        <div *ngIf="formulario.get('fecha_cita')?.errors?.['diaNoLaborable']">La fecha seleccionada es un día no laborable.</div>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
@@ -45,6 +49,12 @@
                                             {{ hora }}
                                         </option>
                                     </select>
+                                    <div *ngIf="formulario.get('hora_cita')?.invalid && formulario.get('hora_cita')?.touched" class="text-danger">
+                                        La hora es obligatoria.
+                                    </div>
+                                    <div *ngIf="horariosDisponibles.length === 0 && formulario.get('fecha_cita')?.valid && formulario.get('id_medico')?.valid && (formulario.get('fecha_cita')?.dirty || formulario.get('id_medico')?.dirty)" class="text-info">
+                                        No hay horas disponibles para esta fecha y médico.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -54,13 +64,14 @@
                                 <button class="btn btn-secondary" type="button" (click)="cerrar()">Cancelar</button>
                             </div>
                             <div id="boton-registrar">
-                                <button class="btn btn-primary" type="submit">Agendar</button>
+                                <button class="btn btn-primary" type="submit">
+                                    {{ isEditMode ? 'Guardar Cambios' : 'Agendar' }}
+                                </button>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
 </div>

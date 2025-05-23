@@ -41,6 +41,7 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
         'nombre_medico',
         'fecha',
         'hora',
+        'estado',
         'observaciones',
         'acciones',
     ];
@@ -51,6 +52,7 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
     mostrarModal: boolean = false;
     modalVisible = false;
     filtroBusqueda: string = '';
+    citaParaEditar: any | null = null; 
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -72,7 +74,7 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(() => {
                 console.log('Señal de refresco recibida en CitasComponent. Recargando citas...');
                 this.cargarCitasPorRol();
-        });
+            });
 
         this.citasDataSource.filterPredicate = this.crearFiltroPersonalizado();
     }
@@ -146,11 +148,65 @@ export class CitasComponent implements OnInit, AfterViewInit, OnDestroy {
         };
     }
 
-    abrirModal() {
+    abrirModalCreacion(): void {
+        this.citaParaEditar = null; // Asegurarse de que no hay cita de edición
+        this.modalVisible = true;
+    }
+
+    modificaCita(cita: any): void {
+        if (cita.estado !== 'pendiente') {
+            Swal.fire('No permitido', 'Solo puedes modificar citas pendientes.', 'info');
+            console.log('Estado actual:', cita.estado);
+            return;
+        }
+        this.citaParaEditar = { ...cita }; // Pasamos una copia de la cita
         this.modalVisible = true;
     }
 
     cerrarModalCita(): void {
         this.modalVisible = false;
+        this.citaParaEditar = null; // Limpiar la cita de edición al cerrar
+        this.cargarCitasPorRol(); // Recargar las citas para reflejar cualquier cambio
     }
+
+    cancelarCita(cita: any): void {
+        if (cita.estado !== 'pendiente') {
+            Swal.fire('No permitido', 'Solo puedes cambiar el estado de citas pendientes.', 'info');
+            console.log('Estado actual:', cita.estado);
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cancelar cita',
+            text: 'Va a cancelar la cita. Esto deja la cita disponible para otros usuarios',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Cancelar cita',
+            cancelButtonText: 'Abortar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const nuevoEstado = 'cancelado';
+                console.log(`Solicitando cambio de estado para cita ID ${cita.id} a:`, nuevoEstado);
+                this.citaService.cambiarEstadoCita(cita.id, { estado: nuevoEstado }).subscribe({
+                    next: (response) => {
+                        Swal.fire('¡Éxito!', 'La cita ha sido cancelada correctamente.', 'success');
+                        console.log('Respuesta del backend:', response);
+                        // No necesitas 'cita.estado = nuevoEstado;' aquí porque 'cargarCitasPorRol()' lo actualizará
+                        this.cargarCitasPorRol(); // Recargar las citas para reflejar el cambio
+                    },
+                    error: (error) => {
+                        console.error('Error al cancelar la cita:', error);
+                        let errorMessage = 'Ha ocurrido un error al cancelar la cita.';
+                        if (error.error && error.error.message) { 
+                            errorMessage = error.error.message;
+                        } else if (error.error && error.error.error) {
+                            errorMessage = error.error.error; 
+                        }
+                        Swal.fire('Error', errorMessage, 'error');
+                    }
+                });
+            }
+        })
+    }
+
 }

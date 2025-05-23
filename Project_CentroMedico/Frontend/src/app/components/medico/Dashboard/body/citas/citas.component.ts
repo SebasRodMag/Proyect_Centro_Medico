@@ -251,7 +251,7 @@ export class CitasComponent implements OnInit, AfterViewInit {
                     next: (response) => {
                         console.log('Respuesta del servidor:', response);
                         Swal.fire('Éxito', 'El estado de la cita se ha actualizado.', 'success');
-                        this.getCitasDelMedicoLogueado();  // <-- Esto debería recargar
+                        this.getCitasDelMedicoLogueado();
                     },
                     error: (error) => {
                         console.error('Error al cambiar estado:', error);

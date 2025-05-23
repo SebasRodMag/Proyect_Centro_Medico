@@ -1,9 +1,16 @@
 <div class="container-citas">
     <div class="header-citas">
         <div>
-            <button (click)="modalVisible = true" id="boton-registrar">Crear cita</button>
-        </div>
-        <app-modal-create [visible]="modalVisible" (cerrarModal)="modalVisible = false"></app-modal-create>
+    <button (click)="abrirModalCreacion()" id="boton-registrar">Crear cita</button>
+</div>
+        <app-modal-create
+            *ngIf="modalVisible" 
+            [visible]="modalVisible"
+            [cita]="citaParaEditar"
+            (cerrarModal)="cerrarModalCita()"
+            (citaCreada)="cerrarModalCita()"
+            (citaActualizada)="cerrarModalCita()"
+        ></app-modal-create>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
             <input type="date" id="fecha-desde" placeholder="" [(ngModel)]="fechaDesde" (change)="aplicarTodosLosFiltros()" />
@@ -47,6 +54,12 @@
             <td mat-cell *matCellDef="let cita">{{ cita.hora }}</td>
         </ng-container>
 
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.estado }}</td>
+        </ng-container>
+
         <!-- Observaciones -->
         <ng-container matColumnDef="observaciones">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Observaciones</th>
@@ -57,16 +70,16 @@
 
         <!-- Acciones -->
         <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
-            <td mat-cell *matCellDef="let cita">
-                <button (click)="mostrarModal = true" id="edit-button">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <button id="delete-button">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </td>
-        </ng-container>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
+    <td mat-cell *matCellDef="let cita">
+        <button id="edit-button" (click)="modificaCita(cita)">
+            <i class="bi bi-pencil-square"></i>
+        </button>
+        <button id="delete-button" (click)="cancelarCita(cita)">
+            <i class="bi bi-trash-fill"></i>
+        </button>
+    </td>
+</ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
