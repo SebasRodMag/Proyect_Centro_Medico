@@ -1,73 +1,130 @@
+version: '3.8'
+
 services:
+  # ------------------------------------
+  # Servicio PHP-FPM para el Backend (Laravel)
+  # ------------------------------------
   app:
-  build:
-    context: ./backend
-  container_name: laravel_app
-  volumes:
-    - ./backend:/var/www/html
-  depends_on:
-    - db
-  networks:
-    - laravel
-  ports:
-    - "8000:8000"
-
-
-  angular:
     build:
-      context: ./frontend
-    container_name: angular_app
-    depends_on:
-      - app
+      context: . # Cambiado a la raíz del proyecto para que Dockerfile pueda acceder a backend
+      dockerfile: docker/php/Dockerfile
+    container_name: laravel_app # Nombre amigable para el contenedor
+    volumes:
+      # Monta el código de tu backend Laravel en el contenedor
+      - ./backend:/var/www/html/backend
+      # Opcional: si necesitas un archivo php.ini personalizado
+      # - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    expose:
+      - "9000" # Expone el puerto 9000 internamente para que Nginx se conecte
+    environment:
+      # Variables de entorno para Laravel.
+      # Asegúrate de que coincidan con tu archivo .env en el proyecto Laravel.
+      # ¡Importante! DB_HOST debe ser el nombre del servicio de la base de datos en docker-compose
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_KEY: base64:TuAppKeyDeLaravelAquíOseGeneraráAutomáticamente
+      DB_CONNECTION: mysql
+      DB_HOST: db # Nombre del servicio de la base de datos
+      DB_PORT: 3306
+      DB_DATABASE: laravel_db # Nombre de la base de datos
+      DB_USERNAME: laravel_user
+      DB_PASSWORD: laravel_password
+      # Variables para Redis (si lo usas)
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Si usas Pusher/Broadcasting
+      # PUSHER_APP_ID: "..."
+      # PUSHER_APP_KEY: "..."
+      # PUSHER_APP_SECRET: "..."
+      # PUSHER_APP_CLUSTER: "..."
     networks:
-      - laravel
+      - app-network
 
+  # ------------------------------------
+  # Servicio Nginx para el Backend (Laravel)
+  # ------------------------------------
   nginx:
-    image: nginx:latest
-    container_name: nginx_web
+    image: nginx:stable-alpine # Imagen ligera de Nginx
+    container_name: laravel_nginx
     ports:
-      - "80:80"
+      - "80:80" # Mapea el puerto 80 del host al puerto 80 del contenedor
+              # Puedes cambiarlo a 8080:80 si el puerto 80 ya está en uso en tu sistema
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./backend:/var/www/html
-      - ./frontend/dist/frontend/browser:/usr/share/nginx/html
+      # Monta el código de tu backend Laravel para que Nginx pueda servir archivos estáticos
+      - ./backend:/var/www/html/backend
+      # Monta el archivo de configuración de Nginx que creamos
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - app
-      - angular
+      - app # Nginx solo arranca después de que el servicio 'app' (PHP-FPM) esté listo
     networks:
-      - laravel
+      - app-network
 
+  # ------------------------------------
+  # Servicio de Base de Datos
+  # ------------------------------------
   db:
-    image: mysql:8.0
-    container_name: mysql_db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
+    image: mysql:8.0 # O postgres:13, mariadb:latest, etc.
+    container_name: laravel_db
     ports:
-      - "3306:3306"
+      - "3306:3306" # Mapea el puerto 3306 del host al puerto 3306 del contenedor
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      # Opcional: configurar la zona horaria
+      TZ: "Europe/Madrid"
     volumes:
-      - mysql_data:/var/lib/mysql
+      # Persistencia de datos para que la base de datos no se pierda al reiniciar el contenedor
+      - dbdata:/var/lib/mysql
     networks:
-      - laravel
+      - app-network
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root
+  # ------------------------------------
+  # Servicio Redis (Opcional, pero muy recomendado para Laravel)
+  # ------------------------------------
+  redis:
+    image: redis:alpine # Imagen ligera de Redis
+    container_name: laravel_redis
     ports:
-      - "8080:80"
-    depends_on:
-      - db
+      - "6379:6379" # Mapea el puerto 6379 del host al puerto 6379 del contenedor
     networks:
-      - laravel
+      - app-network
+
+  # ------------------------------------
+  # Servicio Frontend (Angular - en modo desarrollo)
+  # ------------------------------------
+  frontend:
+    build:
+      # Podrías crear un Dockerfile específico para Angular si lo necesitas
+      # Pero para desarrollo, es común usar una imagen de Node y montar el código
+      context: ./frontend # El contexto es tu carpeta Angular
+      dockerfile: ../docker/frontend/Dockerfile # Si decides usar un Dockerfile
+    # O, si no tienes un Dockerfile específico para Angular dev, puedes hacer esto:
+    # Eliminado image para usar la imagen construida con Dockerfile
+    container_name: angular_frontend
+    volumes:
+      # Eliminado el volumen ./frontend:/app para evitar sobreescribir node_modules
+      - /app/node_modules # Volumen para persistir node_modules dentro del contenedor
+    working_dir: /app
+    ports:
+      - "4200:4200" # Puerto por defecto de Angular CLI (ng serve)
+    command: npm start # Solo inicia el servidor de desarrollo
+    # O si usas yarn: command: yarn start
+    networks:
+      - app-network
+    # Si tu backend es de otro dominio (localhost:80 vs localhost:4200),
+    # Angular necesitará un proxy para las llamadas API a Laravel.
+    # Esto se configura en angular.json o un archivo proxy.conf.json.
+
+# ------------------------------------
+# Redes y Volúmenes
+# ------------------------------------
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  mysql_data:
-
-networks:
-  laravel:
+  dbdata: # Volumen para persistir los datos de MySQL
+  # Puedes añadir volúmenes para Node.js si tienes problemas de permisos, etc.
+  # node_modules_frontend:
