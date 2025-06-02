@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@angular/router": "^19.2.9",
-    "sweetalert2": "^11.21.2"
-  }
-}

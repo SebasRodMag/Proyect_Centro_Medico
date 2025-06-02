@@ -1,5 +1,0 @@
-Probamos que se realicen los cambios.
-if (this.state.cambiar == true) {
-    this.setState({ cambiar: false });
-    this.setState({ mostrar: true });
-};
