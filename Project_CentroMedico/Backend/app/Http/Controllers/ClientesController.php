@@ -28,11 +28,6 @@ class ClientesController extends Controller
             'reconocimientos' => 'required|integer',
         ]);
 
-        // $user = User::where('email', $request->email)->first();
-        // if (!$user) {
-        //     return response()->json(['message' => 'Usuario no encontrado'], 404);
-        // }
-        //Requisito: al crear el cliente, se debe de crear automáticamente el usuario
         $user = new User();
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
@@ -86,12 +81,6 @@ class ClientesController extends Controller
         $cliente->save();
         return response()->json(['message' => 'Cliente actualizado con éxito'], 200);
     }
-
-    // public function destroy($id){
-    //     $cliente = Cliente::findOrFail($id);
-    //     $cliente->delete();
-    //     return response()->json(['message' => 'Cliente eliminado con éxito'], 200);
-    // }
 
     public function index()
     {
