@@ -112,6 +112,20 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'testing' => [
+            'driver' => 'sqlite',
+            'host' => env('DB_TESTING_HOST', '127.0.0.1'),
+            'port' => env('DB_TESTING_PORT', '3306'),
+            'database' => env('DB_TESTING_DATABASE', 'database/databaseTEST.sqlite'),
+            'username' => env('DB_TESTING_USERNAME', 'root'),
+            'password' => env('DB_TESTING_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+        ],
+
     ],
 
     /*

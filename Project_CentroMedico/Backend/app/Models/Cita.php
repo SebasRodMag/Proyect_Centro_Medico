@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Cita extends Model
 {
@@ -16,12 +17,9 @@ class Cita extends Model
     protected $fillable = [
         'id',
         'id_paciente',
-        'id_cliente',
         'id_medico',
         'id_contrato',
         'fecha_hora_cita',
-        // 'hora_fecha_inicio',
-        // 'hora_fecha_fin',
     ];
 
     /**
@@ -48,9 +46,8 @@ class Cita extends Model
         return $this->belongsTo(Contrato::class, 'id_contrato');
     }
 
-    public function cliente(): BelongsTo
+    public function getClienteAttribute()
     {
-        return $this->belongsTo(Cliente::class, 'id_cliente');
-
+        return $this->contrato ? $this->contrato->cliente : null;
     }
 }

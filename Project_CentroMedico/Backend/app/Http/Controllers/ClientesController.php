@@ -28,11 +28,6 @@ class ClientesController extends Controller
             'reconocimientos' => 'required|integer',
         ]);
 
-        // $user = User::where('email', $request->email)->first();
-        // if (!$user) {
-        //     return response()->json(['message' => 'Usuario no encontrado'], 404);
-        // }
-        //Requisito: al crear el cliente, se debe de crear automáticamente el usuario
         $user = new User();
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
@@ -86,12 +81,6 @@ class ClientesController extends Controller
         $cliente->save();
         return response()->json(['message' => 'Cliente actualizado con éxito'], 200);
     }
-
-    // public function destroy($id){
-    //     $cliente = Cliente::findOrFail($id);
-    //     $cliente->delete();
-    //     return response()->json(['message' => 'Cliente eliminado con éxito'], 200);
-    // }
 
     public function index()
     {
@@ -170,71 +159,6 @@ class ClientesController extends Controller
         $clientes = Cliente::where('municipio', 'LIKE', '%' . $municipio . '%')->get();
         return response()->json($clientes, 200);
     }
-
-    //Funcion para buscar contratos por cliente
-    // public function contratos($id)
-    // {
-    //     // 1. Verificar si el cliente existe
-    //     $cliente = Cliente::find($id);
-
-    //     if (!$cliente) {
-    //         return response()->json([
-    //             'message' => 'Cliente no encontrado'
-    //         ], 404);
-    //     }
-
-    //     // 2. Obtener contratos del cliente, incluyendo eliminados
-    //     $contratos = Contrato::withTrashed()
-    //         ->where('id_cliente', $id)
-    //         ->orderByDesc('fecha_inicio')
-    //         ->paginate(10);
-
-    //     // 3. Devolver los detalles del cliente y los contratos, aunque esté vacío
-    //     return response()->json([
-    //         'cliente' => $cliente,  // Información del cliente
-    //         'message' => $contratos->isEmpty() ? 'El cliente no tiene contratos' : 'Contratos recuperados con éxito',
-    //         'data' => $contratos
-    //     ], 200);
-    // }
-
-    // public function contratoVigente($id_cliente)
-    // {
-    //     // 1. Verificar si el cliente existe
-    //     $cliente = Cliente::find($id_cliente);
-
-    //     if (!$cliente) {
-    //         return response()->json([
-    //             'message' => 'Cliente no encontrado'
-    //         ], 404);
-    //     }
-
-    //     // 2. Obtener el contrato vigente basado en las fechas
-    //     $hoy = now();
-
-    //     $contratoVigente = Contrato::withTrashed()
-    //         ->where('id_cliente', $id_cliente)
-    //         ->where('fecha_inicio', '<=', $hoy)
-    //         ->where('fecha_fin', '>=', $hoy)
-    //         ->first();
-
-    //     if (!$contratoVigente) {
-    //         return response()->json([
-    //             'message' => 'No hay contrato vigente para este cliente'
-    //         ], 404);
-    //     }
-
-    //     // 3. Calcular los reconocimientos restantes
-    //     $reconocimientos_restantes = $contratoVigente->numero_reconocimientos - $contratoVigente->citas()->count();
-
-    //     // 4. Devolver la información combinada
-    //     return response()->json([
-    //         'cliente' => $cliente,
-    //         'contrato' => $contratoVigente,
-    //         'reconocimientos_restantes' => $reconocimientos_restantes,
-    //         'message' => 'Contrato vigente y reconocimientos recuperados con éxito',
-    //     ], 200);
-    // }
-
 
     //Función para buscar pacientes por cliente
     public function pacientes($id_cliente)
