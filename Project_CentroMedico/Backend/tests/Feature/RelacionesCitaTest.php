@@ -13,19 +13,27 @@ use App\Models\Contrato;
 use App\Models\Paciente;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\WithFaker;
+use Database\Seeders\RolesSeeder;
 
 class RelacionesCitaTest extends TestCase
 {
     use WithFaker;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RolesSeeder::class);
+    }
+
     /**
      * @return void
      */
     #[Test]
     public function una_cita_tiene_todos_los_modelos_asociados()
     {
-
-        $userCliente = User::factory()->create(['email' => $this->faker->unique()->safeEmail]);
-        $cliente = Cliente::factory()->create(['id_usuario' => $userCliente->id]);
+        $usuarioCliente = User::factory()->create(['email' => $this->faker->unique()->safeEmail]);
+        $usuarioCliente->assignRole('Cliente');
+        $cliente = Cliente::factory()->create(['id_usuario' => $usuarioCliente->id]);
         $contrato = Contrato::factory()->create(['id_cliente' => $cliente->id]);
         $paciente = Paciente::factory()->create(['id_cliente' => $cliente->id]);
         $medico = Medico::factory()->create();

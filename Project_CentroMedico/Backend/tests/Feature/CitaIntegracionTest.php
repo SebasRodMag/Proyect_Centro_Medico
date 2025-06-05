@@ -23,18 +23,18 @@ class CitaIntegracionTest extends TestCase
     #[Test]
     public function testCrearCitaRelacionadaCorrectamente()
     {
-        // Crear usuario
+        //Crear un usuario
         $userCliente = User::factory()->create(['email' => $this->faker->unique()->safeEmail]);
         $userCliente->assignRole('Cliente');
         $cliente = Cliente::factory()->create(['id_usuario' => $userCliente->id]);
-        // Crear un contrato asociado al cliente
+        //Crear un contrato asociado al cliente
         $contrato = Contrato::factory()->create(['id_cliente' => $cliente->id]);
 
-        // Crear paciente y médico (el paciente debe pertenecer al cliente)
+        //Crear paciente y médico (el paciente debe pertenecer al cliente)
         $paciente = Paciente::factory()->create(['id_cliente' => $cliente->id]);
         $medico = Medico::factory()->create();
 
-        // Crear la cita, vinculándola al paciente, médico y contrato
+        //Crear la cita, vinculándola al paciente, médico y contrato
         $cita = Cita::create([
             'id_paciente' => $paciente->id,
             'id_medico' => $medico->id,

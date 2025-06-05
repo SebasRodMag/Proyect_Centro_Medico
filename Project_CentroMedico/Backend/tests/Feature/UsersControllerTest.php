@@ -58,39 +58,6 @@ class UsersControllerTest extends TestCase
         $response->assertJsonFragment(['message' => 'Usuario creado con éxito.']);
     }
 
-/*     public function test_store_route_validation_errors()
-    {
-        $response = $this->postJson('/usuario', []);
-        $response->assertStatus(404);
-        $response->assertJsonValidationErrors(['email', 'password']);
-    } */
-
-/*     public function test_assign_route_role_not_found()
-    {
-        $user = User::factory()->create();
-        $data = ['rol' => 'nonexistentrole'];
-
-        $response = $this->postJson("/users/{$user->id}/assign", $data);
-        $response->assertStatus(404);
-        $response->assertJsonFragment(['message' => 'El rol no existe.']);
-    } */
-
-/*     public function test_assign_route_user_not_found()
-    {
-        $data = ['rol' => 'user'];
-
-        $response = $this->postJson("/users/999999/assign", $data);
-        $response->assertStatus(404);
-    } */
-
-/*     public function test_update_route_validation_errors()
-    {
-        $user = User::factory()->create();
-        $response = $this->putJson("/users/{$user->id}", []);
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['rol']);
-    } */
-
     public function test_update_route_user_not_found()
     {
         $data = ['email' => 'user'];

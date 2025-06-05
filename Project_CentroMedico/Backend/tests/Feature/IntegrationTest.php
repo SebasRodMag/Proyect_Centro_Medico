@@ -28,7 +28,7 @@ class IntegrationTest extends TestCase
     /**
      * Test creating a new client via API.
      */
-    public function test_create_client()
+    public function test_crear_cliente()
     {
         $user = \App\Models\User::factory()->create();
         $user->assignRole('Administrador');
@@ -56,7 +56,7 @@ class IntegrationTest extends TestCase
     /**
      * Test fetching clients list via API.
      */
-    public function test_get_clients_list()
+    public function test_listar_clientes()
     {
         $user = \App\Models\User::factory()->create();
         $user->assignRole('Administrador');
@@ -112,7 +112,7 @@ class IntegrationTest extends TestCase
     /**
      * Test user login.
      */
-    public function test_user_login()
+    public function test_usuario_login()
     {
         $password = 'password123';
         $user = \App\Models\User::factory()->create([
@@ -147,7 +147,7 @@ class IntegrationTest extends TestCase
     /**
      * Test user logout.
      */
-    public function test_user_logout()
+    public function test_usuario_logout()
     {
         $user = \App\Models\User::factory()->create();
 
@@ -163,7 +163,7 @@ class IntegrationTest extends TestCase
     /**
      * Test fetching authenticated user info.
      */
-    public function test_get_authenticated_user()
+    public function test_obtener_usuario_autenticado()
     {
         $user = \App\Models\User::factory()->create();
 
