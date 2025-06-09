@@ -10,10 +10,20 @@ use PHPUnit\Framework\Attributes\Test;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+/**
+ * Class RelacionCitasClienteTest
+ *
+ * Prueba para verificar la relación entre Cliente y sus Citas a través de Contratos.
+ */
 class RelacionCitasClienteTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Configuración inicial para las pruebas.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -21,10 +31,12 @@ class RelacionCitasClienteTest extends TestCase
     }
 
     /**
+     * Verifica que un cliente tiene citas a través de sus contratos.
+     *
      * @return void
      */
     #[Test]
-    public function un_cliente_tiene_citas_a_traves_de_sus_contratos()
+    public function test_un_cliente_tiene_citas_a_traves_de_sus_contratos()
     {
         // Crear un cliente con contratos y citas relacionados para la prueba
         $cliente = \App\Models\Cliente::factory()

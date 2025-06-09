@@ -15,10 +15,20 @@ use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\WithFaker;
 use Database\Seeders\RolesSeeder;
 
+/**
+ * Class RelacionesCitaTest
+ *
+ * Prueba para verificar que una cita tiene todos los modelos asociados correctamente.
+ */
 class RelacionesCitaTest extends TestCase
 {
     use WithFaker;
 
+    /**
+     * Configuración inicial para las pruebas.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -26,10 +36,12 @@ class RelacionesCitaTest extends TestCase
     }
 
     /**
+     * Verifica que una cita tiene paciente, médico, contrato y cliente asociados.
+     *
      * @return void
      */
     #[Test]
-    public function una_cita_tiene_todos_los_modelos_asociados()
+    public function test_una_cita_tiene_todos_los_modelos_asociados()
     {
         $usuarioCliente = User::factory()->create(['email' => $this->faker->unique()->safeEmail]);
         $usuarioCliente->assignRole('Cliente');

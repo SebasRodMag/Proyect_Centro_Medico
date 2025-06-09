@@ -5,10 +5,20 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class IntegrationTest extends TestCase
+/**
+ * Class IntegracionTest
+ *
+ * Pruebas de integración para la API del sistema.
+ */
+class IntegracionTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Configuración inicial para las pruebas.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -16,9 +26,11 @@ class IntegrationTest extends TestCase
     }
 
     /**
-     * Test the home page returns a successful response.
+     * Comprobar que la respuesta de la API es exitosa al navegar a la ruta de inicio.
+     *
+     * @return void
      */
-    public function test_home_page_returns_successful_response()
+    public function test_navegacion_a_home_page()
     {
         $response = $this->get('/');
 
@@ -26,9 +38,11 @@ class IntegrationTest extends TestCase
     }
 
     /**
-     * Test creating a new client via API.
+     * Comprobar que la respuesta de la api es exitosa al solicitar la creación de un nuevo cliente mediante el rol administrador.
+     *
+     * @return void
      */
-    public function test_crear_cliente()
+    public function test_crear_cliente_desde_rol_administrador()
     {
         $user = \App\Models\User::factory()->create();
         $user->assignRole('Administrador');
@@ -54,9 +68,69 @@ class IntegrationTest extends TestCase
     }
 
     /**
-     * Test fetching clients list via API.
+     * Comprobar que la respuesta de la api es fallida al solicitar la creación de un nuevo cliente mediante el rol medico.
+     *
+     * @return void
      */
-    public function test_listar_clientes()
+    public function test_crear_cliente_desde_rol_medico()
+    {
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole('Medico');
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        $clientData = [
+            'email' => 'testclient@example.com',
+            'password' => 'password123',
+            'razon_social' => 'Fruteria Test',
+            'cif' => '99999999Z',
+            'direccion' => 'Plaza la prueba1',
+            'municipio' => 'La Test',
+            'provincia' => 'Almería',
+            'reconocimientos' => 88,
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/clientes', $clientData);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Comprobar que la respuesta de la api es fallida al solicitar la creación de un nuevo cliente mediante el rol paciente.
+     *
+     * @return void
+     */
+    public function test_crear_cliente_desde_rol_paciente()
+    {
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole('Paciente');
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        $clientData = [
+            'email' => 'testclient@example.com',
+            'password' => 'password123',
+            'razon_social' => 'Fruteria Test',
+            'cif' => '99999999Z',
+            'direccion' => 'Plaza la prueba1',
+            'municipio' => 'La Test',
+            'provincia' => 'Almería',
+            'reconocimientos' => 88,
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/clientes', $clientData);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Comprobar la ruta API para listar los clientes con el rol administrador.
+     *
+     * @return void
+     */
+    public function test_listar_clientes_desde_rol_administrador()
     {
         $user = \App\Models\User::factory()->create();
         $user->assignRole('Administrador');
@@ -109,8 +183,47 @@ class IntegrationTest extends TestCase
                 ]);
     }
 
+
     /**
-     * Test user login.
+     * Comprobar la ruta API para listar los clientes con el rol medico.
+     *
+     * @return void
+     */
+    public function test_listar_clientes_desde_rol_medico()
+    {
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole('Medico');
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/clientes');
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Comprobar la ruta API para listar los clientes con el rol paciente.
+     *
+     * @return void
+     */
+    public function test_listar_clientes_desde_rol_paciente()
+    {
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole('Paciente');
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/clientes');
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Comprobar la respuesta de la API a la ruta /login.
+     *
+     * @return void
      */
     public function test_usuario_login()
     {
@@ -145,7 +258,9 @@ class IntegrationTest extends TestCase
     }
 
     /**
-     * Test user logout.
+     * Comprobar la respuesta de la API al ruta /logout.
+     *
+     * @return void
      */
     public function test_usuario_logout()
     {
@@ -161,7 +276,9 @@ class IntegrationTest extends TestCase
     }
 
     /**
-     * Test fetching authenticated user info.
+     * Comprobar la respuesta de la API al ruta /auth/me para obtener información del usuario logueado.
+     *
+     * @return void
      */
     public function test_obtener_usuario_autenticado()
     {

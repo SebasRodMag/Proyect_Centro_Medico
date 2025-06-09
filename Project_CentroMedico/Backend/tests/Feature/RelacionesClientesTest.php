@@ -5,12 +5,19 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\Cliente;
 use PHPUnit\Framework\Attributes\Test;
+
 /**
  *  Test para comprobar las relaciones del modelo Cliente
+ *
+ * Class RelacionesClientesTest
+ *
+ * Pruebas para verificar las relaciones del modelo Cliente.
  */
 class RelacionesClientesTest extends TestCase
 {
     /**
+     * Verifica que un cliente tiene un usuario asociado.
+     *
      * @return void
      */
     #[Test]
@@ -22,10 +29,12 @@ class RelacionesClientesTest extends TestCase
     }
 
     /**
+     * Verifica que un cliente tiene pacientes asociados.
+     *
      * @return void
      */
     #[Test]
-    public function un_cliente_tiene_pacientes()
+    public function test_un_cliente_tiene_pacientes()
     {
         $cliente = Cliente::with('pacientes')->firstOrFail();
 
@@ -33,10 +42,12 @@ class RelacionesClientesTest extends TestCase
     }
 
     /**
+     * Verifica que un cliente tiene contratos asociados.
+     *
      * @return void
      */
     #[Test]
-    public function un_cliente_tiene_contratos()
+    public function test_un_cliente_tiene_contratos()
     {
         $cliente = Cliente::with('contratos')->firstOrFail();
 

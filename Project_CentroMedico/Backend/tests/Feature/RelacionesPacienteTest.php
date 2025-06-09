@@ -9,15 +9,23 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
+/**
+ * Test para comprobar que un Paciente tiene citas y pertenece a un cliente
+ */
 class RelacionesPacienteTest extends TestCase
 {
     /**
-     * A basic feature test example.
+     * Verifica que un paciente tiene citas y pertenece a un cliente.
+     *
+     * @return void
      */
-    public function test_example(): void
+    #[Test]
+    public function test_paciente_tiene_citas_y_pertenece_a_cliente(): void
     {
-        $response = $this->get('/');
+        $paciente = \App\Models\Paciente::with(['citas', 'cliente'])->firstOrFail();
 
-        $response->assertStatus(200);
+        $this->assertNotNull($paciente->citas, 'El paciente no tiene citas asociadas.');
+        $this->assertGreaterThanOrEqual(0, $paciente->citas->count(), 'El paciente no tiene citas asociadas.');
+        $this->assertNotNull($paciente->cliente, 'El paciente no pertenece a un cliente.');
     }
 }

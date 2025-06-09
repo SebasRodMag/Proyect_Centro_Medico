@@ -2,19 +2,27 @@
 
 namespace Tests\Feature;
 
+/**
+ * Test para comprobar que un Contrato pertenece a un Cliente y tiene citas
+ */
 use Tests\TestCase;
 use App\Models\Contrato;
 use PHPUnit\Framework\Attributes\Test;
+
 /**
- * Test para comprobar que un Contrato pertenece a un Cliente y tiene citas
+ * Class RelacionesContratoTest
+ *
+ * Pruebas para verificar las relaciones del modelo Contrato.
  */
 class RelacionesContratoTest extends TestCase
 {
     /**
+     * Verifica que un contrato tiene un cliente asociado.
+     *
      * @return void
      */
     #[Test]
-    public function un_contrato_tiene_cliente_asociado()
+    public function test_un_contrato_tiene_cliente_asociado()
     {
         $contrato = Contrato::with('cliente')->firstOrFail();
 
@@ -22,10 +30,12 @@ class RelacionesContratoTest extends TestCase
     }
 
     /**
+     * Verifica que un contrato tiene citas asociadas.
+     *
      * @return void
      */
     #[Test]
-    public function un_contrato_tiene_citas()
+    public function test_un_contrato_tiene_citas()
     {
         $contrato = Contrato::with('citas')->firstOrFail();
 
