@@ -3,25 +3,39 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Database\Seeders\RolesSeeder;
-//use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\{User, Cliente, Contrato, Paciente, Medico, Cita};
 use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Illuminate\Foundation\Testing\WithFaker;
 
+/**
+ * Class CitaIntegracionTest
+ *
+ * Pruebas de integración para la entidad Cita en la API.
+ */
 class CitaIntegracionTest extends TestCase
 {
     use WithFaker;
 
+    /**
+     * Configuración inicial para las pruebas.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(RolesSeeder::class);
     }
 
+    /**
+     * Prueba para crear una cita relacionada correctamente con paciente, médico y contrato.
+     *
+     * @return void
+     */
     #[Test]
-    public function testCrearCitaRelacionadaCorrectamente()
+    public function test_crear_cita_relacionada_correctamente()
     {
         //Crear un usuario
         $userCliente = User::factory()->create(['email' => $this->faker->unique()->safeEmail]);
