@@ -11,53 +11,72 @@
 <div class="modal-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="mb-3">
-            <label for="razon_social" class="form-label">Razón Social</label>
-            <input
-                id="razon_social"
-                type="text"
-                class="form-control"
-                formControlName="razon_social"
-            />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Razón Social</mat-label> <input
+                    matInput id="razon_social"
+                    type="text"
+                    formControlName="razon_social"
+                />
+                <mat-error *ngIf="form.get('razon_social')?.invalid && form.get('razon_social')?.touched">
+                    La Razón Social es obligatoria.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="cif" class="form-label">CIF</label>
-            <input
-                id="cif"
-                type="text"
-                class="form-control"
-                formControlName="cif"
-            />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>CIF</mat-label> <input
+                    matInput
+                    id="cif"
+                    type="text"
+                    formControlName="cif"
+                />
+                <mat-error *ngIf="form.get('cif')?.invalid && form.get('cif')?.touched">
+                    El CIF es obligatorio.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="direccion" class="form-label">Dirección</label>
-            <input
-                id="direccion"
-                type="text"
-                class="form-control"
-                formControlName="direccion"
-            />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Dirección</mat-label> <input
+                    matInput
+                    id="direccion"
+                    type="text"
+                    formControlName="direccion"
+                />
+                <mat-error *ngIf="form.get('direccion')?.invalid && form.get('direccion')?.touched">
+                    La Dirección es obligatoria.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="municipio" class="form-label">Municipio</label>
-            <input
-                id="municipio"
-                type="text"
-                class="form-control"
-                formControlName="municipio"
-            />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Municipio</mat-label> <input
+                    matInput
+                    id="municipio"
+                    type="text"
+                    formControlName="municipio"
+                />
+                <mat-error *ngIf="form.get('municipio')?.invalid && form.get('municipio')?.touched">
+                    El Municipio es obligatorio.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="provincia" class="form-label">Provincia</label>
-            <input
-                id="provincia"
-                type="text"
-                class="form-control"
-                formControlName="provincia"
-            />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Provincia</mat-label> <input
+                    matInput
+                    id="provincia"
+                    type="text"
+                    formControlName="provincia"
+                />
+                <mat-error *ngIf="form.get('provincia')?.invalid && form.get('provincia')?.touched">
+                    La Provincia es obligatoria.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="d-flex justify-content-end">
@@ -68,7 +87,7 @@
             >
                 Cancelar
             </button>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
         </div>
     </form>
 </div>

@@ -17,125 +17,85 @@
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     min-width: 600px;
+    max-width: 80%;
+    width: auto;
     position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
 
 .modal-header {
-    width: 65%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
-}
-
-
-#contenedor-principal {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    width: 100%;
+    padding: 0 10px 15px 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
 }
 
-#columnas {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
 }
 
-#segundo-contenedor {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-#primer-contenedor,
-#segundo-contenedor {
-    flex: 1;
-}
-
-#primer-contenedor div,
-#segundo-contenedor div {
-    display: flex;
-    flex-direction: column;
-    margin: 5px 0;
-}
-
-
-
-#boton-registrar {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-input,
-select {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid black;
-}
-
-i {
+.close-button {
     font-size: 25px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
 }
 
-/* Estilo básico para que ng-select se integre con tu diseño */
-ng-select {
+.close-button:hover {
+    color: #000;
+}
+
+.modal-body-content {
+    width: 85%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.full-width {
     width: 100%;
-    font-size: 16px;
 }
 
-.ng-select {
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    background-color: #fff;
-    box-shadow: none;
+
+.form-field-group {
+    margin-bottom: 0px;
 }
 
-.ng-select .ng-select-container {
-    border-radius: 5px;
-    min-height: 38px;
-    padding: 4px 8px;
-    border: 1px solid #ced4da;
-    align-items: center;
+mat-error {
+    font-size: 0.8rem;
+    color: #f44336;
+    margin-top: 5px;
+    display: block;
 }
 
-.ng-select.ng-select-multiple .ng-select-container {
-    min-height: 38px;
+
+.button-group {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
 }
 
-.ng-select.ng-select-multiple .ng-value {
-    background-color: #007bff;
+
+.btn-primary {
+    background-color: #2196F3;
     color: white;
+    padding: 10px 25px;
+    border: none;
     border-radius: 4px;
-    padding: 2px 6px;
-    margin-right: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
 }
 
-.ng-select .ng-value-icon {
-    margin-left: 4px;
-}
-
-.ng-dropdown-panel {
-    border: 1px solid #ced4da;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1050 !important;
-    /* Para que se superponga en modales */
-}
-
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
-    padding: 8px 12px;
-}
-
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
-    background-color: #e9ecef;
-}
-
-/* Asegura que en el modal no se corte */
-.modal-content {
-    overflow: visible;
+.btn-primary:hover {
+    background-color: #1976D2;
 }

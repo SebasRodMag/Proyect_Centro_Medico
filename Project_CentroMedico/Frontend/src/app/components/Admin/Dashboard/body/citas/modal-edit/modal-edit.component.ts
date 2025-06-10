@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { MatSelectModule } from '@angular/material/select';
 import dayjs from 'dayjs';
 
 import { MedicoService } from '../../../../../../services/Medico-Service/medico.service'; // Ajusta la ruta
@@ -32,6 +33,7 @@ import { CitaService } from '../../../../../../services/Cita-Service/cita.servic
         MatFormFieldModule,
         MatInputModule,
         MatNativeDateModule,
+        MatSelectModule
     ],
     templateUrl: './modal-edit.component.html',
     styleUrls: ['./modal-edit.component.css'],

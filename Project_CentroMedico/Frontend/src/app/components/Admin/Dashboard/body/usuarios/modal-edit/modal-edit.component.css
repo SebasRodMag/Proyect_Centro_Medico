@@ -85,3 +85,13 @@
 .me-2 {
     margin-right: 0.5rem;
 }
+
+.full-width {
+    width: 100%;
+}
+
+.modal-body mat-form-field {
+    margin-bottom: 15px;
+    width: 100%;
+
+}

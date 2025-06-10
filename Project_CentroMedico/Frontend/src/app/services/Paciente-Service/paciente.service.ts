@@ -12,7 +12,7 @@ export class PacienteService {
     constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         return new HttpHeaders({
             Authorization: `Bearer ${token}`,
         });

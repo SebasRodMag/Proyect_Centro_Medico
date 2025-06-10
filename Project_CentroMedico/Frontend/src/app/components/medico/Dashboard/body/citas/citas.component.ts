@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter } from '@angular/material/core';
 import  Swal from 'sweetalert2';
 
 @Component({
@@ -26,6 +28,7 @@ import  Swal from 'sweetalert2';
         MatButtonModule,
         MatDialogModule
     ],
+    // Removed providers: [DateAdapter] because DateAdapter is abstract and cannot be provided directly
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
