@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         this.authSubscription = this.authService.authState$.subscribe((isLoggedIn: boolean) => {
             if (isLoggedIn) {
-                this.userName = localStorage.getItem('name') || '';
+                this.userName = sessionStorage.getItem('name') || '';
                 this.userRol = this.authService.getRol();
             } else {
                 this.userName = '';
@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         // Si ya está logueado, coger el nombre del usuario y el rol
         if (this.authService.isLoggedIn()) {
-            this.userName = localStorage.getItem('name') || '';
+            this.userName = sessionStorage.getItem('name') || '';
             this.userRol = this.authService.getRol();
         }
     }
