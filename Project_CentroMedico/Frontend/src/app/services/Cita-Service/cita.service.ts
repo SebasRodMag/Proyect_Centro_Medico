@@ -19,11 +19,14 @@ export class CitaService {
         });
     }
 
-    // Elimina este método o implementa correctamente la lógica para obtener las citas del médico.
-    // Si necesitas obtener las citas del médico, crea un método que haga una petición HTTP similar a los otros métodos.
-    // Por ejemplo:
     getCitasDelMedico(): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}/medico/medicos/citas`, {
+        return this.http.get<any>(`${this.apiUrl}/citas/usuario/listar`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getCitasDelUsuarioLogueado(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/citas/usuario/listar`, {
             headers: this.getAuthHeaders(),
         });
     }
@@ -50,7 +53,6 @@ export class CitaService {
                 {
                     headers: this.getAuthHeaders(),
                 }
-                //mostrar un console.log para ver si se obtiene la respuesta correcta
             )
             .pipe(
                 tap((response) => {
@@ -78,7 +80,6 @@ export class CitaService {
         });
     }
 
-    //obtener el medico logueado a traves de la función me de auth.service.ts
     getMedicoLogueado(): Observable<any> {
         return this.http.get(`${this.apiUrl}/auth/me`, {
             headers: this.getAuthHeaders(),
@@ -90,13 +91,6 @@ export class CitaService {
             headers: this.getAuthHeaders(),
         });
     }
-
-    /*     getHorariosDisponiblesParaHoy(): Observable<string[]> {
-        return this.http.get<string[]>(
-            `${this.apiUrl}/citasdisponibles`,
-            { headers: this.getAuthHeaders() }
-        );
-    } */
 
     getHorariosDisponiblesParaHoy(): Observable<{
         horas_disponibles: string[];

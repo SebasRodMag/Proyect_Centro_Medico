@@ -184,23 +184,74 @@ class CitasController extends Controller
         return response()->json($citas, 200);
     }
 
-    public function citasPorMedicoLogueado()
+    /**
+     * Lista las citas del usuario logueado, ya sea médico o paciente.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function citasPorUsuarioLogueado()
     {
         $user = Auth::user();
-        $medico = $user->medico;
-    
-        if (!$medico) {
-            return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
-        }
-        if (!$medico) {
-            return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado.'], 401);
         }
 
-        $citas = $medico->citas()->with(['paciente', 'medico'])->get();
-        $citas = $medico->citas()->with(['paciente', 'medico'])->get();
+        $role = $user->getRoleNames()->first();
 
-        return response()->json($citas, 200);
+        if ($role === 'Medico') {
+            $medico = $user->medico;
 
+            if (!$medico) {
+                return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+            }
+
+            $citas = Cita::where('id_medico', $medico->id)
+                        ->with(['paciente:id,nombre,apellidos,dni'])
+                        ->get();
+
+            $formattedCitas = $citas->map(function ($cita) {
+                return [
+                    'id' => $cita->id,
+                    'fecha_hora_cita' => $cita->fecha_hora_cita,
+                    'estado' => $cita->estado,
+                    'observaciones' => $cita->observaciones,
+                    'nombre_paciente' => $cita->paciente->nombre . ' ' . $cita->paciente->apellidos,
+                    'dni'=>$cita->paciente->dni,
+                    'id_paciente' => $cita->id_paciente,
+                    'id_contrato' => $cita->id_contrato,
+                ];
+            });
+
+            return response()->json($formattedCitas, 200);
+
+        } elseif ($role === 'Paciente') {
+            $paciente = $user->paciente;
+
+            if (!$paciente) {
+                return response()->json(['error' => 'El usuario no está registrado como paciente.'], 403);
+            }
+
+            $citas = Cita::where('id_paciente', $paciente->id)
+                        ->with(['medico:id,nombre,apellidos,dni'])
+                        ->get();
+            $formattedCitas = $citas->map(function ($cita) {
+                return [
+                    'id' => $cita->id,
+                    'fecha_hora_cita' => $cita->fecha_hora_cita,
+                    'estado' => $cita->estado,
+                    'observaciones' => $cita->observaciones,
+                    'nombre_medico' => $cita->medico->nombre . ' ' . $cita->medico->apellidos,
+                    'id_medico' => $cita->id_medico,
+                    'id_contrato' => $cita->id_contrato,
+                ];
+            });
+
+            return response()->json($formattedCitas, 200);
+
+        } else {
+            return response()->json(['error' => 'Rol de usuario no soportado para la consulta de citas.'], 403);
+        }
     }
 
 

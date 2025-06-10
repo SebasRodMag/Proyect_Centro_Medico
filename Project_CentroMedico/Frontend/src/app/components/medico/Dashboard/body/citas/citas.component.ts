@@ -8,12 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ModalEditComponent } from './modal-edit/modal-edit.component';
 import { FormsModule } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatNativeDateModule } from '@angular/material/core';
-import { DateAdapter } from '@angular/material/core';
-import  Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-citas',
@@ -28,7 +25,6 @@ import  Swal from 'sweetalert2';
         MatButtonModule,
         MatDialogModule
     ],
-    // Removed providers: [DateAdapter] because DateAdapter is abstract and cannot be provided directly
     templateUrl: './citas.component.html',
     styleUrls: ['./citas.component.css'],
 })
@@ -39,7 +35,6 @@ export class CitasComponent implements OnInit, AfterViewInit {
         'id',
         'nombre_paciente',
         'dni',
-        'nombre_medico',
         'fecha',
         'hora',
         'estado',
@@ -56,7 +51,6 @@ export class CitasComponent implements OnInit, AfterViewInit {
 
     constructor(
         private citaService: CitaService,
-        private modalService: NgbModal,
         private dialog: MatDialog,
         private snackBar: MatSnackBar
     ) { }
@@ -70,17 +64,17 @@ export class CitasComponent implements OnInit, AfterViewInit {
 
         this.fechaDesde = fechaActual;
         this.fechaHasta = fechaActual;
-        
+
         this.getCitasDelMedicoLogueado();
+
         this.citasDataSource.filterPredicate = (data: any, filter: string) => {
-            const nombreCompleto = (data.paciente?.nombre + ' ' + data.paciente?.apellidos).toLowerCase();
-            const dni = data.paciente?.dni?.toLowerCase() || '';
-            const medico = (data.medico?.nombre + ' ' + data.medico?.apellidos).toLowerCase();
+            const filterLower = filter.toLowerCase();
+            const nombreCompletoPaciente = data.nombre_paciente ? data.nombre_paciente.toLowerCase() : '';
+            const dniPaciente = data.dni ? data.dni.toLowerCase() : '';
 
             return (
-                nombreCompleto.includes(filter) ||
-                dni.includes(filter) ||
-                medico.includes(filter)
+                nombreCompletoPaciente.includes(filterLower) ||
+                dniPaciente.includes(filterLower)
             );
         };
     }
@@ -91,23 +85,23 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     getCitasDelMedicoLogueado(): void {
-    console.log('Recargando citas del médico...');
-    this.citaService.getCitasDelMedico().subscribe({
-        next: (citas) => {
-            console.log('Citas recibidas desde el backend:', citas);
-            this.citasOriginal = citas;
-            this.citasDataSource.data = citas;
-            console.log('DataSource actualizado:', this.citasDataSource.data);
-            this.filtrarPorFechas();
-        },
-        error: (error) => {
-            console.error('Error al cargar las citas del médico:', error);
-        }
-    });
-}
+        console.log('Recargando citas del médico...');
+        this.citaService.getCitasDelMedico().subscribe({
+            next: (citas) => {
+                console.log('Citas recibidas desde el backend:', citas);
+                this.citasOriginal = citas;
+                this.citasDataSource.data = citas;
+                console.log('DataSource actualizado:', this.citasDataSource.data);
+                this.filtrarPorFechas();
+            },
+            error: (error) => {
+                console.error('Error al cargar las citas del médico:', error);
+                this.snackBar.open('Error al cargar las citas del médico.', 'Cerrar', { duration: 3000 });
+            }
+        });
+    }
 
     filtrarPorFechas(): void {
-        //se definen de esta forma para que no presente errores al comparar las fechas no haya diferencias por horas
         const desde = this.fechaDesde ? new Date(this.fechaDesde + 'T00:00:00') : null;
         const hasta = this.fechaHasta ? new Date(this.fechaHasta + 'T23:59:59') : null;
 
@@ -146,14 +140,12 @@ export class CitasComponent implements OnInit, AfterViewInit {
 
                         this.citaService.actualizarCita(citaEditada.id, citaEditada).subscribe({
                             next: () => {
-                                console.log('Cita enviada al backend:', citaEditada)
-                                this.citaService.getCitasDelMedico().subscribe((citasActualizadas) => {
-                                    this.citasOriginal = citasActualizadas;
-                                    this.citasDataSource.data = [...this.citasOriginal];
-                                    this.snackBar.open('Cita actualizada con éxito', 'Cerrar', { duration: 3000 });
-                                });
+                                console.log('Cita enviada al backend:', citaEditada);
+                                this.getCitasDelMedicoLogueado();
+                                this.snackBar.open('Cita actualizada con éxito', 'Cerrar', { duration: 3000 });
                             },
                             error: (err) => {
+                                console.error('Error al actualizar cita:', err);
                                 this.snackBar.open(err?.error?.message || 'No se pudo actualizar la cita', 'Cerrar', {
                                     duration: 4000,
                                 });
@@ -163,11 +155,12 @@ export class CitasComponent implements OnInit, AfterViewInit {
                 });
             },
             error: (err) => {
+                console.error('Error al cargar horarios disponibles:', err);
                 this.snackBar.open('No se pudieron cargar los horarios disponibles', 'Cerrar', { duration: 4000 });
             }
         });
     }
-//función para comparar la fecha de la cita con el dia presente y saber sii se puede modificar una cita.
+
     esHoy(fechaHora: string): boolean {
         const fechaCita = new Date(fechaHora);
         const hoy = new Date();
@@ -181,12 +174,12 @@ export class CitasComponent implements OnInit, AfterViewInit {
 
     eliminarCita(cita: any): void {
         if (cita.estado === 'realizada') {
-        Swal.fire('No permitido', 'No se puede eliminar una cita ya realizada.', 'info');
-        return;
-    }
+            Swal.fire('No permitido', 'No se puede eliminar una cita ya realizada.', 'info');
+            return;
+        }
         Swal.fire({
             title: '¿Estás seguro?',
-            text: 'Esta acción marcará la cita como eliminada. '+ cita.id,
+            text: 'Esta acción marcará la cita como eliminada. ' + cita.id,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Sí, eliminar',
@@ -196,9 +189,10 @@ export class CitasComponent implements OnInit, AfterViewInit {
                 this.citaService.eliminarCita(cita.id).subscribe({
                     next: () => {
                         Swal.fire('Eliminada', 'La cita ha sido eliminada.', 'success');
-                        this.getCitasDelMedicoLogueado(); // O refresca el DataSource actual
+                        this.getCitasDelMedicoLogueado();
                     },
                     error: (error) => {
+                        console.error('Error al eliminar cita:', error);
                         Swal.fire('Error', error.error?.message || 'No se pudo eliminar la cita.', 'error');
                     }
                 });
@@ -206,25 +200,6 @@ export class CitasComponent implements OnInit, AfterViewInit {
         });
     }
 
-    confirmarEliminacion(cita: any): void {
-        const confirmado = confirm(`¿Estás seguro de que deseas eliminar la cita del ${new Date(cita.fecha_hora_cita).toLocaleString()} com id: ${cita.id}?`);
-        console.log('Se va a eliminar la cita: ', cita.id)
-
-        if (confirmado) {
-            this.citaService.eliminarCita(cita.id).subscribe({
-                next: () => {
-                    alert('Cita eliminada correctamente');
-                    this.getCitasDelMedicoLogueado(); // vuelve a cargar la tabla
-                },
-                error: (error) => {
-                    console.error('Error al eliminar cita:', error);
-                    alert('No se pudo eliminar la cita.');
-                }
-            });
-        }
-    }
-
-    //función para cambiar el campo estado de la tabla citas
     cambiarEstado(cita: any): void {
         if (cita.estado !== 'pendiente') {
             Swal.fire('No permitido', 'Solo puedes cambiar el estado de citas pendientes.', 'info');
@@ -266,5 +241,18 @@ export class CitasComponent implements OnInit, AfterViewInit {
             }
         });
     }
-}
 
+    mostrarObservaciones(observaciones: string): void {
+        Swal.fire({
+            title: 'Observaciones de la Cita',
+            html: observaciones && observaciones.trim() !== '' ? observaciones : 'Esta cita no tiene observaciones.',
+            icon: 'info',
+            confirmButtonText: 'Cerrar',
+            allowOutsideClick: true,
+            allowEscapeKey: true,
+            width: '600px',
+            padding: '1.5em',
+            backdrop: true
+        });
+    }
+}

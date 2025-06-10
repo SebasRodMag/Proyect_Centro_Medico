@@ -54,4 +54,8 @@ export class PacienteService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    getCitasDelPacienteLogueado():Observable<any>{
+        return this.http.get<any>(`${this.apiUrl}/citas/paciente/`)
+    }
 }

@@ -123,9 +123,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('citas/{id_cita}', [CitasController::class, 'update']);
     });
 
+    Route::middleware(['role:Medico|Paciente'])->group(function(){
+        Route::get('citas/usuario/listar', [CitasController::class, 'citasPorUsuarioLogueado']);
+    });
+
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
-        Route::get('medico/medicos/citas', [CitasController::class, 'citasPorMedicoLogueado']);//corregir la función citasPorMedico
+        
         Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);//correcto
         Route::get('medicos/perfil/yo' , [MedicosController::class, 'medicoLogueado']);//correcto
         //buscar las horas disponibles para un medico logueado en una fecha
