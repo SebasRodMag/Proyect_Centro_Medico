@@ -107,7 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('medicos/{medico}/citas', [CitasController::class, 'citasPorMedico']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
         // Route::put('/citas/{cita}', [CitasController::class, 'updateHoy']); Lo he comentado porque hace conflicto con el update()
-        Route::put('citas/{cita}/cancelar', [CitasController::class, 'cancelarCita']);
+        Route::put('citas/{cita}/cancelar', [CitasController::class, 'cambiarEstadoCita']);
         Route::get('pacientes/medico/listar', [PacientesController::class, 'pacientesByMedico']);//Listar pacientes por id_medico
         Route::delete('eliminar/cita/medico/{id}', [CitasController::class, 'eliminarCitaMedico']);//Eliminar(softDelete) la cita por un medico logueado
     });

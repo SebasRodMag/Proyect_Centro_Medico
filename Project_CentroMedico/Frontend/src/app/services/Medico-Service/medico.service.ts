@@ -60,4 +60,10 @@ export class MedicoService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    getMedicoLogueado(): Observable<any>{
+        return this.http.post<Medico>(`${this.apiUrl}/medicos/perfil/yo`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
 }

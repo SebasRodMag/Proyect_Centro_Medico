@@ -238,8 +238,8 @@ export class CitasComponent implements OnInit, AfterViewInit {
             icon: 'question',
             input: 'select',
             inputOptions: {
-                realizada: 'Realizada',
-                cancelado: 'Cancelada'
+                realizado: 'Realizado',
+                cancelado: 'Cancelado'
             },
             inputPlaceholder: 'Selecciona un estado',
             showCancelButton: true,
