@@ -13,7 +13,7 @@ export class CitaService {
     constructor(private http: HttpClient) {}
 
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         return new HttpHeaders({
             Authorization: `Bearer ${token}`,
         });

@@ -85,3 +85,19 @@
 .me-2 {
     margin-right: 0.5rem;
 }
+.full-width {
+    width: 100%;
+}
+
+.modal-body mat-form-field {
+    margin-bottom: 15px;
+}
+
+.modal-body .mat-form-field .mat-form-field-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.d-flex.justify-content-end {
+    align-items: center;
+}

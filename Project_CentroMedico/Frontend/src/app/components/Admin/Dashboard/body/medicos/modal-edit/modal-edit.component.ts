@@ -15,6 +15,8 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import Swal from 'sweetalert2';
 import { MedicoService } from '../../../../../../services/Medico-Service/medico.service';
 
@@ -29,6 +31,8 @@ import { MedicoService } from '../../../../../../services/Medico-Service/medico.
         MatInputModule,
         MatButtonModule,
         FormsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
     ],
     templateUrl: './modal-edit.component.html',
     styleUrls: ['./modal-edit.component.css'],
@@ -41,7 +45,7 @@ export class ModalEditComponent implements OnInit {
         private medicoService: MedicoService,
         private dialogRef: MatDialogRef<ModalEditComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { medico: any }
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         const medico = this.data.medico;
@@ -49,7 +53,7 @@ export class ModalEditComponent implements OnInit {
             nombre: [medico.nombre, Validators.required],
             apellidos: [medico.apellidos, Validators.required],
             dni: [medico.dni, Validators.required],
-            fecha_fin: [medico.fecha_fin || null],
+            fecha_fin: [medico.fecha_fin ? new Date(medico.fecha_fin) : null, Validators.required],
         });
     }
 
@@ -60,18 +64,16 @@ export class ModalEditComponent implements OnInit {
             return;
         }
 
-        const formData = { ...this.form.value };
-        if (formData.fecha_fin === '') {
-            formData.fecha_fin = null;
+        const formValue = { ...this.form.value };
+        if (formValue.fecha_fin instanceof Date) {
+            formValue.fecha_fin = formValue.fecha_fin.toISOString().split('T')[0]; // Formato YYYY-MM-DD
         }
 
-        console.log('Datos a enviar:', formData);
 
-        this.medicoService
-            .updateMedico(this.data.medico.id, formData)
+        this.medicoService // **¡ATENCIÓN!** Usar medicoService
+            .updateMedico(this.data.medico.id, formValue) // Pasar formValue
             .subscribe({
                 next: () => {
-                    console.log('Respuesta exitosa del backend');
                     Swal.fire(
                         'Actualizado',
                         'Médico actualizado correctamente',
@@ -79,8 +81,8 @@ export class ModalEditComponent implements OnInit {
                     );
                     this.dialogRef.close(true);
                 },
-                error: (error) => {
-                    console.error('Error en la actualización:', error);
+                error: (err) => { // Capturar el error para mostrarlo
+                    console.error('Error al actualizar médico:', err);
                     Swal.fire(
                         'Error',
                         'No se pudo actualizar el médico',

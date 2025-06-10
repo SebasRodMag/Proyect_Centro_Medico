@@ -6,23 +6,21 @@
 <div class="modal-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="mb-3">
-            <label for="medico">Médico asignado</label>
-            <select formControlName="medico" id="medico" class="form-select">
-                <option value="" disabled>Selecciona un médico</option>
-                <option *ngFor="let medico of medicos" [value]="medico.id">
-                    {{ medico.nombre }} {{ medico.apellidos }}
-                </option>
-            </select>
-            <div *ngIf="form.get('medico')?.invalid && form.get('medico')?.touched" class="text-danger">
-                El médico es obligatorio.
-            </div>
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Médico asignado</mat-label> <mat-select formControlName="medico"> <mat-option value="" disabled>Selecciona un médico</mat-option>
+                    <mat-option *ngFor="let medico of medicos" [value]="medico.id">
+                        {{ medico.nombre }} {{ medico.apellidos }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('medico')?.invalid && form.get('medico')?.touched">
+                    El médico es obligatorio.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="fecha" class="form-label">Día</label>
             <mat-form-field appearance="fill" class="full-width">
-                <mat-label>Fecha</mat-label>
-                <input
+                <mat-label>Fecha</mat-label> <input
                     matInput
                     [matDatepicker]="picker"
                     formControlName="fecha"
@@ -31,27 +29,27 @@
                 />
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker startView="month"></mat-datepicker>
+                <mat-error *ngIf="form.get('fecha')?.invalid && form.get('fecha')?.touched">
+                    La fecha es obligatoria.
+                </mat-error>
             </mat-form-field>
-            <div *ngIf="form.get('fecha')?.invalid && form.get('fecha')?.touched" class="text-danger">
-                La fecha es obligatoria.
-            </div>
         </div>
 
         <div class="mb-3">
-            <label for="hora" class="form-label">Hora</label>
-            <select id="hora" formControlName="hora" class="form-select">
-                <option value="" disabled>Horas disponibles</option>
-                <option *ngIf="horasDisponibles.length === 0" disabled>No hay horas disponibles</option>
-                <option *ngFor="let hora of horasDisponibles" [value]="hora">
-                    {{ hora }}
-                </option>
-            </select>
-            <div *ngIf="form.get('hora')?.invalid && form.get('hora')?.touched" class="text-danger">
-                La hora es obligatoria.
-            </div>
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Hora</mat-label> <mat-select formControlName="hora"> <mat-option value="" disabled>Horas disponibles</mat-option>
+                    <mat-option *ngIf="horasDisponibles.length === 0" disabled>No hay horas disponibles</mat-option>
+                    <mat-option *ngFor="let hora of horasDisponibles" [value]="hora">
+                        {{ hora }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('hora')?.invalid && form.get('hora')?.touched">
+                    La hora es obligatoria.
+                </mat-error>
+            </mat-form-field>
 
             <div
-                *ngIf="horasDisponibles.length === 0"
+                *ngIf="horasDisponibles.length === 0 && form.get('medico')?.value && form.get('fecha')?.value"
                 class="alert alert-warning mt-2"
                 role="alert"
             >
@@ -63,7 +61,7 @@
             <button type="button" class="btn btn-secondary me-2" (click)="close()">
                 Cancelar
             </button>
-            <button type="submit" class="btn btn-primary" [disabled]="horasDisponibles.length === 0">
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid || horasDisponibles.length === 0">
                 Guardar
             </button>
         </div>

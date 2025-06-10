@@ -6,28 +6,46 @@
 <div class="modal-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input id="nombre" type="text" class="form-control" formControlName="nombre" />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Nombre</mat-label> <input matInput id="nombre" type="text" formControlName="nombre" />
+                <mat-error *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+                    El nombre es obligatorio.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="apellidos" class="form-label">Apellidos</label>
-            <input id="apellidos" type="text" class="form-control" formControlName="apellidos" />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Apellidos</mat-label> <input matInput id="apellidos" type="text" formControlName="apellidos" />
+                <mat-error *ngIf="form.get('apellidos')?.invalid && form.get('apellidos')?.touched">
+                    Los apellidos son obligatorios.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="dni" class="form-label">DNI</label>
-            <input id="dni" type="text" class="form-control" formControlName="dni" />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>DNI</mat-label> <input matInput id="dni" type="text" formControlName="dni" />
+                <mat-error *ngIf="form.get('dni')?.invalid && form.get('dni')?.touched">
+                    El DNI es obligatorio.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="mb-3">
-            <label for="fecha_fin" class="form-label">Fecha Fin</label>
-            <input id="fecha_fin" type="date" class="form-control" formControlName="fecha_fin" />
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Fecha Fin</mat-label> <input matInput [matDatepicker]="pickerFechaFin" formControlName="fecha_fin" />
+                <mat-datepicker-toggle matSuffix [for]="pickerFechaFin"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFechaFin></mat-datepicker>
+                <mat-error *ngIf="form.get('fecha_fin')?.invalid && form.get('fecha_fin')?.touched">
+                    La Fecha Fin es obligatoria.
+                </mat-error>
+            </mat-form-field>
         </div>
 
         <div class="d-flex justify-content-end">
             <button type="button" class="btn btn-secondary me-2" (click)="close()">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
         </div>
     </form>
 </div>

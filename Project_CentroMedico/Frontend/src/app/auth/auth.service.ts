@@ -32,7 +32,7 @@ export class AuthService {
     constructor(private http: HttpClient, private router: Router) {}
 
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         return new HttpHeaders({
             Authorization: `Bearer ${token}`,
         });
@@ -44,10 +44,10 @@ export class AuthService {
             .pipe(
                 tap((res) => {
                     // Almacenar token y datos del usuario
-                    localStorage.setItem('token', res.token);
-                    localStorage.setItem('rol', res.user.rol);
-                    localStorage.setItem('name', res.user.name);
-                    localStorage.setItem('id', res.user.id);
+                    sessionStorage.setItem('token', res.token);
+                    sessionStorage.setItem('rol', res.user.rol);
+                    sessionStorage.setItem('name', res.user.name);
+                    sessionStorage.setItem('id', res.user.id);
 
                     console.log('Rol:', res.user.rol);
                     console.log('Nombre:', res.user.name);
@@ -66,7 +66,7 @@ export class AuthService {
     }
 
     logout() {
-        localStorage.clear();
+        sessionStorage.clear();
         this.authState.next(false); // Notificar sesión cerrada para actualizar el header
         this.router.navigate(['/login']);
         console.log('Sesión cerrada');
@@ -104,15 +104,15 @@ export class AuthService {
     }
 
     getRol(): string {
-        return localStorage.getItem('rol') || '';
+        return sessionStorage.getItem('rol') || '';
     }
 
     isLoggedIn(): boolean {
-        return !!localStorage.getItem('token');
+        return !!sessionStorage.getItem('token');
     }
 
     getToken(): string | null {
-        return localStorage.getItem('token');
+        return sessionStorage.getItem('token');
     }
 
     me(): Observable<User> {

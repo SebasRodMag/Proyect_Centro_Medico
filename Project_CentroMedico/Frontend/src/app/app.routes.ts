@@ -99,7 +99,7 @@ export const routes: Routes = [
 
     {
         path: 'medico/dashboard/home',
-        loadComponent: () =>import('./components/Medico/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
+        loadComponent: () =>import('./components/medico/Dashboard/body/citas/citas.component').then((m) => m.CitasComponent),
         canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
         data: { role: 'Medico' },
     },
