@@ -261,4 +261,10 @@ class ClientesController extends Controller
             'pacientes' => $pacientes
         ], 200);
     }
+
+    //Función para listar todos los clientes, obteniendo su id y razon_social
+    public function listarClientesPorRazonSocial(){
+        $clientes = Cliente::select('id', 'razon_social')->get();
+        return response()->json($clientes, 200);
+    }
 }

@@ -20,7 +20,7 @@ use App\Models\Paciente;
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');//Para saber que usuario esta logueado
+    Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 });
 
@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('clientes', [ClientesController::class, 'store']);
         Route::put('clientes/{clienteId}', [ClientesController::class, 'update']);
         Route::delete('clientes/{clienteId}', [ClientesController::class, 'destroy']);
+        Route::get('clientes/razon_social/listar', [ClientesController::class, 'listarClientesPorRazonSocial']);
 
         Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']); 
         Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
@@ -66,12 +67,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('contratos', [ContratosController::class, 'store']);
         // Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         Route::get('clientes/pacientes/cif/{cif}', [ClientesController::class, 'pacientesByCIF']);
+        Route::get('clientes/pacientes/id/{cliente_id}', [PacientesController::class, 'getPacientesPorClienteId']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
 
         //Pacientes
         Route::get('pacientes', [PacientesController::class, 'index']);
         Route::post('pacientes', [PacientesController::class, 'store']);
+        
 
         //Citas
         

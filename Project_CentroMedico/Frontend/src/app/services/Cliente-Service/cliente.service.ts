@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ClienteService {
     [x: string]: any;
-    private apiUrl = '/api/clientes';
+    private apiUrl = 'http://127.0.0.1:8000/api/clientes';
 
     constructor(private http: HttpClient) {}
 
@@ -57,7 +57,19 @@ export class ClienteService {
         });
     }
 
-    createCliente(cliente: any): Observable<any> {
+    getPacientesPorClienteId(id_cliente: number): Observable<any>{
+        return this.http.get(`${this.apiUrl}/pacientes/id/${id_cliente}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getListarClientesPorRazonSocial(): Observable<any>{
+        return this.http.get(`${this.apiUrl}/razon_social/listar`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    crearCliente(cliente: any): Observable<any> {
         return this.http.post(this.apiUrl, cliente, {
             headers: this.getAuthHeaders(),
         });

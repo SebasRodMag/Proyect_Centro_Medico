@@ -211,16 +211,27 @@ class PacientesController extends Controller
     }
 
     //listar los pacientes de un cliente, recibiendo el id del cliente como parámetro
-    public function pacientesPorClienteConId(Request $request, $id)
+    public function getPacientesPorClienteId($id_cliente)
     {
-        $cliente = Cliente::where('id', $id)->first();
+        $cliente = Cliente::with(['pacientes', 'contratos' => function($query) {
+            $query->where('autorenovacion', true)->orderBy('fecha_inicio', 'desc');
+        }])->find($id_cliente);
+
         if (!$cliente) {
-            return response()->json(['message' => 'Cliente no encontrado'], 404);
+            return response()->json(['error' => 'Cliente no encontrado.'], 404);
         }
-        $pacientes = $cliente->pacientes;
-        if ($pacientes->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron pacientes para este cliente.'], 200);
-        }
-        return response()->json($pacientes, 200);
+
+        $idContrato = $cliente->contratos->first()->id ?? null;
+
+        return response()->json([
+            'pacientes' => $cliente->pacientes->map(function ($paciente) {
+                return [
+                    'id' => $paciente->id,
+                    'nombre' => $paciente->nombre,
+                    'apellidos' => $paciente->apellidos,
+                ];
+            }),
+            'id_contrato' => $idContrato,
+        ], 200);
     }
 }

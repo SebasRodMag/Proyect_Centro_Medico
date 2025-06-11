@@ -18,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class LoginComponent implements OnInit {
     errorMessage: string | null = null;
     loginForm!: FormGroup;
+    passwordVisible: boolean = false;
 
     constructor(private authService: AuthService, private router: Router) {}
 
@@ -26,6 +27,10 @@ export class LoginComponent implements OnInit {
             email: new FormControl('', [Validators.required, Validators.email]),
             password: new FormControl('', [Validators.required]),
         });
+    }
+
+    hacerPasswordVisibile(): void {
+        this.passwordVisible = !this.passwordVisible;
     }
 
     onSubmit() {

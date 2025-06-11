@@ -1,117 +1,144 @@
-<div class="modal-backdrop" *ngIf="isVisible">
+<div class="modal-backdrop" *ngIf="esVisible">
     <div class="modal-content">
         <div class="modal-header">
             <h2>REGISTRAR CLIENTE</h2>
             <i class="bi bi-x-circle close-button" (click)="close()"></i>
         </div>
         <div>
-            <form (ngSubmit)="onSubmit()" #clienteForm="ngForm">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
                 <div id="contenedor-principal">
                     <div id="columnas">
                         <div id="primer-contenedor">
-                            <div>
-                                <label for="email">Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    [(ngModel)]="cliente.email"
-                                    required
-                                />
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Email:</mat-label>
+                                    <input matInput type="email" formControlName="email" />
+                                    <mat-error *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                                        <span *ngIf="form.get('email')?.errors?.['required']">El email es
+                                            obligatorio.</span>
+                                        <span *ngIf="form.get('email')?.errors?.['email']">Introduce un email
+                                            válido.</span>
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="password">Contraseña:</label>
-                                <div class="password-wrapper">
-                                    <input
-                                        [type]="mostrarPassword ? 'text' : 'password'"
-                                        name="password"
-                                        id="password"
-                                        [(ngModel)]="cliente.password"
-                                        required
-                                        minlength="6"
-                                        #passwordField="ngModel"
-                                    />
-                                    <i
-                                        class="bi"
-                                        [ngClass]="
-                                            mostrarPassword
-                                                ? 'bi-eye-fill'
-                                                : 'bi-eye-slash-fill'
-                                        "
-                                        (click)="
-                                            mostrarPassword = !mostrarPassword
-                                        "
-                                    ></i>
-                                </div>
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Contraseña:</mat-label>
+                                    <div class="password-wrapper">
+                                        <input matInput [type]="mostrarPassword ? 'text' : 'password'"
+                                            formControlName="password" />
+                                        <button mat-icon-button matSuffix (click)="mostrarPassword = !mostrarPassword"
+                                            type="button">
+                                            <mat-icon>{{ mostrarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+                                        </button>
+                                    </div>
+                                    <mat-error *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+                                        <span *ngIf="form.get('password')?.errors?.['required']">La contraseña es
+                                            obligatoria.</span>
+                                        <span *ngIf="form.get('password')?.errors?.['minlength']">La contraseña debe
+                                            tener al menos 6 caracteres.</span>
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="razon_social">Razón social:</label>
-                                <input
-                                    type="text"
-                                    name="razon_social"
-                                    id="razon_social"
-                                    [(ngModel)]="cliente.razon_social"
-                                    required
-                                />
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Razón social:</mat-label>
+                                    <input matInput type="text" formControlName="razon_social" />
+                                    <mat-error
+                                        *ngIf="form.get('razon_social')?.invalid && form.get('razon_social')?.touched">
+                                        La razón social es obligatoria.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="cif">CIF:</label>
-                                <input
-                                    type="text"
-                                    name="cif"
-                                    id="cif"
-                                    [(ngModel)]="cliente.cif"
-                                    required
-                                />
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>CIF:</mat-label>
+                                    <input matInput type="text" formControlName="cif" />
+                                    <mat-error *ngIf="form.get('cif')?.invalid && form.get('cif')?.touched">
+                                        El CIF es obligatorio.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="reconocimientos"
-                                    >Nº de reconocimientos:</label
-                                >
-                                <input
-                                    type="number"
-                                    name="reconocimientos"
-                                    id="reconocimientos"
-                                    [(ngModel)]="cliente.reconocimientos"
-                                    required
-                                />
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Nº de reconocimientos:</mat-label>
+                                    <input matInput type="number" formControlName="reconocimientos" />
+                                    <mat-error
+                                        *ngIf="form.get('reconocimientos')?.invalid && form.get('reconocimientos')?.touched">
+                                        <span *ngIf="form.get('reconocimientos')?.errors?.['required']">El número es
+                                            obligatorio.</span>
+                                        <span *ngIf="form.get('reconocimientos')?.errors?.['min']">El número no puede
+                                            ser negativo.</span>
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
                         </div>
+
                         <div id="segundo-contenedor">
-                            <div>
-                                <label for="direccion">Dirección:</label>
-                                <input
-                                    type="text"
-                                    name="direccion"
-                                    id="direccion"
-                                    [(ngModel)]="cliente.direccion"
-                                    required
-                                />
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Dirección:</mat-label>
+                                    <input matInput type="text" formControlName="direccion" />
+                                    <mat-error *ngIf="form.get('direccion')?.invalid && form.get('direccion')?.touched">
+                                        La dirección es obligatoria.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="municipio">Municipio:</label>
-                                <input
-                                    type="text"
-                                    name="municipio"
-                                    id="municipio"
-                                    [(ngModel)]="cliente.municipio"
-                                    required
-                                />
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Municipio:</mat-label>
+                                    <input matInput type="text" formControlName="municipio" />
+                                    <mat-error *ngIf="form.get('municipio')?.invalid && form.get('municipio')?.touched">
+                                        El municipio es obligatorio.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="provincia">Provincia:</label>
-                                <input
-                                    type="text"
-                                    name="provincia"
-                                    id="provincia"
-                                    [(ngModel)]="cliente.provincia"
-                                    required
-                                />
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Provincia:</mat-label>
+                                    <input matInput type="text" formControlName="provincia" />
+                                    <mat-error *ngIf="form.get('provincia')?.invalid && form.get('provincia')?.touched">
+                                        La provincia es obligatoria.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Fecha Inicio Contrato:</mat-label>
+                                    <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio" />
+                                    <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                                    <mat-datepicker #pickerInicio></mat-datepicker>
+                                    <mat-error
+                                        *ngIf="form.get('fechaInicio')?.invalid && form.get('fechaInicio')?.touched">
+                                        La fecha de inicio es obligatoria.
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Fecha Fin Contrato:</mat-label>
+                                    <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin" />
+                                    <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                                    <mat-datepicker #pickerFin></mat-datepicker>
+                                    <mat-error *ngIf="form.get('fechaFin')?.invalid && form.get('fechaFin')?.touched">
+                                        La fecha de fin es obligatoria.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
                     <div id="boton-registrar">
-                        <button type="submit" id="registrar">Registrar</button>
+                        <button type="submit" id="registrar" [disabled]="form.invalid">
+                            Registrar
+                        </button>
                     </div>
                 </div>
             </form>
