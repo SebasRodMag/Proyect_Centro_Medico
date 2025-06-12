@@ -1,17 +1,13 @@
 <div class="modal-backdrop" *ngIf="isVisible">
     <div class="modal-content">
         <div class="modal-header">
-            <!-- El título del modal es "REGISTRAR EMPLEADO" en tu HTML, pero el TS es de "Paciente" -->
-            <!-- Sugiero usar "REGISTRAR PACIENTE" para consistencia -->
             <h2>REGISTRAR PACIENTE</h2>
             <i class="bi bi-x-circle close-button" (click)="close()"></i>
         </div>
         <div>
-            <!-- Usar [formGroup] para enlazar con el FormGroup del TS -->
             <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()">
                 <div id="contenedor-principal">
                     <div id="columnas">
-                        <!-- Primera Columna -->
                         <div id="primer-contenedor">
                             <div class="form-field-group">
                                 <mat-form-field appearance="fill" class="full-width">
@@ -64,7 +60,6 @@
                             </div>
                         </div>
 
-                        <!-- Segunda Columna -->
                         <div id="segundo-contenedor">
                             <div class="form-field-group">
                                 <mat-form-field appearance="fill" class="full-width">
@@ -93,7 +88,7 @@
                                         *ngIf="pacienteForm.get('password')?.invalid && pacienteForm.get('password')?.touched">
                                         <span *ngIf="pacienteForm.get('password')?.errors?.['required']">La contraseña
                                             es obligatoria.</span>
-                                        <span *ngIf="pacienteForm.get('password')?.errors?.['minlength']">Mínimo 6
+                                        <span *ngIf="pacienteForm.get('password')?.errors?.['minlength']">Mínimo 8
                                             caracteres.</span>
                                     </mat-error>
                                 </mat-form-field>

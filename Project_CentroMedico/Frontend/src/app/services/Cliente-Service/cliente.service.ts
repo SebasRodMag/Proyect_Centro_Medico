@@ -70,7 +70,7 @@ export class ClienteService {
     }
 
     crearCliente(cliente: any): Observable<any> {
-        return this.http.post(this.apiUrl, cliente, {
+        return this.http.post(`${this.apiUrl}/${cliente}/pacientes`, cliente, {
             headers: this.getAuthHeaders(),
         });
     }

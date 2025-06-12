@@ -133,7 +133,7 @@ class MedicosController extends Controller
 
     public function showAllMedicos()
     {
-        $medicos = Medico::all(); // O Medico::get();
+        $medicos = Medico::all();
         return response()->json($medicos, 200);
     }
 

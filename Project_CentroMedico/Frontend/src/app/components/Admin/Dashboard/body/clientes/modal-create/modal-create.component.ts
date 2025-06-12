@@ -93,13 +93,31 @@ export class ModalCreateComponent {
                 this.close();
             },
             error: (error) => {
-                console.error('Error al crear el cliente:', error);
-                let errorMessage = 'No se pudo registrar el cliente.';
-                if (error.error && error.error.message) {
+                console.error('Error al crear el cliente:', error); // Esto ya lo tienes, excelente
+                console.log('Estructura completa del objeto de error:', JSON.stringify(error, null, 2)); // <-- ¡Añade esto!
+
+                let errorMessage = 'No se pudo registrar el cliente. Inténtalo de nuevo.';
+
+                // *** DEJA EL CÓDIGO DE MANEJO DE ERRORES QUE TENÍAS DESPUÉS DE ESTE PUNTO ***
+                // Esto es para que podamos ver la estructura y tú puedas copiarla aquí.
+                if (error.status === 422 && error.error && error.error.errors) {
+                    const validationErrors = error.error.errors;
+                    let detailedErrors = '';
+                    for (const fieldName in validationErrors) {
+                        if (validationErrors.hasOwnProperty(fieldName)) {
+                            const errorsForField = validationErrors[fieldName];
+                            errorsForField.forEach((msg: string) => {
+                                detailedErrors += `${msg}<br>`;
+                            });
+                        }
+                    }
+                    errorMessage = `Errores de validación:<br>${detailedErrors}`;
+                } else if (error.error && error.error.message) {
                     errorMessage = error.error.message;
                 } else if (error.statusText) {
                     errorMessage = `Error: ${error.status} - ${error.statusText}`;
                 }
+
                 Swal.fire('Error', errorMessage, 'error');
             },
         });
