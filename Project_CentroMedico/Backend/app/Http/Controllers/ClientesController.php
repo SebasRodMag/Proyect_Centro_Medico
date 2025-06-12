@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller
 {
@@ -266,5 +267,43 @@ class ClientesController extends Controller
     public function listarClientesPorRazonSocial(){
         $clientes = Cliente::select('id', 'razon_social')->get();
         return response()->json($clientes, 200);
+    }
+
+    
+    /**
+     * Función para listar los pacientes en función del id_cliente asignando también la razon_social de la empresa
+     *
+     * @param  int  $id_cliente El ID del cliente (empresa).
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function listarPacientesPorIdCliente($id_cliente)
+    {
+        try {
+            $pacientes = Paciente::where('pacientes.id_cliente', $id_cliente)
+                ->select(
+                    'pacientes.id',
+                    // Use DB::raw to concatenate nombre and apellidos
+                    // Note: 'CONCAT_WS' is good for MySQL, '||' for SQLite.
+                    // For SQLite, you'd typically use 'pacientes.apellidos || ", " || pacientes.nombre'
+                    // For MySQL, 'CONCAT_WS(", ", pacientes.apellidos, pacientes.nombre)'
+                    DB::raw('pacientes.apellidos || ", " || pacientes.nombre as nombre_completo'), // For SQLite
+                    // For MySQL, you would use: DB::raw('CONCAT_WS(", ", pacientes.apellidos, pacientes.nombre) as nombre_completo'),
+                    'pacientes.dni', // Added DNI
+                    'pacientes.email',
+                    'pacientes.fecha_nacimiento',
+                    'clientes.razon_social' // Get the company name from the 'clientes' table
+                )
+                ->join('clientes', 'clientes.id', '=', 'pacientes.id_cliente')
+                ->get();
+
+            if ($pacientes->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron pacientes para este cliente.'], 404);
+            }
+
+            return response()->json($pacientes, 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al listar pacientes: ' . $e->getMessage()], 500);
+        }
     }
 }

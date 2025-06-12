@@ -1,46 +1,27 @@
 <div class="container-medicos">
     <div class="header-medicos">
         <div>
-            <button (click)="modal.open()">Registrar médico</button>
+            <button (click)="openModalRegMedico()">Registrar médico</button>
         </div>
-        <!-- Modal de creación -->
-        <app-modal-create #modal></app-modal-create>
+
+        <app-modal-create #modalRegistrarMedicoRef (medicoActualizado)="loadMedicos()"
+            (closed)="loadMedicos()"></app-modal-create>
 
         <div id="contenedor-filtros">
             <label for="nombre">Nombre:</label>
-            <input
-                type="text"
-                id="nombre"
-                [(ngModel)]="nombreFiltro"
-                (input)="applyFilters()"
-            />
+            <input type="text" id="nombre" [(ngModel)]="nombreFiltro" (input)="aplicarFiltros()" />
 
             <label for="dni">DNI:</label>
-            <input
-                type="text"
-                id="dni"
-                [(ngModel)]="dniFiltro"
-                (input)="applyFilters()"
-            />
+            <input type="text" id="dni" [(ngModel)]="dniFiltro" (input)="aplicarFiltros()" />
         </div>
 
         <div id="contenedor-busqueda">
-            <input
-                type="text"
-                placeholder="Búsqueda..."
-                [(ngModel)]="busquedaGlobal"
-                (input)="applyFilters()"
-            />
+            <input type="text" placeholder="Búsqueda..." [(ngModel)]="busquedaGlobal" (input)="aplicarFiltros()" />
             <i class="bi bi-search" id="icono-search"></i>
         </div>
     </div>
 
-    <table
-        mat-table
-        [dataSource]="medicosDataSource"
-        class="mat-elevation-z1"
-        matSort
-    >
+    <table mat-table [dataSource]="medicosDataSource" class="mat-elevation-z1" matSort>
         <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
             <td mat-cell *matCellDef="let medico">{{ medico.id }}</td>
@@ -62,9 +43,9 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Inicio</th>
             <td mat-cell *matCellDef="let medico">
                 {{
-                    medico.fecha_inicio
-                        ? (medico.fecha_inicio | date : "dd/MM/yyyy")
-                        : "-"
+                medico.fecha_inicio
+                ? (medico.fecha_inicio | date : "dd/MM/yyyy")
+                : "-"
                 }}
             </td>
         </ng-container>
@@ -73,9 +54,9 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Fin</th>
             <td mat-cell *matCellDef="let medico">
                 {{
-                    medico.fecha_fin
-                        ? (medico.fecha_fin | date : "dd/MM/yyyy")
-                        : "-"
+                medico.fecha_fin
+                ? (medico.fecha_fin | date : "dd/MM/yyyy")
+                : "-"
                 }}
             </td>
         </ng-container>
@@ -83,7 +64,7 @@
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
             <td mat-cell *matCellDef="let medico">
-                <button class="boton-cambiar" (click)="modalEditarOpen(medico)">
+                <button class="boton-cambiar" (click)="modalEditar(medico)">
                     <i class="bi bi-pencil-square"></i>
                 </button>
 
@@ -97,9 +78,5 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
-    <mat-paginator
-        [length]="medicos.length"
-        [pageSize]="5"
-        [pageSizeOptions]="[10, 20, 50]"
-    ></mat-paginator>
+    <mat-paginator [length]="medicos.length" [pageSize]="5" [pageSizeOptions]="[10, 20, 50]"></mat-paginator>
 </div>

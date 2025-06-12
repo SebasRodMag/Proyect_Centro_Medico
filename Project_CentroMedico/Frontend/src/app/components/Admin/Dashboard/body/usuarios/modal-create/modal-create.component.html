@@ -1,76 +1,67 @@
 <div class="modal-backdrop" *ngIf="isVisible">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>{{isEditMode ? 'EDITAR' : 'REGISTRAR'}} USUARIO</h2>
+            <h2>{{ isEditMode ? 'EDITAR' : 'REGISTRAR' }} USUARIO</h2>
             <i class="bi bi-x-circle close-button" (click)="close()"></i>
         </div>
         <div>
-            <form #userForm="ngForm" (ngSubmit)="crearUsuario(userForm)">
+            <form [formGroup]="userForm" (ngSubmit)="crearUsuario()">
                 <div id="contenedor-principal">
                     <div id="columnas">
                         <div id="primer-contenedor">
-                            <div>
-                                <label for="email">Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    [(ngModel)]="email"
-                                    required
-                                    #emailField="ngModel"
-                                />
-                                <div *ngIf="emailField.invalid && emailField.touched" class="error">
-                                    El email es obligatorio.
-                                </div>
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Email:</mat-label>
+                                    <input matInput type="email" formControlName="email" />
+                                    <mat-error *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                                        <span *ngIf="userForm.get('email')?.errors?.['required']">El email es
+                                            obligatorio.</span>
+                                        <span *ngIf="userForm.get('email')?.errors?.['email']">Introduce un email
+                                            válido.</span>
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
 
-                            <div class="input-container">
-                                <label for="password">Contraseña:</label>
-                                <div class="password-wrapper">
-                                    <input
-                                        [type]="mostrarPassword ? 'text' : 'password'"
-                                        name="password"
-                                        id="password"
-                                        [(ngModel)]="password"
-                                        required
-                                        minlength="6"
-                                        #passwordField="ngModel"
-                                    />
-                                    <i
-                                        class="bi"
-                                        [ngClass]="mostrarPassword ? 'bi-eye-fill' : 'bi-eye-slash-fill'"
-                                        (click)="mostrarPassword = !mostrarPassword"
-                                    ></i>
-                                </div>
-                                <div *ngIf="passwordField.invalid && passwordField.touched" class="error">
-                                    La contraseña es obligatoria y debe tener al menos 6 caracteres.
-                                </div>
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Contraseña:</mat-label>
+                                    <input matInput [type]="mostrarPassword ? 'text' : 'password'"
+                                        formControlName="password" />
+                                    <button mat-icon-button matSuffix (click)="mostrarPassword = !mostrarPassword"
+                                        type="button">
+                                        <mat-icon>{{ mostrarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+                                    </button>
+                                    <mat-error
+                                        *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                                        <span *ngIf="userForm.get('password')?.errors?.['required']">La contraseña es
+                                            obligatoria.</span>
+                                        <span *ngIf="userForm.get('password')?.errors?.['minlength']">Mínimo 6
+                                            caracteres.</span>
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
 
-                            <div>
-                                <label for="rol">Rol:</label>
-                                <select
-                                    name="rol"
-                                    id="rol"
-                                    [(ngModel)]="rol"
-                                    required
-                                    #rolField="ngModel"
-                                >
-                                    <option value="Administrador">Administrador</option>
-                                    <option value="Medico">Médico</option>
-                                    <option value="Cliente" selected>Cliente</option>
-                                    <option value="Paciente">Paciente</option>
-                                </select>
-                                <div *ngIf="rolField.invalid && rolField.touched" class="error">
-                                    El rol es obligatorio.
-                                </div>
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Rol:</mat-label>
+                                    <mat-select formControlName="rol">
+                                        <mat-option value="Administrador">Administrador</mat-option>
+                                        <mat-option value="Medico">Médico</mat-option>
+                                        <mat-option value="Cliente">Cliente</mat-option>
+                                        <mat-option value="Paciente">Paciente</mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="userForm.get('rol')?.invalid && userForm.get('rol')?.touched">
+                                        El rol es obligatorio.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
 
                     <div id="boton-registrar">
                         <button type="submit" id="registrar" [disabled]="userForm.invalid">
-                            {{isEditMode ? 'Actualizar' : 'Registrar'}}</button>
+                            {{ isEditMode ? 'Actualizar' : 'Registrar' }}
+                        </button>
                     </div>
                 </div>
             </form>

@@ -82,3 +82,15 @@ i{
     font-size: 25px;
 }
 
+.modal-content {
+  /* ... otros estilos ... */
+  max-width: 650px; /* Ajusta este ancho máximo según lo veas conveniente para dos columnas */
+  width: 90%;
+  /* ... otros estilos ... */
+}
+
+.mat-form-field {
+  /* ... otros estilos ... */
+  max-width: 280px; /* Ajusta este ancho máximo para los inputs individuales */
+  /* ... otros estilos ... */
+}

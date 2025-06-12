@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -42,11 +42,9 @@ export class MedicosComponent implements OnInit {
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild('modalRegistrarMedicoRef') modalRegistrarMedico!: ModalCreateComponent;
 
-    constructor(
-        private medicoService: MedicoService,
-        private dialog: MatDialog
-    ) {}
+    constructor(private medicoService: MedicoService, private dialog: MatDialog, private cdRef: ChangeDetectorRef) { }
 
     ngOnInit(): void {
         this.loadMedicos();
@@ -59,45 +57,58 @@ export class MedicosComponent implements OnInit {
                 this.medicosDataSource.data = this.medicos;
                 this.medicosDataSource.paginator = this.paginator;
                 this.medicosDataSource.sort = this.sort;
-                this.medicosDataSource.filterPredicate =
-                    this.customFilterPredicate();
+                this.medicosDataSource.filterPredicate = this.filtrosPersonalizados();
+                this.aplicarFiltros();
+                this.cdRef.detectChanges();
             },
             error: (err) => console.error('Error al obtener médicos', err),
         });
     }
 
-    modalEditarOpen(medico: any): void {
+    openModalRegMedico(): void {
+        if (this.modalRegistrarMedico) {
+            this.modalRegistrarMedico.open();
+        } else {
+            console.error('El componente del modal de creación no está disponible.');
+        }
+    }
+
+    modalEditar(medico: any): void {
         const dialogRef = this.dialog.open(ModalEditComponent, {
             width: '500px',
             data: { medico },
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result) this.loadMedicos();
+            if (result) {
+                this.loadMedicos();
+            }
         });
     }
 
-    applyFilters() {
+    aplicarFiltros() {
         const filtro = {
             nombre: this.nombreFiltro.trim().toLowerCase(),
             dni: this.dniFiltro.trim().toLowerCase(),
             global: this.busquedaGlobal.trim().toLowerCase(),
         };
         this.medicosDataSource.filter = JSON.stringify(filtro);
+        if (this.medicosDataSource.paginator) {
+            this.medicosDataSource.paginator.firstPage();
+        }
     }
 
-    customFilterPredicate() {
+    filtrosPersonalizados() {
         return (data: any, filter: string): boolean => {
             const f = JSON.parse(filter);
             const nombreCompleto =
-                `${data.nombre} ${data.apellidos}`.toLowerCase();
+                `${data.apellidos || ''}, ${data.nombre || ''}`.toLowerCase();
 
             const matchNombre = nombreCompleto.includes(f.nombre);
             const matchDni = data.dni?.toLowerCase().includes(f.dni);
-            const matchGlobal = Object.values(data)
-                .join(' ')
-                .toLowerCase()
-                .includes(f.global);
+            const dataParaBusquedaGlobal = `${nombreCompleto} ${data.dni || ''} ${data.email || ''}`.toLowerCase();
+            const matchGlobal = dataParaBusquedaGlobal.includes(f.global);
+
 
             return matchNombre && matchDni && matchGlobal;
         };
@@ -106,11 +117,7 @@ export class MedicosComponent implements OnInit {
     eliminarMedico(medico: any): void {
         Swal.fire({
             title: '¿Estás seguro?',
-            text:
-                'Esta acción eliminará al médico: ' +
-                medico.apellidos +
-                ', ' +
-                medico.nombre,
+            text:'Esta acción eliminará al médico: ' + medico.apellidos +', ' +medico.nombre,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Sí, eliminar',
@@ -119,26 +126,14 @@ export class MedicosComponent implements OnInit {
             if (result.isConfirmed) {
                 this.medicoService.deleteMedico(medico.id).subscribe({
                     next: () => {
-                        Swal.fire(
-                            'Eliminado',
-                            'El médico ha sido eliminado correctamente.',
-                            'success'
-                        );
-                        this.medicos = this.medicos.filter(
-                            (m) => m.id !== medico.id
-                        );
-                        this.medicosDataSource.data = this.medicos;
+                        this.loadMedicos();
+                        Swal.fire('Eliminado','El médico ha sido eliminado correctamente.','success');
                     },
                     error: (error) => {
-                        Swal.fire(
-                            'Error',
-                            error.error?.message ||
-                                'No se pudo eliminar el médico.',
-                            'error'
-                        );
+                        Swal.fire('Error',error.error?.message ||'No se pudo eliminar el médico.','error');
                     },
                 });
             }
         });
-    }    
+    }
 }

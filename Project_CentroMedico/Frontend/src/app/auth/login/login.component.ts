@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
         if (this.loginForm.valid) {
             this.authService.login(this.loginForm.value).subscribe({
                 next: (response) => {
-                    // El servicio authService ahora maneja la re dirección
+                    //El servicio authService ahora maneja la re dirección
                     console.log('Inicio de sesión exitoso');
                 },
                 error: (error) => {

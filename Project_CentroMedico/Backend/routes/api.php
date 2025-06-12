@@ -74,6 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //Pacientes
         Route::get('pacientes', [PacientesController::class, 'index']);
         Route::post('pacientes', [PacientesController::class, 'store']);
+        Route::get('pacientes/listar/{paciente}/cliente', [ClientesController::class, 'listarPacientesPorIdCliente']);
         
 
         //Citas

@@ -25,7 +25,7 @@ export class ClienteService {
     }
 
     getPacientesDelCliente(id_cliente: string): Observable<any> {
-        return this.http.get(`clientes/${id_cliente}/listar-clientes`, {
+        return this.http.get(`http://127.0.0.1:8000/api/pacientes/listar/${id_cliente}/cliente`, {
             headers: this.getAuthHeaders(),
         });
     }
