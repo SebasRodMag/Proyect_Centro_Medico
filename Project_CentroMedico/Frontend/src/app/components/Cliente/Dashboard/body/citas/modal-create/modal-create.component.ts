@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-modal-create',
@@ -44,6 +45,7 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
     private contratoService = inject(ContratoService);
     private medicoService = inject(MedicoService);
     private refreshService = inject(RefreshService);
+    private dialogRef = inject(MatDialogRef<ModalCreateComponent>);
 
     private diasNoLaborables: string[] = [
         '2025-01-01', // Año Nuevo
@@ -173,8 +175,8 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
     cargarPacientesDelCliente(): void {
         this.pacienteService.getPacientesPorCliente().subscribe({
             next: (pacientes) => {
-                console.log("Lista de pacientes: "+pacientes);
-                
+                console.log("Lista de pacientes: " + pacientes);
+
                 this.pacientes = pacientes;
             },
             error: (err: HttpErrorResponse) => {
@@ -351,7 +353,7 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     cerrar(): void {
-        this.cerrarModal.emit();
+        this.dialogRef.close();
         this.formulario?.reset();
         this.horariosDisponibles = [];
         this.isEditMode = false;

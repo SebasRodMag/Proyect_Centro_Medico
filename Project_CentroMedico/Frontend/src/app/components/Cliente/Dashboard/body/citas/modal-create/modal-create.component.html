@@ -1,5 +1,5 @@
-<div class="modal-backdrop" *ngIf="visible">
-    <div class="modal-container" *ngIf="visible" (click)="$event.stopPropagation()">
+<div class="modal-backdrop">
+    <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-content-custom">
             <div class="modal-header">
                 <h5 class="modal-title">{{ isEditMode ? 'Editar cita' : 'Crear nueva cita' }}</h5>
