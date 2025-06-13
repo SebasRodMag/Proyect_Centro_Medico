@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('clientes/razon_social/listar', [ClientesController::class, 'listarClientesPorRazonSocial']);
 
         Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']); 
-        Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
+        
 
         //Médicos
         Route::get('medicos', [MedicosController::class, 'index']);
@@ -101,7 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
         /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
         Route::get('medicos/{id_medico}/citas/{fecha}', [CitasController::class, 'horariosDisponibles']);
-
+        Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
         Route::delete('citas/{id}', [CitasController::class, 'destroy']);
         
         

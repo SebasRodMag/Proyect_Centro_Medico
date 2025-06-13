@@ -83,7 +83,6 @@ i {
     font-size: 25px;
 }
 
-/* Estilo básico para que ng-select se integre con tu diseño */
 ng-select {
     width: 100%;
     font-size: 16px;
@@ -124,7 +123,6 @@ ng-select {
     border: 1px solid #ced4da;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 1050 !important;
-    /* Para que se superponga en modales */
 }
 
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
@@ -135,7 +133,6 @@ ng-select {
     background-color: #e9ecef;
 }
 
-/* Asegura que en el modal no se corte */
 .modal-content {
     overflow: visible;
 }

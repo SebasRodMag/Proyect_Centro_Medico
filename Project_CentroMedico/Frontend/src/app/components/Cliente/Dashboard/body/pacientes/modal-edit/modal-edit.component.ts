@@ -35,9 +35,9 @@ import { MatDialogModule } from '@angular/material/dialog';
         MatDialogModule
     ],
     templateUrl: './modal-edit.component.html',
-    styleUrls: ['./modal-edit.component.css'], // Usar styleUrls en lugar de styleUrl para consistencia
+    styleUrls: ['./modal-edit.component.css'],
 })
-export class ModalEditComponent implements OnInit, OnDestroy { // Cambiar OnChanges a OnDestroy
+export class ModalEditComponent implements OnInit, OnDestroy {
 
     pacienteForm!: FormGroup;
     isEditMode = false;
@@ -48,49 +48,41 @@ export class ModalEditComponent implements OnInit, OnDestroy { // Cambiar OnChan
         private pacienteService: PacienteService,
         private authService: AuthService,
         private refreshService: RefreshService,
-        public dialogRef: MatDialogRef<ModalEditComponent>, // Inyecta MatDialogRef
-        @Inject(MAT_DIALOG_DATA) public data: any // Inyecta los datos pasados al modal
+        public dialogRef: MatDialogRef<ModalEditComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any
     ) { }
 
     ngOnInit(): void {
-        this.initForm(); // Inicializa el formulario
+        this.initForm();
 
-        // Si se reciben datos, estamos en modo edición
         if (this.data && this.data.paciente) {
             this.isEditMode = true;
             this.modalTitle = 'Editar Paciente';
             this.pacienteForm.patchValue(this.data.paciente);
 
-            // Ajustar el formato de la fecha de nacimiento para el datepicker
             if (this.data.paciente.fecha_nacimiento) {
-                // Asume que la fecha de nacimiento viene en formato 'YYYY-MM-DD HH:MM:SS' o 'YYYY-MM-DD'
-                // MatDatepicker necesita un objeto Date o una string en formato ISO (YYYY-MM-DD)
                 const fechaNacimiento = new Date(this.data.paciente.fecha_nacimiento);
                 this.pacienteForm.get('fecha_nacimiento')?.setValue(fechaNacimiento);
             }
 
-            // La contraseña no es obligatoria en edición a menos que se modifique
             this.pacienteForm.get('password')?.clearValidators();
             this.pacienteForm.get('password')?.updateValueAndValidity();
         } else {
             this.isEditMode = false;
             this.modalTitle = 'Registrar Paciente';
-            // Asegurarse de que el validador de password esté activo para el modo registro
             this.pacienteForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
             this.pacienteForm.get('password')?.updateValueAndValidity();
         }
     }
 
     ngOnDestroy(): void {
-        // Lógica de limpieza si es necesaria
+        //
     }
 
-    // Cierra el modal de MatDialog
     close(): void {
-        this.dialogRef.close(); // Cierra el diálogo de Material
+        this.dialogRef.close();
     }
 
-    // Inicializa el formulario con Validators
     initForm(): void {
         this.pacienteForm = this.fb.group({
             id: [null],
@@ -99,8 +91,7 @@ export class ModalEditComponent implements OnInit, OnDestroy { // Cambiar OnChan
             dni: ['', [Validators.required, Validators.pattern(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i)]],
             fecha_nacimiento: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
-            // La contraseña se manejará dinámicamente en ngOnInit
-            password: [''] // Iniciar con un valor vacío
+            password: ['']
         });
     }
 
@@ -113,14 +104,12 @@ export class ModalEditComponent implements OnInit, OnDestroy { // Cambiar OnChan
             return;
         }
 
-        const pacienteData = { ...this.pacienteForm.value }; // Copia los valores del formulario
+        const pacienteData = { ...this.pacienteForm.value };
 
-        // Formatear la fecha de nacimiento a 'YYYY-MM-DD' antes de enviar
         if (pacienteData.fecha_nacimiento instanceof Date) {
             pacienteData.fecha_nacimiento = pacienteData.fecha_nacimiento.toISOString().split('T')[0];
         }
 
-        // Si la contraseña está vacía en modo edición, no la envíes
         if (this.isEditMode && pacienteData.password === '') {
             delete pacienteData.password;
         }
@@ -139,7 +128,7 @@ export class ModalEditComponent implements OnInit, OnDestroy { // Cambiar OnChan
                     this.pacienteService.updatePaciente(pacienteData.id, pacienteData).subscribe({
                         next: () => {
                             Swal.fire('¡Éxito!', 'Paciente actualizado correctamente.', 'success');
-                            this.dialogRef.close(true); // Cierra y envía 'true' para indicar éxito
+                            this.dialogRef.close(true);
                             this.refreshService.triggerRefreshPacientes();
                         },
                         error: (err: HttpErrorResponse) => {
@@ -157,7 +146,7 @@ export class ModalEditComponent implements OnInit, OnDestroy { // Cambiar OnChan
                     this.pacienteService.createPaciente(pacienteData, id_cliente).subscribe({
                         next: () => {
                             Swal.fire('¡Éxito!', 'Paciente creado correctamente.', 'success');
-                            this.dialogRef.close(true); // Cierra y envía 'true' para indicar éxito
+                            this.dialogRef.close(true);
                             this.refreshService.triggerRefreshPacientes();
                         },
                         error: (err: HttpErrorResponse) => {

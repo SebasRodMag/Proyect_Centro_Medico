@@ -1,9 +1,8 @@
-// src/app/pages/private/cliente/pacientes/pacientes.component.ts
 import { AfterViewInit, Component, OnInit, ViewChild, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClienteService } from '../../../../../services/Cliente-Service/cliente.service';
 import { PacienteService } from '../../../../../services/Paciente-Service/paciente.service';
-import { ModalEditComponent } from './modal-edit/modal-edit.component'; // Importa el componente modal
+import { ModalEditComponent } from './modal-edit/modal-edit.component';
 import { CommonModule } from '@angular/common';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -58,10 +57,9 @@ export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private destroy$ = new Subject<void>();
 
-    // !!! AÑADIR ESTAS PROPIEDADES PARA LOS FILTROS
     fechaDesde: string = '';
     fechaHasta: string = '';
-    filtroBusqueda: string = ''; // Para el input de búsqueda general
+    filtroBusqueda: string = '';
 
     constructor(
         private clienteService: ClienteService,
@@ -115,7 +113,6 @@ export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         };
 
-        // !!! Configurar el filtro personalizado aquí, una vez que el DataSource está listo
         this.pacientesDataSource.filterPredicate = this.createFilterPredicate();
     }
 
@@ -141,7 +138,6 @@ export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.pacientes = [];
                 }
                 this.pacientesDataSource.data = this.pacientes;
-                // !!! Aplicar filtros después de cargar los datos iniciales
                 this.aplicarTodosLosFiltros();
             },
             (error: any) => {
@@ -185,26 +181,21 @@ export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    // !!! Nuevo método para aplicar todos los filtros
+
     aplicarTodosLosFiltros(): void {
-        // Al asignar una cadena vacía o una cadena de "trigger", el `filterPredicate` se ejecutará
-        // para cada elemento de los datos de la tabla.
-        this.pacientesDataSource.filter = 'trigger_filter_update'; // Usa una cadena que no sea parte de tus datos para asegurar que el predicado se ejecute.
+        this.pacientesDataSource.filter = 'trigger_filter_update';
 
         if (this.pacientesDataSource.paginator) {
             this.pacientesDataSource.paginator.firstPage();
         }
     }
 
-    // !!! Nuevo método para crear el predicado de filtro personalizado
     private createFilterPredicate(): (data: any, filter: string) => boolean {
         return (data: any, filter: string): boolean => {
-            // Filtro por rango de fechas de nacimiento
             const fechaNacimientoPaciente = this.formatearFecha(data.fecha_nacimiento);
             const cumpleFechaDesde = !this.fechaDesde || fechaNacimientoPaciente >= this.fechaDesde;
             const cumpleFechaHasta = !this.fechaHasta || fechaNacimientoPaciente <= this.fechaHasta;
 
-            // Filtro de búsqueda general
             const searchTerms = this.filtroBusqueda.toLowerCase().trim();
             const dataStr = (
                 data.nombre + ' ' +
@@ -220,7 +211,6 @@ export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
         };
     }
 
-    // Función auxiliar para extraer solo la fecha en formato 'YYYY-MM-DD'
     private formatearFecha(fechaStr: string): string {
         if (!fechaStr) return '';
         const fecha = new Date(fechaStr);

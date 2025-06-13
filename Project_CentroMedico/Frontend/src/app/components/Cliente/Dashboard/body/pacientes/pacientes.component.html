@@ -2,7 +2,6 @@
     <div class="header-pacientes">
         <div>
             <button (click)="openCreatePacienteModal()">Agregar paciente</button>
-            vista Listar Pacientes
         </div>
         <div id="contenedor-filtros">
             <label for="fecha-desde">Fecha desde:</label>
@@ -58,16 +57,27 @@
             <td mat-cell *matCellDef="let paciente">{{ paciente.fecha_nacimiento | date : "dd/MM/yyyy" }}</td>
         </ng-container>
 
+
+
         <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
-            <td mat-cell *matCellDef="let paciente">
-				<button mat-icon-button color="primary" (click)="openEditPacienteModal(paciente)">
-					<mat-icon>edit</mat-icon>
-				</button>
-				<button mat-icon-button color="warn" (click)="eliminarPaciente(paciente.id)">
-					<mat-icon>delete</mat-icon>
-				</button>
-			</td>
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let element">
+                <button
+                    class="boton-cambiar"
+                    (click)="openEditPacienteModal(element)"
+                    title="Editar cita"
+                >
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+
+                <button
+                    class="boton-eliminar"
+                    (click)="eliminarPaciente(element)"
+                    title="Cancelar cita"
+                >
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
