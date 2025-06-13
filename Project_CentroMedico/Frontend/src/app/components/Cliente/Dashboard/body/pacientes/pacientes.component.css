@@ -14,25 +14,23 @@
 
 .header-citas {
     display: flex;
-    justify-content: space-between; /* Esto empuja el primer hijo a la izquierda y el último a la derecha */
+    justify-content: space-between;
     align-items: center;
-    width: 100%; /* Ocupa todo el ancho del contenedor padre */
-    margin-bottom: 20px; /* Un poco más de espacio debajo del encabezado */
-    /* gap: 20px; <-- Quitar este gap porque space-between lo maneja */
+    width: 100%; 
+    margin-bottom: 20px;
 }
 
-/* Nuevo contenedor para los filtros y búsqueda del lado derecho */
 .filtros-y-busqueda-right {
     display: flex;
     align-items: center;
-    gap: 20px; /* Espacio entre los filtros de fecha y el input de búsqueda */
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay espacio, aunque con gap ya es menos probable */
-    justify-content: flex-end; /* Asegura que si se envuelven, se alineen a la derecha */
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 #contenedor-busqueda {
     position: relative;
-    display: flex; /* Asegura que el input y el icono estén en línea */
+    display: flex;
     align-items: center;
 }
 
@@ -43,22 +41,21 @@
     border: 0;
     width: 200px;
     height: 40px;
-    cursor: pointer; /* Indica que es clickeable */
+    cursor: pointer;
 }
 
 #contenedor-busqueda input {
     padding: 15px;
     border: 0;
     border-radius: 28px;
-    padding-left: 30px; /* Deja espacio para el icono */
-    width: 250px; /* Ajusta el ancho de la búsqueda si es necesario */
+    padding-left: 30px;
+    width: 250px;
 }
 
 #contenedor-filtros {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre labels e inputs */
-    /* margin: 10px; <-- Quitar este margin global para este flexbox */
+    gap: 10px;
 }
 
 #contenedor-filtros label {
@@ -66,7 +63,7 @@
 }
 
 #contenedor-filtros input {
-    margin: 0; /* Eliminar márgenes específicos que podrían interferir */
+    margin: 0;
     border-radius: 15px 5px 5px 15px;
     border: 1px solid transparent;
     transition: all 0.3s ease-in-out;
@@ -77,35 +74,35 @@
     outline: none;
     border: 1.25px solid #1500ff;
     scale: 1.02;
+    background-color: #DC3545;
 }
 
 #icono-search {
     position: absolute;
     top: 50%;
-    left: 10px; /* Posiciona el icono dentro del input */
+    left: 10px;
     transform: translateY(-50%);
     width: 18px;
     height: 18px;
-    color: #666; /* Un color para el icono de búsqueda */
+    color: #666;
 }
 
 table {
-    margin-top: 20px; /* Más espacio entre el header y la tabla */
-    width: 100%; /* Asegura que la tabla ocupe todo el ancho */
-    table-layout: fixed; /* Ayuda a que las columnas se distribuyan uniformemente */
+    margin-top: 20px;
+    width: 100%;
+    table-layout: fixed;
 }
 
 table th,
 table td {
     text-align: start;
-    padding: 12px 8px; /* Ajusta el padding para un mejor aspecto */
+    padding: 12px 8px;
 }
 
 mat-header-cell {
     text-align: center;
 }
 
-/* Usar selectores de Material Design para estilos de tabla */
 .mat-elevation-z8 th {
     background-color: white;
     color: black;
@@ -113,7 +110,7 @@ mat-header-cell {
 }
 
 .mat-elevation-z8 td {
-    font-size: 14px; /* Un poco más grande para mejor legibilidad */
+    font-size: 14px;
     text-align: center;
 }
 
@@ -130,12 +127,11 @@ mat-header-cell {
     border-right: 0;
 }
 
-/* Estilos para los botones de acción dentro de la tabla */
 #edit-button, #delete-button {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.2em; /* Tamaño de los iconos */
+    font-size: 1.2em;
     margin: 0 5px;
     padding: 5px;
     border-radius: 5px;
@@ -143,11 +139,11 @@ mat-header-cell {
 }
 
 #edit-button i.bi-pencil-square {
-    color: #FFC107; /* Amarillo para editar */
+    color: #FFC107;
 }
 
 #delete-button i.bi-trash-fill {
-    color: #DC3545; /* Rojo para eliminar/cancelar */
+    color: #DC3545;
 }
 
 #edit-button:hover, #delete-button:hover {
@@ -165,23 +161,23 @@ mat-paginator {
     display: flex;
     justify-content: center;
     width: 100%;
-    background-color: #D9D9D9; /* Asegura que el paginador tenga el mismo fondo que el contenedor principal */
-    border-radius: 0 0 15px 15px; /* Bordes redondeados en la parte inferior */
+    background-color: #D9D9D9;
+    border-radius: 0 0 15px 15px;
     padding: 10px 0;
 }
 
 mat-paginator .mat-paginator-range-label {
-    font-size: 12px; /* Un poco más grande para legibilidad */
+    font-size: 12px;
 }
 
 mat-paginator button {
-    font-size: 12px; /* Más grande */
+    font-size: 12px;
     background-color: #4CAF50;
     color: white;
     border-radius: 4px;
     margin-left: 5px;
-    height: 30px; /* Altura para los botones */
-    width: 30px; /* Ancho para los botones */
+    height: 30px;
+    width: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
