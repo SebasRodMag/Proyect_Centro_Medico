@@ -38,7 +38,7 @@ export class AuthService {
         });
     }
     
-    login(credentials: { email: string; password: string }): Observable<AuthResponse> {
+login(credentials: { email: string; password: string }): Observable<AuthResponse> {
         return this.http
             .post<AuthResponse>(`${this.apiUrl}/login`, credentials)
             .pipe(
@@ -58,9 +58,6 @@ export class AuthService {
                 catchError((error) => {
                     console.error('Error en el login:', error);
                     return throwError(error);
-                }),
-                tap((res) => { 
-                    this.redirectUser(res.user.rol);
                 })
             );
     }

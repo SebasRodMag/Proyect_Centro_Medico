@@ -1,56 +1,109 @@
 <div class="modal-backdrop" *ngIf="isVisible">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>REGISTRAR MÉDICO</h2>
+            <h2>{{ isEditMode ? 'EDITAR MÉDICO' : 'REGISTRAR MÉDICO' }}</h2>
             <i class="bi bi-x-circle close-button" (click)="close()"></i>
         </div>
         <div>
-            <form (ngSubmit)="registrarMedico()">
+            <form [formGroup]="form" (ngSubmit)="registrarMedico()">
                 <div id="contenedor-principal">
                     <div id="columnas">
                         <div id="primer-contenedor">
-                            <div>
-                                <label for="email">Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    [(ngModel)]="form.email"
-                                    required
-                                />
+                            <!-- Campo de Email -->
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Email:</mat-label>
+                                    <input matInput type="email" formControlName="email" />
+                                    <mat-error *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                                        <span *ngIf="form.get('email')?.errors?.['required']">El email es
+                                            obligatorio.</span>
+                                        <span *ngIf="form.get('email')?.errors?.['email']">Introduce un email
+                                            válido.</span>
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="nombre">Nombre:</label>
-                                <input
-                                    type="text"
-                                    name="nombre"
-                                    id="nombre"
-                                    [(ngModel)]="form.nombre"
-                                    required
-                                />
+
+                            <!-- Campo de Nombre -->
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Nombre:</mat-label>
+                                    <input matInput type="text" formControlName="nombre" />
+                                    <mat-error *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+                                        El nombre es obligatorio.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="apellidos">Apellidos:</label>
-                                <input
-                                    type="text"
-                                    name="apellidos"
-                                    id="apellidos"
-                                    [(ngModel)]="form.apellidos"
-                                    required
-                                />
+
+                            <!-- Campo de Apellidos -->
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Apellidos:</mat-label>
+                                    <input matInput type="text" formControlName="apellidos" />
+                                    <mat-error *ngIf="form.get('apellidos')?.invalid && form.get('apellidos')?.touched">
+                                        Los apellidos son obligatorios.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
-                            <div>
-                                <label for="dni">DNI:</label>
-                                <input
-                                    name="dni"
-                                    id="dni"
-                                    [(ngModel)]="form.dni"
-                                    required
-                                />
+
+                            <!-- Campo de DNI -->
+                            <div class="form-field-group">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>DNI:</mat-label>
+                                    <input matInput type="text" formControlName="dni" />
+                                    <mat-error *ngIf="form.get('dni')?.invalid && form.get('dni')?.touched">
+                                        <span *ngIf="form.get('dni')?.errors?.['required']">El DNI es
+                                            obligatorio.</span>
+                                        <span *ngIf="form.get('dni')?.errors?.['pattern']">Formato de DNI
+                                            inválido.</span>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Campo de Contraseña (visible solo en modo creación o si se está editando una existente) -->
+                            <!-- Aunque el backend requiere password, en edicion, podemos dejarlo opcional si esta vacio -->
+                            <div class="form-field-group" *ngIf="!isEditMode || form.get('password')?.value">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Contraseña:</mat-label>
+                                    <input matInput [type]="mostrarPassword ? 'text' : 'password'"
+                                        formControlName="password" />
+                                    <button mat-icon-button matSuffix (click)="mostrarPassword = !mostrarPassword"
+                                        type="button">
+                                        <mat-icon>{{ mostrarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+                                    </button>
+                                    <mat-error *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+                                        <span *ngIf="form.get('password')?.errors?.['required']">La contraseña es
+                                            obligatoria.</span>
+                                        <span *ngIf="form.get('password')?.errors?.['minlength']">La contraseña debe
+                                            tener al menos 8 caracteres.</span>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Campo de Confirmar Contraseña (visible solo en modo creación o si se está editando una existente) -->
+                            <div class="form-field-group" *ngIf="!isEditMode || form.get('confirmPassword')?.value">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Confirmar Contraseña:</mat-label>
+                                    <input matInput [type]="mostrarConfirmPassword ? 'text' : 'password'"
+                                        formControlName="confirmPassword" />
+                                    <button mat-icon-button matSuffix
+                                        (click)="mostrarConfirmPassword = !mostrarConfirmPassword" type="button">
+                                        <mat-icon>{{ mostrarConfirmPassword ? 'visibility' : 'visibility_off'
+                                            }}</mat-icon>
+                                    </button>
+                                    <mat-error
+                                        *ngIf="form.get('confirmPassword')?.invalid && form.get('confirmPassword')?.touched">
+                                        <span *ngIf="form.get('confirmPassword')?.errors?.['required']">Confirmar
+                                            contraseña es obligatorio.</span>
+                                    </mat-error>
+                                    <mat-error
+                                        *ngIf="form.hasError('passwordMismatch') && (form.get('password')?.touched || form.get('confirmPassword')?.touched)">
+                                        Las contraseñas no coinciden.
+                                    </mat-error>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" id="registrar">
+                    <button type="submit" id="registrar" [disabled]="form.invalid">
                         {{ isEditMode ? "Actualizar" : "Registrar" }}
                     </button>
                 </div>

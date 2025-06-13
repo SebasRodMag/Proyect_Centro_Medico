@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller
 {
@@ -33,7 +34,7 @@ class ClientesController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         $user->assignRole('Cliente');
-        
+
         $cliente = new Cliente();
         $cliente->razon_social = $request->razon_social;
         $cliente->cif = $request->cif;
@@ -84,11 +85,13 @@ class ClientesController extends Controller
 
     public function index()
     {
-        $clientes = Cliente::with(['contratos' => function ($query) {
-            $query->where('fecha_inicio', '<=', now())
-                ->where('fecha_inicio', '>=', now()->subYear())
-                ->orderBy('fecha_inicio', 'desc');
-        }])->get();
+        $clientes = Cliente::with([
+            'contratos' => function ($query) {
+                $query->where('fecha_inicio', '<=', now())
+                    ->where('fecha_inicio', '>=', now()->subYear())
+                    ->orderBy('fecha_inicio', 'desc');
+            }
+        ])->get();
 
         foreach ($clientes as $cliente) {
             // Obtener el contrato vigente (el primero más reciente del último año)
@@ -118,12 +121,13 @@ class ClientesController extends Controller
         return response()->json($cliente, 200);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $cliente = Cliente::findOrFail($id);
         $cliente->delete();
         return response()->json(['message' => 'Cliente eliminado con éxito'], 200);
     }
-    
+
 
     //Función para mostrar todos los usuarios, tanto activos como eliminados
     public function showAllUsers()
@@ -259,6 +263,107 @@ class ClientesController extends Controller
         return response()->json([
             'cliente' => $cliente,
             'pacientes' => $pacientes
+        ], 200);
+    }
+
+    //Función para listar todos los clientes, obteniendo su id y razon_social
+    public function listarClientesPorRazonSocial()
+    {
+        $clientes = Cliente::select('id', 'razon_social')->get();
+        return response()->json($clientes, 200);
+    }
+
+
+    /**
+     * Función para listar los pacientes en función del id_cliente asignando también la razon_social de la empresa
+     *
+     * @param  int  $id_cliente El ID del cliente (empresa).
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function listarPacientesPorIdCliente($id_cliente)
+    {
+        try {
+            $pacientes = Paciente::where('pacientes.id_cliente', $id_cliente)
+                ->select(
+                    'pacientes.id',
+                    // Use DB::raw to concatenate nombre and apellidos
+                    // Note: 'CONCAT_WS' is good for MySQL, '||' for SQLite.
+                    // For SQLite, you'd typically use 'pacientes.apellidos || ", " || pacientes.nombre'
+                    // For MySQL, 'CONCAT_WS(", ", pacientes.apellidos, pacientes.nombre)'
+                    DB::raw('pacientes.apellidos || ", " || pacientes.nombre as nombre_completo'), // For SQLite
+                    // For MySQL, you would use: DB::raw('CONCAT_WS(", ", pacientes.apellidos, pacientes.nombre) as nombre_completo'),
+                    'pacientes.dni', // Added DNI
+                    'pacientes.email',
+                    'pacientes.fecha_nacimiento',
+                    'clientes.razon_social' // Get the company name from the 'clientes' table
+                )
+                ->join('clientes', 'clientes.id', '=', 'pacientes.id_cliente')
+                ->get();
+
+            if ($pacientes->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron pacientes para este cliente.'], 404);
+            }
+
+            return response()->json($pacientes, 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al listar pacientes: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function getContratoInfo($id_cliente)
+    {
+        // 1. Obtener el cliente
+        $cliente = Cliente::find($id_cliente);
+
+        if (!$cliente) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
+        }
+
+        // 2. Buscar el contrato vigente para este cliente
+        // Se considera "vigente" si la fecha actual está entre fecha_inicio y fecha_fin
+        // O si tiene autorenovacion en true y la fecha_fin es pasada, lo que implicaría que "se renovó"
+        // Si hay varios contratos, podríamos tomar el que tiene la fecha_fin más lejana
+        // o el que más se ajuste a la fecha actual si hay solapamiento.
+        // Para simplificar, buscamos el contrato más reciente que sea 'actualmente' o 'potencialmente' válido.
+        $contratoVigente = Contrato::where('id_cliente', $id_cliente)
+            ->where(function ($query) {
+                $query->where('fecha_fin', '>=', Carbon::today()) // Contratos cuya fecha fin es hoy o en el futuro
+                    ->orWhere('autorenovacion', true); // Contratos con autorenovación (independientemente de fecha_fin para esta lógica)
+            })
+            ->orderBy('fecha_fin', 'desc') // Si hay varios, toma el que termina más tarde
+            ->first();
+
+        // Si no hay contrato vigente que cumpla las condiciones iniciales
+        if (!$contratoVigente) {
+            // Si no se encuentra un contrato futuro o autorenovable, busca el más reciente finalizado para un mensaje más informativo
+            $latestContract = Contrato::where('id_cliente', $id_cliente)
+                ->orderBy('fecha_fin', 'desc')
+                ->first();
+
+            return response()->json([
+                'message' => 'No se encontró un contrato vigente o autorenovable.',
+                'contrato' => $latestContract, // Devolvemos el último contrato para que el frontend pueda dar un mensaje más específico
+                'realizados_count' => 0
+            ], 200); // 200 OK, pero con información de que no hay contrato vigente
+        }
+
+        // 3. Contar las citas 'realizadas' asociadas directamente a ESTE contrato
+        $realizadosCount = Cita::where('id_contrato', $contratoVigente->id)
+            ->where('estado', 'realizado')
+            ->count();
+
+        // 4. Determinar si el contrato está "vencido" (fecha_fin en el pasado) pero es autorenovable
+        // Esta lógica es importante para el frontend.
+        $isExpiredButAutorenewable = false;
+        if ($contratoVigente->autorenovacion && Carbon::parse($contratoVigente->fecha_fin)->isPast()) {
+            $isExpiredButAutorenewable = true;
+        }
+
+        return response()->json([
+            'contrato' => $contratoVigente,
+            'realizados_count' => $realizadosCount,
+            'is_expired_but_autorenewable' => $isExpiredButAutorenewable // Indicar al frontend
         ], 200);
     }
 }

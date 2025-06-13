@@ -14,7 +14,7 @@ interface Medico {
     providedIn: 'root',
 })
 export class MedicoService {
-    private apiUrl = '/api/medicos';
+    private apiUrl = 'http://127.0.0.1:8000/api/medicos';
 
     constructor(private http: HttpClient) {}
 
@@ -44,7 +44,7 @@ export class MedicoService {
     }
 
     createMedico(data: any): Observable<any> {
-        return this.http.post(this.apiUrl, data, {
+        return this.http.post(`${this.apiUrl}`, data, {
             headers: this.getAuthHeaders(),
         });
     }
@@ -57,6 +57,12 @@ export class MedicoService {
 
     deleteMedico(medicoId: number): Observable<any>{
         return this.http.delete(`${this.apiUrl}/${medicoId}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getMedicoLogueado(): Observable<any>{
+        return this.http.post<Medico>(`${this.apiUrl}/perfil/yo`, {
             headers: this.getAuthHeaders(),
         });
     }

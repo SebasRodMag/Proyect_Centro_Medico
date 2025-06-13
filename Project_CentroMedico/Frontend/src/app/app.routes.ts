@@ -120,6 +120,12 @@ export const routes: Routes = [
         canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Medico
         data: { role: 'Paciente' },
     },
+    {
+        path: 'paciente/dashboard/citas',
+        loadComponent: () => import('./components/Paciente/Dashboard/citas/citas.component').then(m => m.CitasComponent),
+        canActivate: [AuthGuard, RoleGuard],  // Verifica si está logueado y es Administrador
+        data: { role: 'Paciente' },
+    },
 
 
     ////////////////////////////////////////////////////////////////////////////////

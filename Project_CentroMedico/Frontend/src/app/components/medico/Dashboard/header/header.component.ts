@@ -20,7 +20,7 @@ export class HeaderComponent {
     setInterval(() => {
       this.horaActual = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }, 1000);
-    this.userName = localStorage.getItem('name') || '';
+    this.userName = sessionStorage.getItem('name') || '';
   }
 
   constructor(private authService: AuthService) { }

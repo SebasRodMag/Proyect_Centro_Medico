@@ -43,6 +43,16 @@
             <i class="bi bi-clipboard-heart-fill"></i> Mis contratos
         </button>
     </ng-container>
+
+    <!-- Este es el NAV que verán los Pacientes -->
+    <ng-container *ngIf="userRol === 'Paciente'">
+        <button routerLink="/paciente/dashboard/home" routerLinkActive="active-link">
+            <i class="bi bi-speedometer"></i> Inicio
+        </button>
+        <button routerLink="/paciente/dashboard/citas" routerLinkActive="active-link">
+            <i class="bi bi-calendar-date"></i> Mis Citas
+        </button>
+    </ng-container>
     
 </div>
 

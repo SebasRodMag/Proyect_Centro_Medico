@@ -32,8 +32,8 @@ export class PacientesComponent implements OnInit {
     pacientesDataSource = new MatTableDataSource<any>();
     displayedColumns: string[] = [
         'id',
-        'cliente',
-        'nombre',
+        'razon_social',
+        'nombre_completo',
         'dni',
         'email',
         'fecha_nacimiento',
@@ -52,59 +52,59 @@ export class PacientesComponent implements OnInit {
         private authService: AuthService,
         private route: ActivatedRoute,
         private dialog: MatDialog
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         console.log('PacientesComponent iniciado...');
-        
+
         this.route.params.subscribe((params) => {
             this.clienteId = params['id_cliente'];
-            console.log('Id del cliente: '+this.clienteId);
-            
+            console.log('Id del cliente: ' + this.clienteId);
+
             this.getPacientes();
         });
     }
 
     getPacientes(): void {
-    this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(
-        (data: any) => {
-            console.log('Respuesta pacientes:', data);
-            this.pacientes = data;  // aquí asignas directamente el array
-            this.clienteNombre = ''; // si no tienes el nombre del cliente en la respuesta
+        this.clienteService.getPacientesDelCliente(this.clienteId).subscribe(
+            (data: any) => {
+                console.log('Respuesta pacientes:', data);
+                this.pacientes = data;
+                this.clienteNombre = '';
 
-            this.pacientesDataSource.data = this.pacientes;
-            this.pacientesDataSource.paginator = this.paginator;
-            this.pacientesDataSource.sort = this.sort;
+                this.pacientesDataSource.data = this.pacientes;
+                this.pacientesDataSource.paginator = this.paginator;
+                this.pacientesDataSource.sort = this.sort;
 
-            this.pacientesDataSource.filterPredicate = this.customFilterPredicate();
-        },
-        (error: any) => {
-            console.error('Error al obtener los pacientes:', error);
-        }
-    );
-}
+                this.pacientesDataSource.filterPredicate = this.filtroPersonalizado();
+            },
+            (error: any) => {
+                console.error('Error al obtener los pacientes:', error);
+            }
+        );
+    }
 
 
-    applyFilters() {
+    aplicarFiltros() {
         const filtro = this.busquedaGlobal.trim().toLowerCase();
         this.pacientesDataSource.filter = filtro;
     }
 
-    customFilterPredicate() {
-    return (data: any, filter: string): boolean => {
-        try {
-            const contenido = Object.values(data)
-                .map((v) => v ?? '')
-                .join(' ')
-                .toLowerCase();
+    filtroPersonalizado() {
+        return (data: any, filter: string): boolean => {
+            try {
+                const contenido = Object.values(data)
+                    .map((v) => v ?? '')
+                    .join(' ')
+                    .toLowerCase();
 
-            return contenido.includes(filter);
-        } catch (e) {
-            console.error('Error en filtro personalizado:', e, data);
-            return false;
-        }
-    };
-}
+                return contenido.includes(filter);
+            } catch (e) {
+                console.error('Error en filtro personalizado:', e, data);
+                return false;
+            }
+        };
+    }
 
 
     editarPaciente(paciente: any) {

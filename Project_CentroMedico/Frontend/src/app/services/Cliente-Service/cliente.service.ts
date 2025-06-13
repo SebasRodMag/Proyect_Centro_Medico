@@ -7,9 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class ClienteService {
     [x: string]: any;
-    private apiUrl = '/api/clientes';
+    private apiUrl = 'http://127.0.0.1:8000/api/clientes';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     private getAuthHeaders(): HttpHeaders {
         const token = sessionStorage.getItem('token');
@@ -25,7 +25,7 @@ export class ClienteService {
     }
 
     getPacientesDelCliente(id_cliente: string): Observable<any> {
-        return this.http.get(`clientes/${id_cliente}/listar-clientes`, {
+        return this.http.get(`http://127.0.0.1:8000/api/pacientes/listar/${id_cliente}/cliente`, {
             headers: this.getAuthHeaders(),
         });
     }
@@ -57,8 +57,20 @@ export class ClienteService {
         });
     }
 
-    createCliente(cliente: any): Observable<any> {
-        return this.http.post(this.apiUrl, cliente, {
+    getPacientesPorClienteId(id_cliente: number): Observable<any> {
+        return this.http.get(`${this.apiUrl}/pacientes/id/${id_cliente}`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    getListarClientesPorRazonSocial(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/razon_social/listar`, {
+            headers: this.getAuthHeaders(),
+        });
+    }
+
+    crearCliente(cliente: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/${cliente}/pacientes`, cliente, {
             headers: this.getAuthHeaders(),
         });
     }
@@ -72,6 +84,14 @@ export class ClienteService {
     updateCliente(id: number, datos: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}`, datos,
             {
+                headers: this.getAuthHeaders(),
+            }
+        );
+    }
+
+    getContratoYReconocimientos(idCliente: number): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${idCliente}/contrato-info`,
+        {
                 headers: this.getAuthHeaders(),
             }
         );

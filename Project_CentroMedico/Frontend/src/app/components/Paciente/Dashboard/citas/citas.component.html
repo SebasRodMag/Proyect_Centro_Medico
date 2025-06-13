@@ -21,12 +21,29 @@
 
         <ng-container matColumnDef="nombre_paciente">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Paciente</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.nombre_paciente }}</td>
+            <td mat-cell *matCellDef="let cita">
+                <ng-container *ngIf="userRole === 'medico'">
+                    {{ cita.paciente_nombre_completo }}
+                </ng-container>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="dni">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
-            <td mat-cell *matCellDef="let cita">{{ cita.dni }}</td>
+            <td mat-cell *matCellDef="let cita">
+                <ng-container *ngIf="userRole === 'medico'">
+                    {{ cita.paciente?.dni }}
+                </ng-container>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre_medico">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Médico</th>
+            <td mat-cell *matCellDef="let cita">
+                <ng-container *ngIf="userRole === 'Paciente'">
+                    {{ cita.nombre_medico }}
+                </ng-container>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="fecha">
@@ -57,16 +74,18 @@
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
             <td mat-cell *matCellDef="let cita">
-                <button class="boton-cambiar" id="edit-button"
-                    [disabled]="cita.estado !== 'pendiente' || !esHoy(cita.fecha_hora_cita)" (click)="openModal(cita)"
-                    title="Cambiar hora de la cita">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
+                <ng-container *ngIf="userRole === 'medico'">
+                    <button class="boton-cambiar" id="edit-button"
+                        [disabled]="cita.estado !== 'pendiente' || !esHoy(cita.fecha_hora_cita)"
+                        (click)="openModal(cita)" title="Cambiar hora de la cita">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
 
-                <button class="boton-estado" id="estado-button" [disabled]="cita.estado !== 'pendiente'"
-                    (click)="cambiarEstado(cita)" title="Cambiar estado">
-                    <i class="bi bi-arrow-repeat"></i>
-                </button>
+                    <button class="boton-estado" id="estado-button" [disabled]="cita.estado !== 'pendiente'"
+                        (click)="cambiarEstado(cita)" title="Cambiar estado">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                </ng-container>
             </td>
         </ng-container>
 

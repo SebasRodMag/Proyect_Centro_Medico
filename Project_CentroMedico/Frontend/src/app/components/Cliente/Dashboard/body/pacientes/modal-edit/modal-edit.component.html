@@ -1,69 +1,82 @@
-<div class="modal-backdrop" *ngIf="isVisible">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>{{ modalTitle }}</h2> <i class="bi bi-x-circle close-button" (click)="close()"></i>
-        </div>
-        <div> 
-            <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()"> <div id="contenedor-principal">
-                    <div id="columnas">
-                        <div id="primer-contenedor">
-                            <input type="hidden" formControlName="id">
+<mat-dialog-content>
+    <h2 mat-dialog-title>{{ modalTitle }}</h2> <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()">
+        <div id="contenedor-principal">
+            <div id="columnas">
+                <div id="primer-contenedor">
+                    <input type="hidden" formControlName="id">
 
-                            <div>
-                                <label for="nombre">Nombre:</label>
-                                <input type="text" id="nombre" formControlName="nombre"/>
-                                <div *ngIf="pacienteForm.get('nombre')?.invalid && pacienteForm.get('nombre')?.touched" class="text-danger">
-                                    <div *ngIf="pacienteForm.get('nombre')?.errors?.['required']">El nombre es obligatorio.</div>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="apellidos">Apellidos:</label>
-                                <input type="text" id="apellidos" formControlName="apellidos"/>
-                                <div *ngIf="pacienteForm.get('apellidos')?.invalid && pacienteForm.get('apellidos')?.touched" class="text-danger">
-                                    <div *ngIf="pacienteForm.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios.</div>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="dni">DNI:</label>
-                                <input type="text" id="dni" formControlName="dni"/>
-                                <div *ngIf="pacienteForm.get('dni')?.invalid && pacienteForm.get('dni')?.touched" class="text-danger">
-                                    <div *ngIf="pacienteForm.get('dni')?.errors?.['required']">El DNI es obligatorio.</div>
-                                    <div *ngIf="pacienteForm.get('dni')?.errors?.['pattern']">El formato del DNI no es válido.</div>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-                                <input type="date" id="fecha_nacimiento" formControlName="fecha_nacimiento"/>
-                                <div *ngIf="pacienteForm.get('fecha_nacimiento')?.invalid && pacienteForm.get('fecha_nacimiento')?.touched" class="text-danger">
-                                    <div *ngIf="pacienteForm.get('fecha_nacimiento')?.errors?.['required']">La fecha de nacimiento es obligatoria.</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="segundo-contenedor">
-                            <div>
-                                <label for="email">Email:</label>
-                                <input type="text" id="email" formControlName="email"/>
-                                <div *ngIf="pacienteForm.get('email')?.invalid && pacienteForm.get('email')?.touched" class="text-danger">
-                                    <div *ngIf="pacienteForm.get('email')?.errors?.['required']">El email es obligatorio.</div>
-                                    <div *ngIf="pacienteForm.get('email')?.errors?.['email']">El formato del email no es válido.</div>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="password">Contraseña:</label>
-                                <input type="password" id="password" formControlName="password"/>
-                                <div *ngIf="pacienteForm.get('password')?.invalid && pacienteForm.get('password')?.touched" class="text-danger">
-                                    <div *ngIf="pacienteForm.get('password')?.errors?.['required'] && !isEditMode">La contraseña es obligatoria.</div>
-                                    <div *ngIf="pacienteForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
-                                    <div *ngIf="isEditMode && pacienteForm.get('password')?.value === ''">Dejar vacío si no deseas cambiar la contraseña.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="boton-registrar">
-                        <button type="submit" id="registrar">{{ isEditMode ? 'Guardar Cambios' : 'Registrar' }}</button>
-                    </div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Nombre:</mat-label>
+                        <input matInput type="text" formControlName="nombre">
+                        <mat-error *ngIf="pacienteForm.get('nombre')?.hasError('required') && pacienteForm.get('nombre')?.touched">
+                            El nombre es obligatorio.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Apellidos:</mat-label>
+                        <input matInput type="text" formControlName="apellidos">
+                        <mat-error *ngIf="pacienteForm.get('apellidos')?.hasError('required') && pacienteForm.get('apellidos')?.touched">
+                            Los apellidos son obligatorios.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>DNI:</mat-label>
+                        <input matInput type="text" formControlName="dni">
+                        <mat-error *ngIf="pacienteForm.get('dni')?.hasError('required') && pacienteForm.get('dni')?.touched">
+                            El DNI es obligatorio.
+                        </mat-error>
+                        <mat-error *ngIf="pacienteForm.get('dni')?.hasError('pattern') && pacienteForm.get('dni')?.touched">
+                            El formato del DNI no es válido.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Fecha de nacimiento:</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="fecha_nacimiento" readonly>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="pacienteForm.get('fecha_nacimiento')?.hasError('required') && pacienteForm.get('fecha_nacimiento')?.touched">
+                            La fecha de nacimiento es obligatoria.
+                        </mat-error>
+                    </mat-form-field>
                 </div>
-            </form>
+
+                <div id="segundo-contenedor">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email:</mat-label>
+                        <input matInput type="email" formControlName="email">
+                        <mat-error *ngIf="pacienteForm.get('email')?.hasError('required') && pacienteForm.get('email')?.touched">
+                            El email es obligatorio.
+                        </mat-error>
+                        <mat-error *ngIf="pacienteForm.get('email')?.hasError('email') && pacienteForm.get('email')?.touched">
+                            El formato del email no es válido.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Contraseña:</mat-label>
+                        <input matInput type="password" formControlName="password">
+                        <mat-error *ngIf="pacienteForm.get('password')?.hasError('required') && pacienteForm.get('password')?.touched && !isEditMode">
+                            La contraseña es obligatoria.
+                        </mat-error>
+                        <mat-error *ngIf="pacienteForm.get('password')?.hasError('minlength') && pacienteForm.get('password')?.touched">
+                            La contraseña debe tener al menos 6 caracteres.
+                        </mat-error>
+                        <mat-hint *ngIf="isEditMode && pacienteForm.get('password')?.value === ''">
+                            Dejar vacío si no deseas cambiar la contraseña.
+                        </mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+        {{ isEditMode ? 'Guardar Cambios' : 'Registrar' }}
+    </button>
+</mat-dialog-actions>

@@ -6,34 +6,68 @@ use App\Models\Medico;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class MedicosController extends Controller
 {
+    /**
+     * Se crea un nuevo médico, para lo cual primero crea un nuevo usuario en la tabla User del que coge el nuevo id
+     * para asociarlo al médico en la tabla Medico.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'dni' => 'required|string|min:9|max:9',
-            'email' => 'required|email',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'nombre' => 'required|string|max:255',
+                'apellidos' => 'required|string|max:255',
+                'dni' => 'required|string|min:9|max:9|unique:medicos,dni',
+                'email' => 'required|email|max:255|unique:users,email',
+                'password' => 'required|string|min:8|max:255',
+            ], [
+                //Mensaje de error para cada campo
+                'dni.unique' => 'Ya existe un médico con este DNI.',
+                'email.unique' => 'Este correo electrónico ya está registrado por otro usuario.',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado'], 404);
+            //Se crea el nuevo usuario
+            $user = new User();
+            $user->email = $validatedData['email'];
+            $user->password = Hash::make($validatedData['password']);
+            $user->save();
+
+
+            $role = Role::where('name', 'Medico')->first();
+            if ($role) {
+                $user->assignRole($role);
+            } else {
+                \Log::warning('Rol "Medico" no encontrado. Asegurarse de que el rol está creado.');
+            }
+
+            $medico = new Medico();
+            $medico->id_usuario = $user->id;
+            $medico->nombre = $validatedData['nombre'];
+            $medico->apellidos = $validatedData['apellidos'];
+            $medico->dni = $validatedData['dni'];
+            $medico->fecha_inicio = now();
+            $medico->fecha_fin = null;
+
+            $medico->save();
+
+            return response()->json(['message' => 'Médico creado con éxito'], 201);
+
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Error de validación','errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al crear el médico','error' => $e->getMessage()], 500);
         }
-
-        $medico = new Medico();
-        $medico->nombre = $request->nombre;
-        $medico->apellidos = $request->apellidos;
-        $medico->dni = $request->dni;
-        $medico->fecha_inicio = now();
-        $medico->fecha_fin = null;
-        $medico->id_usuario = $user->id;
-        $medico->save();
-
-        return response()->json(['message' => 'Médico creado con éxito'], 201);
     }
 
     public function update(Request $request, $id)
@@ -85,7 +119,7 @@ class MedicosController extends Controller
         return response()->json($medico, 200);
     }
 
-    public function showAllMedicos()
+    public function showAllMedicosInclusoEliminados()
     {
         $medicos = Medico::withTrashed()->get();
         return response()->json($medicos, 200);
@@ -94,6 +128,12 @@ class MedicosController extends Controller
     public function showTrashedMedicos()
     {
         $medicos = Medico::onlyTrashed()->get();
+        return response()->json($medicos, 200);
+    }
+
+    public function showAllMedicos()
+    {
+        $medicos = Medico::all();
         return response()->json($medicos, 200);
     }
 

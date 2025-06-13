@@ -1,3 +1,4 @@
+<!-- modal-create.component.html -->
 <div class="modal-backdrop" *ngIf="isVisible">
     <div class="modal-content">
         <div class="modal-header">
@@ -5,13 +6,19 @@
             <i class="bi bi-x-circle close-button" (click)="close()"></i>
         </div>
 
-        <div class="modal-body-content"> <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body-content">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
                 <div class="form-field-group">
                     <mat-form-field appearance="fill" class="full-width">
-                        <mat-label>CIF</mat-label>
-                        <input matInput type="text" formControlName="cif" />
-                        <mat-error *ngIf="form.get('cif')?.invalid && form.get('cif')?.touched">
-                            El CIF es obligatorio y debe tener 9 caracteres.
+                        <mat-label>Empresa</mat-label>
+                        <mat-select formControlName="id_cliente">
+                            <mat-option value="" disabled>Selecciona una empresa</mat-option>
+                            <mat-option *ngFor="let cliente of clientes" [value]="cliente.id">
+                                {{ cliente.razon_social }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="form.get('id_cliente')?.invalid && form.get('id_cliente')?.touched">
+                            La empresa es obligatoria.
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -20,6 +27,7 @@
                     <mat-form-field appearance="fill" class="full-width">
                         <mat-label>Paciente</mat-label>
                         <mat-select formControlName="paciente">
+                            <mat-option value="" disabled>Selecciona un paciente</mat-option>
                             <mat-option *ngFor="let paciente of pacientes" [value]="paciente.id">
                                 {{ paciente.nombre }} {{ paciente.apellidos }}
                             </mat-option>
@@ -48,12 +56,8 @@
                 <div class="form-field-group">
                     <mat-form-field appearance="fill" class="full-width">
                         <mat-label>Fecha</mat-label>
-                        <input
-                            matInput
-                            [matDatepicker]="picker"
-                            formControlName="fecha"
-                            [matDatepickerFilter]="filtrarDiasHabiles"
-                        />
+                        <input matInput [matDatepicker]="picker" formControlName="fecha"
+                            [matDatepickerFilter]="filtrarDiasHabiles" [min]="fechaDePartida" />
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker startView="month"></mat-datepicker>
                         <mat-error *ngIf="form.get('fecha')?.invalid && form.get('fecha')?.touched">
@@ -67,8 +71,9 @@
                         <mat-label>Hora</mat-label>
                         <mat-select formControlName="hora">
                             <mat-option value="" disabled>Horas disponibles</mat-option>
-                            <mat-option *ngIf="availableHours.length === 0" disabled>No hay horas disponibles</mat-option>
-                            <mat-option *ngFor="let hora of availableHours" [value]="hora">{{ hora }}</mat-option>
+                            <mat-option *ngIf="horasDisponibles.length === 0" disabled>No hay horas
+                                disponibles</mat-option>
+                            <mat-option *ngFor="let hora of horasDisponibles" [value]="hora">{{ hora }}</mat-option>
                         </mat-select>
                         <mat-error *ngIf="form.get('hora')?.invalid && form.get('hora')?.touched">
                             La hora es obligatoria.
@@ -77,11 +82,8 @@
                 </div>
 
                 <div class="button-group">
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        [disabled]="form.invalid || availableHours.length === 0"
-                    >
+                    <button type="submit" class="btn btn-primary"
+                        [disabled]="form.invalid || horasDisponibles.length === 0">
                         Reservar
                     </button>
                 </div>

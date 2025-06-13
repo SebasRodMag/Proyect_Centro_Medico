@@ -1,4 +1,4 @@
-.container-pacientes{
+.container-citas {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -11,86 +11,180 @@
     margin: 20px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
 }
-.header-pacientes{
+
+.header-citas {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Esto empuja el primer hijo a la izquierda y el último a la derecha */
     align-items: center;
-    width: 100%;
+    width: 100%; /* Ocupa todo el ancho del contenedor padre */
+    margin-bottom: 20px; /* Un poco más de espacio debajo del encabezado */
+    /* gap: 20px; <-- Quitar este gap porque space-between lo maneja */
 }
-#contenedor-busqueda{
+
+/* Nuevo contenedor para los filtros y búsqueda del lado derecho */
+.filtros-y-busqueda-right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espacio entre los filtros de fecha y el input de búsqueda */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay espacio, aunque con gap ya es menos probable */
+    justify-content: flex-end; /* Asegura que si se envuelven, se alineen a la derecha */
+}
+
+#contenedor-busqueda {
     position: relative;
+    display: flex; /* Asegura que el input y el icono estén en línea */
+    align-items: center;
 }
-.header-pacientes button{
+
+.header-citas button {
     background-color: #009975;
     color: white;
     border-radius: 10px;
     border: 0;
     width: 200px;
     height: 40px;
+    cursor: pointer; /* Indica que es clickeable */
 }
 
-#contenedor-busqueda input{
+#contenedor-busqueda input {
     padding: 15px;
     border: 0;
     border-radius: 28px;
-    padding-left: 30px;
+    padding-left: 30px; /* Deja espacio para el icono */
+    width: 250px; /* Ajusta el ancho de la búsqueda si es necesario */
 }
 
-#icono-search{
+#contenedor-filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre labels e inputs */
+    /* margin: 10px; <-- Quitar este margin global para este flexbox */
+}
+
+#contenedor-filtros label {
+    white-space: nowrap;
+}
+
+#contenedor-filtros input {
+    margin: 0; /* Eliminar márgenes específicos que podrían interferir */
+    border-radius: 15px 5px 5px 15px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+#contenedor-filtros input:active,
+#contenedor-filtros input:focus {
+    outline: none;
+    border: 1.25px solid #1500ff;
+    scale: 1.02;
+}
+
+#icono-search {
     position: absolute;
     top: 50%;
-    left: 10px;
+    left: 10px; /* Posiciona el icono dentro del input */
     transform: translateY(-50%);
     width: 18px;
     height: 18px;
+    color: #666; /* Un color para el icono de búsqueda */
 }
 
-table{
-    margin-top: 10px;
-    width: 100%;
+table {
+    margin-top: 20px; /* Más espacio entre el header y la tabla */
+    width: 100%; /* Asegura que la tabla ocupe todo el ancho */
+    table-layout: fixed; /* Ayuda a que las columnas se distribuyan uniformemente */
 }
 
-table th, table td{
+table th,
+table td {
+    text-align: start;
+    padding: 12px 8px; /* Ajusta el padding para un mejor aspecto */
+}
+
+mat-header-cell {
     text-align: center;
 }
-#tabla-pacientes th{
-    background-color: #376AA8;
-    color: white;
-}
 
-#tabla-pacientes th,td{
-    font-size: 12px;
+/* Usar selectores de Material Design para estilos de tabla */
+.mat-elevation-z8 th {
+    background-color: white;
+    color: black;
     text-align: center;
-    padding: 10px;
 }
 
-#tabla-pacientes tr:nth-child(odd){
+.mat-elevation-z8 td {
+    font-size: 14px; /* Un poco más grande para mejor legibilidad */
+    text-align: center;
+}
+
+.mat-elevation-z8 tr:nth-child(odd) {
     background-color: #fff;
 }
-#tabla-pacientes tr:nth-child(even){
-    background-color: #376aa845;
+
+.mat-elevation-z8 tr:nth-child(even) {
+    background-color: white;
 }
 
-#tabla-pacientes th:last-child,td:last-child{
+.mat-elevation-z8 th:last-child,
+.mat-elevation-z8 td:last-child {
     border-right: 0;
 }
+
+/* Estilos para los botones de acción dentro de la tabla */
+#edit-button, #delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em; /* Tamaño de los iconos */
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#edit-button i.bi-pencil-square {
+    color: #FFC107; /* Amarillo para editar */
+}
+
+#delete-button i.bi-trash-fill {
+    color: #DC3545; /* Rojo para eliminar/cancelar */
+}
+
+#edit-button:hover, #delete-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
 mat-paginator {
     margin-top: 10px;
     display: flex;
     justify-content: center;
     width: 100%;
+    background-color: #D9D9D9; /* Asegura que el paginador tenga el mismo fondo que el contenedor principal */
+    border-radius: 0 0 15px 15px; /* Bordes redondeados en la parte inferior */
+    padding: 10px 0;
 }
 
 mat-paginator .mat-paginator-range-label {
-    font-size: 7px;
+    font-size: 12px; /* Un poco más grande para legibilidad */
 }
 
 mat-paginator button {
-    font-size: 7px;
+    font-size: 12px; /* Más grande */
     background-color: #4CAF50;
     color: white;
     border-radius: 4px;
     margin-left: 5px;
+    height: 30px; /* Altura para los botones */
+    width: 30px; /* Ancho para los botones */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 mat-paginator button:hover {

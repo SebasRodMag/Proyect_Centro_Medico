@@ -1,3 +1,6 @@
+/* ------------------------------------ */
+/* Estilos del Backdrop del Modal */
+/* ------------------------------------ */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -11,91 +14,242 @@
     z-index: 1000;
 }
 
+/* ------------------------------------ */
+/* Estilos del Contenido del Modal */
+/* ------------------------------------ */
 .modal-content {
     background: white;
-    padding: 20px;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-width: 600px;
     position: relative;
+    /* Ancho para el modal de una sola columna */
+    max-width: 450px;
+    /* Ajusta este ancho máximo según lo veas conveniente */
+    width: 90%;
+    /* Ancho responsivo, hasta el max-width */
+    padding: 25px;
+    /* Ajusta el padding interno del modal */
+    box-sizing: border-box;
+    /* Asegura que el padding se incluye en el ancho */
+
+    /* Propiedades para el scroll si el contenido excede la altura de la pantalla */
+    max-height: 90vh;
+    /* Limita la altura del modal al 90% del viewport height */
+    overflow-y: auto;
+    /* Habilita el scroll vertical si el contenido excede el max-height */
 }
 
+/* ------------------------------------ */
+/* Estilos del Encabezado del Modal */
+/* ------------------------------------ */
 .modal-header {
-    width: 65%;
+    width: 100%;
+    /* El header ocupa todo el ancho del modal menos el padding */
     display: flex;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-
+/* ------------------------------------ */
+/* Contenedor Principal del Formulario */
+/* ------------------------------------ */
 #contenedor-principal {
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* Centra los elementos horizontalmente */
     width: 100%;
+    padding: 10px;
+    /* Espacio alrededor de las columnas */
 }
 
+/* ------------------------------------ */
+/* Contenedor de la (única) Columna del Formulario */
+/* ------------------------------------ */
 #columnas {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 20px;
+    flex-direction: column;
+    /* Forzamos una sola columna verticalmente */
+    align-items: center;
+    /* Centra los campos si son más estrechos que el contenedor */
+    gap: 15px;
+    /* Espacio entre los grupos de campos */
     width: 100%;
 }
 
-#segundo-contenedor {
+/* ------------------------------------ */
+/* Estilos de la Columna Individual */
+/* ------------------------------------ */
+#primer-contenedor {
+    /* No necesitamos #segundo-contenedor */
     display: flex;
     flex-direction: column;
+    /* Apila los campos verticalmente dentro de la columna */
+    gap: 15px;
+    /* Espacio vertical entre los grupos de campos */
+    width: 100%;
+    /* La columna ocupa todo el ancho disponible */
+}
+
+/* ------------------------------------ */
+/* Estilo para cada Grupo de Campo (mat-form-field) */
+/* ------------------------------------ */
+.form-field-group {
+    width: 100%;
+    /* Asegura que el contenedor del campo ocupe el ancho de su columna */
+    display: flex;
+    /* Asegura que el mat-form-field dentro se comporte bien */
     justify-content: center;
+    /* Centra el mat-form-field si es más estrecho */
 }
 
-#primer-contenedor,
-#segundo-contenedor {
-    flex: 1;
+/* ------------------------------------ */
+/* CLAVE: Controla el Tamaño de TODOS los Inputs de Material Design */
+/* ------------------------------------ */
+.mat-form-field {
+    width: 100% !important;
+    /* Fuerza al mat-form-field a ocupar el 100% de .form-field-group */
+    max-width: 300px;
+    /* <-- Ancho máximo deseado para CADA input. AJUSTA ESTE VALOR. */
+    box-sizing: border-box;
+    /* Asegura que el padding y border se incluyan en el max-width */
+    /* Ajustes para reducir el espacio vertical */
+    padding-bottom: 0 !important;
+    margin-bottom: -1.25em !important;
+    /* Reduce el margen inferior para acercar los campos */
 }
 
+/* Ajustes finos para el espaciado de errores y subscript de Material Design */
+.mat-mdc-form-field-subscript-wrapper {
+    padding: 0 !important;
+}
+
+/* **AJUSTES ESPECÍFICOS PARA DATEPICKERS (si hay, para asegurar que se ajustan)** */
+/* Aunque no hay datepickers aquí, es bueno mantener estas reglas si alguna vez los añades */
+.mat-mdc-form-field-type-mat-date-input .mat-mdc-form-field-flex,
+.mat-mdc-form-field-type-mat-date-range-input .mat-mdc-form-field-flex {
+    max-width: 100% !important;
+    flex-wrap: nowrap !important;
+    min-width: 0 !important;
+}
+
+.mat-mdc-form-field-type-mat-date-input .mat-mdc-form-field-infix,
+.mat-mdc-form-field-type-mat-date-range-input .mat-mdc-form-field-infix {
+    flex-grow: 1 !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+}
+
+.mat-mdc-form-field-suffix {
+    min-width: unset !important;
+    flex-shrink: 0 !important;
+    width: auto !important;
+}
+
+/* ------------------------------------ */
+/* Estilos del Botón de Registrar */
+/* ------------------------------------ */
+#registrar {
+    /* Selector para el botón con ID 'registrar' */
+    background-color: #5cb85c;
+    /* Un verde de Bootstrap (btn-success) */
+    color: white;
+    border: 1px solid #4cae4c;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 30px;
+    /* Margen superior para separarlo de los inputs */
+    width: 100%;
+    /* El botón ocupa el 100% del contenedor */
+    max-width: 200px;
+    /* Limita el ancho del botón, ajusta si es necesario */
+}
+
+#registrar:hover {
+    background-color: #449d44;
+}
+
+#registrar:disabled {
+    background-color: #cccccc;
+    border-color: #999999;
+    cursor: not-allowed;
+}
+
+/* ------------------------------------ */
+/* Estilos para el icono de cerrar modal */
+/* ------------------------------------ */
+.close-button {
+    font-size: 25px;
+    cursor: pointer;
+    color: #555;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* ------------------------------------ */
+/* Estilos para Mensajes de Error */
+/* ------------------------------------ */
+.error-message {
+    /* Esto es para errores fuera de mat-error */
+    color: #dc3545;
+    font-size: 0.85em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* ------------------------------------ */
+/* Media queries para Responsividad */
+/* ------------------------------------ */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 15px;
+        max-width: 95%;
+        /* Que ocupe casi todo el ancho en móviles */
+    }
+
+    /* Los contenedores de columna ya están configurados para apilarse por defecto */
+    #primer-contenedor {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .form-field-group {
+        justify-content: center;
+        /* Centrar el campo en el centro de la pantalla */
+    }
+
+    .mat-form-field {
+        max-width: 300px;
+        /* Mantener un ancho razonable para los inputs en móviles */
+    }
+
+    #registrar {
+        max-width: 200px;
+        /* Mantener el ancho del botón */
+    }
+}
+
+/* Esto era de versiones anteriores, ya no debería ser necesario con mat-form-field */
+/*
+input, select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+i {
+  font-size: 25px;
+}
 #primer-contenedor div,
 #segundo-contenedor div {
-    display: flex;
-    flex-direction: column;
-    margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+  margin: 5px 0;
 }
-
-#boton-registrar {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-input,
-select {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid black;
-}
-
-i {
-    font-size: 25px;
-}
-
-.password-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-
-
-    i {
-        position: absolute;
-        right: 10px;
-        cursor: pointer;
-        color: #555;
-        font-size: 1.2rem;
-    }
-
-    i:hover {
-        color: #000;
-    }
-}
+*/

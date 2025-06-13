@@ -73,3 +73,109 @@
         background-color: #ccc;
         cursor: not-allowed;
     }
+
+    /* Estilos generales del contenedor y formulario de login */
+.container {
+    max-width: 300px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center; /* Centrar el h2 */
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left; /* Alinea etiquetas a la izquierda */
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px; /* Ajustado padding */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Importante para que el padding no añada ancho extra */
+    font-size: 16px;
+    line-height: 1.5; /* Para consistencia */
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.error-message {
+    color: #dc3545; /* Rojo de Bootstrap para errores */
+    font-size: 0.85em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    margin-top: 20px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-primary:disabled {
+    background-color: #cccccc;
+    border-color: #999999;
+    cursor: not-allowed;
+}
+
+/* --- NUEVOS ESTILOS PARA EL BOTÓN DE VISIBILIDAD DE CONTRASEÑA --- */
+.password-wrapper {
+    position: relative; /* CLAVE: Permite posicionar el icono de forma absoluta dentro */
+    width: 100%; /* Asegura que el contenedor ocupe el ancho completo */
+}
+
+.password-wrapper input {
+    padding-right: 40px; /* Deja espacio para el icono dentro del input */
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 12px; /* Distancia desde el borde derecho */
+    top: 50%; /* Centra verticalmente */
+    transform: translateY(-50%); /* Ajuste fino para el centrado vertical */
+    cursor: pointer;
+    color: #555;
+    font-size: 1.2rem; /* Tamaño del icono */
+    z-index: 10; /* Asegura que esté por encima del input */
+}
+
+.password-toggle-icon:hover {
+    color: #000;
+}

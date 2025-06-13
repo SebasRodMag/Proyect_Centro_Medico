@@ -103,7 +103,8 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita actualizada con éxito'], 200);
     }
 
-    public function destroy($id_cliente){
+    public function destroy($id_cliente)
+    {
         $cita = Cita::findOrFail($id_cliente);
         $cita->delete();
         return response()->json(['message' => 'Cita eliminada correctamente'], 200);
@@ -184,23 +185,74 @@ class CitasController extends Controller
         return response()->json($citas, 200);
     }
 
-    public function citasPorMedicoLogueado()
+    /**
+     * Lista las citas del usuario logueado, ya sea médico o paciente.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function citasPorUsuarioLogueado()
     {
         $user = Auth::user();
-        $medico = $user->medico;
-    
-        if (!$medico) {
-            return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
-        }
-        if (!$medico) {
-            return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado.'], 401);
         }
 
-        $citas = $medico->citas()->with(['paciente', 'medico'])->get();
-        $citas = $medico->citas()->with(['paciente', 'medico'])->get();
+        $role = $user->getRoleNames()->first();
 
-        return response()->json($citas, 200);
+        if ($role === 'Medico') {
+            $medico = $user->medico;
 
+            if (!$medico) {
+                return response()->json(['error' => 'El usuario no está registrado como médico.'], 403);
+            }
+
+            $citas = Cita::where('id_medico', $medico->id)
+                ->with(['paciente:id,nombre,apellidos,dni'])
+                ->get();
+
+            $formattedCitas = $citas->map(function ($cita) {
+                return [
+                    'id' => $cita->id,
+                    'fecha_hora_cita' => $cita->fecha_hora_cita,
+                    'estado' => $cita->estado,
+                    'observaciones' => $cita->observaciones,
+                    'nombre_paciente' => $cita->paciente->nombre . ' ' . $cita->paciente->apellidos,
+                    'dni' => $cita->paciente->dni,
+                    'id_paciente' => $cita->id_paciente,
+                    'id_contrato' => $cita->id_contrato,
+                ];
+            });
+
+            return response()->json($formattedCitas, 200);
+
+        } elseif ($role === 'Paciente') {
+            $paciente = $user->paciente;
+
+            if (!$paciente) {
+                return response()->json(['error' => 'El usuario no está registrado como paciente.'], 403);
+            }
+
+            $citas = Cita::where('id_paciente', $paciente->id)
+                ->with(['medico:id,nombre,apellidos,dni'])
+                ->get();
+            $formattedCitas = $citas->map(function ($cita) {
+                return [
+                    'id' => $cita->id,
+                    'fecha_hora_cita' => $cita->fecha_hora_cita,
+                    'estado' => $cita->estado,
+                    'observaciones' => $cita->observaciones,
+                    'nombre_medico' => $cita->medico->nombre . ' ' . $cita->medico->apellidos,
+                    'id_medico' => $cita->id_medico,
+                    'id_contrato' => $cita->id_contrato,
+                ];
+            });
+
+            return response()->json($formattedCitas, 200);
+
+        } else {
+            return response()->json(['error' => 'Rol de usuario no soportado para la consulta de citas.'], 403);
+        }
     }
 
 
@@ -232,7 +284,7 @@ class CitasController extends Controller
     {
         //verificar el formato de la fecha y la hora:
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-        return response()->json(['error' => 'Formato de fecha inválido. Se espera YYYY-MM-DD.'], 400);
+            return response()->json(['error' => 'Formato de fecha inválido. Se espera YYYY-MM-DD.'], 400);
         }
         // Definir el rango de horas en el que se puede reservar (09:00 a 15:00)
         $horaInicio = Carbon::createFromFormat('Y-m-d H:i', "$fecha 09:00");
@@ -241,7 +293,7 @@ class CitasController extends Controller
         $horasDisponibles = [];
         while ($horaInicio < $horaFin) {
             $horasDisponibles[] = $horaInicio->format('H:i');
-            $horaInicio->addMinutes(5); 
+            $horaInicio->addMinutes(5);
         }
         $citasOcupadas = Cita::where('id_medico', $id_medico)
             ->whereDate('fecha_hora_cita', $fecha)
@@ -339,4 +391,56 @@ class CitasController extends Controller
 
         return response()->json(['message' => 'Estado de la cita actualizado con éxito.'], 200);
     }
+
+    /**
+     * Obtiene las citas pendientes y futuras para un cliente específico,
+     * incluyendo la información del paciente y el médico.
+     *
+     * @param  int  $id_cliente El ID del cliente.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getCitasByClienteId($id_cliente)
+    {
+        $cliente = Cliente::find($id_cliente);
+
+        if (!$cliente) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
+        }
+
+        // Obtener las citas asociadas a este cliente a través de sus contratos
+        // y cargar eager load las relaciones 'paciente' y 'medico'.
+        // Asegúrate de que la relación 'citas' en el modelo Cliente está bien definida
+        // (ya la compartiste y parece correcta: HasManyThrough a Cita a través de Contrato).
+        $citas = $cliente->citas()
+            ->with(['paciente', 'medico']) // <--- CLAVE: Cargar las relaciones aquí
+            ->get();
+
+        // Filtrar las citas para mostrar solo las 'pendientes' y que la fecha/hora sea en el futuro.
+        $citasPendientesYFuturas = $citas->filter(function ($cita) {
+            // Verifica que 'fecha_hora_cita' esté presente y no sea nula.
+            // Si está ausente o es nula en la DB, esto evitará errores y las excluirá.
+            if (!isset($cita->fecha_hora_cita) || is_null($cita->fecha_hora_cita)) {
+                // Puedes añadir un log aquí para depuración en Laravel si ves que faltan fechas
+                // \Log::warning("Cita ID {$cita->id} no tiene 'fecha_hora_cita' definida o es nula.");
+                return false; // Excluye la cita si la fecha es inválida
+            }
+
+            try {
+                $citaDateTime = Carbon::parse($cita->fecha_hora_cita);
+                // Retorna true si el estado es 'pendiente' Y la fecha/hora es en el futuro.
+                return $cita->estado === 'pendiente' && $citaDateTime->isFuture();
+            } catch (\Exception $e) {
+                // Captura errores si el formato de fecha_hora_cita es inesperado
+                // \Log::error("Error al parsear fecha_hora_cita para Cita ID {$cita->id}: " . $e->getMessage());
+                return false; // Excluye la cita si la fecha no se puede parsear
+            }
+        })->values(); // Reindexar el array para evitar índices no consecutivos después del filtro
+
+        // Devuelve solo el array de citas filtrado
+        return response()->json([
+            'citas' => $citasPendientesYFuturas->toArray() // Convertir la colección a un array PHP
+        ], 200);
+    }
+
+
 }

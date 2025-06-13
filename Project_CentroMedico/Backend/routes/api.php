@@ -20,7 +20,7 @@ use App\Models\Paciente;
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');//Para saber que usuario esta logueado
+    Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 });
 
@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('clientes', [ClientesController::class, 'store']);
         Route::put('clientes/{clienteId}', [ClientesController::class, 'update']);
         Route::delete('clientes/{clienteId}', [ClientesController::class, 'destroy']);
+        Route::get('clientes/razon_social/listar', [ClientesController::class, 'listarClientesPorRazonSocial']);
 
         Route::delete('clientes/{clienteId}/pacientes/{pacienteId}', [PacientesController::class, 'destroy']); 
         Route::put('clientes/pacientes/{pacienteId}', [PacientesController::class, 'update']); 
@@ -66,12 +67,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('contratos', [ContratosController::class, 'store']);
         // Route::get('/clientes/{id_cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         Route::get('clientes/pacientes/cif/{cif}', [ClientesController::class, 'pacientesByCIF']);
+        Route::get('clientes/pacientes/id/{cliente_id}', [PacientesController::class, 'getPacientesPorClienteId']);
         Route::get('contratos/{contrato}', [ContratosController::class, 'show']);
         Route::put('contratos/{contrato}', [ContratosController::class, 'update']);
 
         //Pacientes
         Route::get('pacientes', [PacientesController::class, 'index']);
         Route::post('pacientes', [PacientesController::class, 'store']);
+        Route::get('pacientes/listar/{paciente}/cliente', [ClientesController::class, 'listarPacientesPorIdCliente']);
+        
 
         //Citas
         
@@ -84,7 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         // Route::get('clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);
-
+        Route::get('citas/cliente/{id_cliente}', [CitasController::class, 'getCitasByClienteId']);
         Route::get('clientes/listarpacientes', [PacientesController::class, 'pacientesPorCliente']);//Listar los pacientes de un Cliente
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ContratosController::class, 'contratoVigente']);
         // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
@@ -92,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
+        Route::get('/clientes/{id_cliente}/contrato-info', [ClientesController::class, 'getContratoInfo']);
         // Route::get('clientes/{cliente}/pacientes', [PacientesController::class, 'pacientesPorCliente']);
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
         /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
@@ -107,7 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('medicos/{medico}/citas', [CitasController::class, 'citasPorMedico']);
         Route::get('citas/{cita}', [CitasController::class, 'show']);//Hay que modificarlo para que muestre los dato del paciente
         // Route::put('/citas/{cita}', [CitasController::class, 'updateHoy']); Lo he comentado porque hace conflicto con el update()
-        Route::put('citas/{cita}/cancelar', [CitasController::class, 'cancelarCita']);
+        Route::put('citas/{cita}/cancelar', [CitasController::class, 'cambiarEstadoCita']);
         Route::get('pacientes/medico/listar', [PacientesController::class, 'pacientesByMedico']);//Listar pacientes por id_medico
         Route::delete('eliminar/cita/medico/{id}', [CitasController::class, 'eliminarCitaMedico']);//Eliminar(softDelete) la cita por un medico logueado
     });
@@ -123,9 +128,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('citas/{id_cita}', [CitasController::class, 'update']);
     });
 
+    Route::middleware(['role:Medico|Paciente'])->group(function(){
+        Route::get('citas/usuario/listar', [CitasController::class, 'citasPorUsuarioLogueado']);
+    });
+
     //Rutas que solo los médicos pueden acceder
     Route::middleware(['role:Medico'])->group(function (){
-        Route::get('medico/medicos/citas', [CitasController::class, 'citasPorMedicoLogueado']);//corregir la función citasPorMedico
+        
         Route::get('citas/dia/{fecha}', [CitasController::class, 'citasPorDia']);//correcto
         Route::get('medicos/perfil/yo' , [MedicosController::class, 'medicoLogueado']);//correcto
         //buscar las horas disponibles para un medico logueado en una fecha

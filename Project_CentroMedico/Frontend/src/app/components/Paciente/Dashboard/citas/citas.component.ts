@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CitaService } from '../../../../../services/Cita-Service/cita.service';
+import { CitaService } from '../../../../services/Cita-Service/cita.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -11,7 +11,6 @@ import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
-
 @Component({
     selector: 'app-citas',
     standalone: true,
@@ -31,16 +30,8 @@ import Swal from 'sweetalert2';
 export class CitasComponent implements OnInit, AfterViewInit {
     citasDataSource = new MatTableDataSource<any>();
 
-    displayedColumns: string[] = [
-        'id',
-        'nombre_paciente',
-        'dni',
-        'fecha',
-        'hora',
-        'estado',
-        'observaciones',
-        'acciones',
-    ];
+    displayedColumns: string[] = [];
+    userRole: string | null = null;
 
     fechaDesde!: string;
     fechaHasta!: string;
@@ -52,7 +43,7 @@ export class CitasComponent implements OnInit, AfterViewInit {
     constructor(
         private citaService: CitaService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
     ) { }
 
     ngOnInit(): void {
@@ -65,17 +56,30 @@ export class CitasComponent implements OnInit, AfterViewInit {
         this.fechaDesde = fechaActual;
         this.fechaHasta = fechaActual;
 
-        this.getCitasDelMedicoLogueado();
+        this.userRole = sessionStorage.getItem('rol');
+        console.log('Rol de usuario detectado en CitasComponent (directo de sessionStorage):', this.userRole);
 
+        this.setDisplayedColumns();
+
+        if (this.userRole === 'Medico' || this.userRole === 'Paciente') {
+            this.getCitasDelUsuarioLogueado();
+        } else {
+            this.citasDataSource.data = [];
+            this.snackBar.open('No tienes un rol válido para ver citas.', 'Cerrar', { duration: 3000 });
+        }
+        
         this.citasDataSource.filterPredicate = (data: any, filter: string) => {
             const filterLower = filter.toLowerCase();
-            const nombreCompletoPaciente = data.nombre_paciente ? data.nombre_paciente.toLowerCase() : '';
-            const dniPaciente = data.dni ? data.dni.toLowerCase() : '';
 
-            return (
-                nombreCompletoPaciente.includes(filterLower) ||
-                dniPaciente.includes(filterLower)
-            );
+            if (this.userRole === 'Paciente' && data.nombre_medico) {
+                return data.nombre_medico.toLowerCase().includes(filterLower);
+            }
+            if (this.userRole === 'Medico') {
+                const nombrePaciente = data.nombre_paciente ? data.nombre_paciente.toLowerCase() : '';
+                const dniPaciente = data.dni ? data.dni.toLowerCase() : ''; 
+                return nombrePaciente.includes(filterLower) || dniPaciente.includes(filterLower);
+            }
+            return false;
         };
     }
 
@@ -84,19 +88,50 @@ export class CitasComponent implements OnInit, AfterViewInit {
         this.citasDataSource.sort = this.sort;
     }
 
-    getCitasDelMedicoLogueado(): void {
-        console.log('Recargando citas del médico...');
-        this.citaService.getCitasDelMedico().subscribe({
+    setDisplayedColumns(): void {
+        if (this.userRole === 'Medico') {
+            this.displayedColumns = [
+                'id',
+                'nombre_paciente',
+                'dni',
+                'fecha',
+                'hora',
+                'estado',
+                'observaciones',
+                'acciones',
+            ];
+        } else if (this.userRole === 'Paciente') {
+            this.displayedColumns = [
+                'id',
+                'nombre_medico',
+                'fecha',
+                'hora',
+                'estado',
+                'observaciones',
+            ];
+        } else {
+            this.displayedColumns = [
+                'id',
+                'fecha',
+                'hora',
+                'estado',
+                'observaciones',
+            ];
+        }
+    }
+
+    getCitasDelUsuarioLogueado(): void {
+        console.log('Recargando citas del usuario logueado...');
+        this.citaService.getCitasDelUsuarioLogueado().subscribe({
             next: (citas) => {
                 console.log('Citas recibidas desde el backend:', citas);
                 this.citasOriginal = citas;
                 this.citasDataSource.data = citas;
                 console.log('DataSource actualizado:', this.citasDataSource.data);
-                this.filtrarPorFechas();
             },
             error: (error) => {
-                console.error('Error al cargar las citas del médico:', error);
-                this.snackBar.open('Error al cargar las citas del médico.', 'Cerrar', { duration: 3000 });
+                console.error('Error al cargar las citas del usuario:', error);
+                this.snackBar.open('Error al cargar las citas.', 'Cerrar', { duration: 3000 });
             }
         });
     }
@@ -121,6 +156,11 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     openModal(cita: any): void {
+        if (this.userRole !== 'Medico') {
+            this.snackBar.open('No tienes permiso para editar citas.', 'Cerrar', { duration: 3000 });
+            return;
+        }
+
         this.citaService.getHorariosDisponiblesParaHoy().subscribe({
             next: (response: any) => {
                 console.log('Respuesta horarios disponibles:', response);
@@ -141,11 +181,10 @@ export class CitasComponent implements OnInit, AfterViewInit {
                         this.citaService.actualizarCita(citaEditada.id, citaEditada).subscribe({
                             next: () => {
                                 console.log('Cita enviada al backend:', citaEditada);
-                                this.getCitasDelMedicoLogueado();
+                                this.getCitasDelUsuarioLogueado();
                                 this.snackBar.open('Cita actualizada con éxito', 'Cerrar', { duration: 3000 });
                             },
                             error: (err) => {
-                                console.error('Error al actualizar cita:', err);
                                 this.snackBar.open(err?.error?.message || 'No se pudo actualizar la cita', 'Cerrar', {
                                     duration: 4000,
                                 });
@@ -155,7 +194,6 @@ export class CitasComponent implements OnInit, AfterViewInit {
                 });
             },
             error: (err) => {
-                console.error('Error al cargar horarios disponibles:', err);
                 this.snackBar.open('No se pudieron cargar los horarios disponibles', 'Cerrar', { duration: 4000 });
             }
         });
@@ -173,6 +211,11 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     eliminarCita(cita: any): void {
+        if (this.userRole !== 'Medico') {
+            Swal.fire('No permitido', 'No tienes permiso para eliminar citas.', 'info');
+            return;
+        }
+
         if (cita.estado === 'realizada') {
             Swal.fire('No permitido', 'No se puede eliminar una cita ya realizada.', 'info');
             return;
@@ -189,10 +232,9 @@ export class CitasComponent implements OnInit, AfterViewInit {
                 this.citaService.eliminarCita(cita.id).subscribe({
                     next: () => {
                         Swal.fire('Eliminada', 'La cita ha sido eliminada.', 'success');
-                        this.getCitasDelMedicoLogueado();
+                        this.getCitasDelUsuarioLogueado();
                     },
                     error: (error) => {
-                        console.error('Error al eliminar cita:', error);
                         Swal.fire('Error', error.error?.message || 'No se pudo eliminar la cita.', 'error');
                     }
                 });
@@ -201,6 +243,11 @@ export class CitasComponent implements OnInit, AfterViewInit {
     }
 
     cambiarEstado(cita: any): void {
+        if (this.userRole !== 'Medico') {
+            Swal.fire('No permitido', 'No tienes permiso para cambiar el estado de citas.', 'info');
+            return;
+        }
+
         if (cita.estado !== 'pendiente') {
             Swal.fire('No permitido', 'Solo puedes cambiar el estado de citas pendientes.', 'info');
             console.log('Estado actual:', cita.estado);
@@ -229,7 +276,7 @@ export class CitasComponent implements OnInit, AfterViewInit {
                     next: (response) => {
                         console.log('Respuesta del servidor:', response);
                         Swal.fire('Éxito', 'El estado de la cita se ha actualizado.', 'success');
-                        this.getCitasDelMedicoLogueado();
+                        this.getCitasDelUsuarioLogueado();
                     },
                     error: (error) => {
                         console.error('Error al cambiar estado:', error);

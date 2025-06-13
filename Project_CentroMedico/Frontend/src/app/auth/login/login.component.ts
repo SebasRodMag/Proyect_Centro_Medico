@@ -18,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class LoginComponent implements OnInit {
     errorMessage: string | null = null;
     loginForm!: FormGroup;
+    passwordVisible: boolean = false;
 
     constructor(private authService: AuthService, private router: Router) {}
 
@@ -28,11 +29,15 @@ export class LoginComponent implements OnInit {
         });
     }
 
+    hacerPasswordVisibile(): void {
+        this.passwordVisible = !this.passwordVisible;
+    }
+
     onSubmit() {
         if (this.loginForm.valid) {
             this.authService.login(this.loginForm.value).subscribe({
                 next: (response) => {
-                    // El servicio authService ahora maneja la re dirección
+                    //El servicio authService ahora maneja la re dirección
                     console.log('Inicio de sesión exitoso');
                 },
                 error: (error) => {

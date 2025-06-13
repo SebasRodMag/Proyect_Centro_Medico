@@ -78,9 +78,10 @@ input {
     border: 1px solid black;
 }
 
-i{
+i {
     font-size: 25px;
 }
+
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -111,6 +112,7 @@ i{
     display: flex;
     justify-content: space-between;
 }
+
 .password-wrapper {
     position: relative;
     display: flex;
@@ -178,6 +180,145 @@ input {
     border: 1px solid black;
 }
 
-i{
+i {
     font-size: 25px;
+}
+
+.error-message {
+    color: #dc3545;
+    /* Bootstrap red for errors */
+    font-size: 0.85em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Optional: Highlight invalid inputs */
+input.ng-invalid.ng-touched {
+    border: 1px solid #dc3545;
+}
+
+/* Estilos generales del modal */
+.modal-content {
+    max-width: 600px;
+    /* Reduce el ancho máximo del modal. Ajusta este valor según necesites. */
+    width: 90%;
+    /* El modal ocupará el 90% del ancho de la pantalla, hasta el max-width */
+    padding: 25px;
+    /* Ajusta el padding interno del modal */
+    box-sizing: border-box;
+    /* Asegura que el padding se incluye en el ancho */
+    /* Asegúrate de que otros estilos como 'background', 'border-radius', 'box-shadow' estén definidos aquí si es necesario */
+}
+
+/* Contenedor principal de las columnas del formulario */
+#contenedor-principal {
+    padding: 10px;
+    /* Espacio alrededor de las columnas */
+}
+
+/* Contenedor de las dos columnas (primer y segundo contenedor) */
+#columnas {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permite que las columnas se envuelvan si la pantalla es pequeña */
+    gap: 30px;
+    /* Espacio entre las dos columnas */
+    justify-content: center;
+    /* Centra las columnas si no llenan el ancho completo */
+}
+
+/* Estilos para cada columna individual */
+#primer-contenedor,
+#segundo-contenedor {
+    flex: 1;
+    /* Cada columna intentará ocupar el mismo espacio disponible */
+    min-width: 150px;
+    /* Establece un ancho mínimo para cada columna para evitar que sean demasiado estrechas */
+    display: flex;
+    flex-direction: column;
+    /* Apila los campos verticalmente dentro de cada columna */
+    gap: 15px;
+    /* Espacio vertical entre los grupos de campos (form-field-group) */
+}
+
+/* Estilo para cada grupo de campo de formulario (mat-form-field) */
+.form-field-group {
+    width: 100%;
+    /* Asegura que el contenedor del campo ocupe el ancho de su columna */
+}
+
+/* Controla el tamaño de los inputs de Material Design */
+.mat-form-field {
+    width: 100% !important;
+    /* Fuerza al mat-form-field a ocupar el 100% del ancho del form-field-group */
+    max-width: 150px;
+    /* <-- Clave: Limita el ancho real del input y su label/underline. Ajusta este valor. */
+    /* Puedes reducir aún más el padding interno de Material si el input sigue viéndose muy 'alto' */
+    padding-bottom: 0 !important;
+    /* Elimina el padding inferior del mat-form-field */
+    margin-bottom: -1.25em !important;
+    /* Reduce el margen inferior para acercar los campos */
+}
+
+/* Ajustes finos para el espaciado de errores y subscript */
+.mat-mdc-form-field-subscript-wrapper {
+    padding: 0 !important;
+    /* Elimina padding que podría hacer que los inputs parezcan muy separados */
+}
+
+/* Alineación del icono de mostrar/ocultar contraseña */
+.password-wrapper {
+    position: relative;
+    /* Asegura que el botón de visibilidad se posicione correctamente */
+}
+
+.password-wrapper button {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: auto;
+    width: auto;
+    min-width: unset;
+    padding: 0;
+    line-height: 1;
+    /* Alinea el icono */
+    z-index: 1;
+    /* Asegura que esté por encima del input */
+    /* Estilos para el icono si usas Material Icons directamente en el botón */
+}
+
+/* Estilos para el botón de registrar */
+#boton-registrar {
+    text-align: center;
+    /* Centra el botón */
+    margin-top: 30px;
+    /* Margen superior para separarlo de los inputs */
+}
+
+/* Media queries para pantallas más pequeñas (opcional, pero recomendado) */
+@media (max-width: 768px) {
+    #columnas {
+        flex-direction: column;
+        /* Las columnas se apilan verticalmente en pantallas pequeñas */
+        align-items: center;
+        /* Centra las columnas apiladas */
+        gap: 20px;
+        /* Reduce el espacio entre columnas apiladas */
+    }
+
+    #primer-contenedor,
+    #segundo-contenedor {
+        min-width: unset;
+        /* Quita el min-width en pantallas pequeñas */
+        width: 100%;
+        /* Las columnas ocupan todo el ancho disponible */
+        max-width: 400px;
+        /* Limita el ancho máximo para que no se extiendan demasiado en tabletas */
+    }
+
+    .mat-form-field {
+        max-width: 100%;
+        /* Los inputs ocupan todo el ancho de su columna en pantallas pequeñas */
+    }
 }
