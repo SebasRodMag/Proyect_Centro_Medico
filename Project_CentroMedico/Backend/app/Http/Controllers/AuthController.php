@@ -24,7 +24,6 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
         $rol = $user->getRoleNames()->first();
 
-        // Asignar nombre según rol
         switch ($rol) {
             case 'Paciente':
                 $name = $user->paciente?->nombre ?? 'Paciente sin nombre';
@@ -71,10 +70,8 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        // Obtener el nombre del primer rol (como viene de Spatie)
-        $role = $user->getRoleNames()->first(); // Ej: 'Medico'
+        $role = $user->getRoleNames()->first();
 
-        // Comparar con los nombres exactos que tienes en la BD
         $rolId = match ($role) {
             'Paciente' => \App\Models\Paciente::where('id_usuario', $user->id)->value('id'),
             'Cliente'  => \App\Models\Cliente::where('id_usuario', $user->id)->value('id'),
@@ -82,7 +79,6 @@ class AuthController extends Controller
             default    => null,
         };
 
-        // Añadir al objeto del usuario
         $user->rol_id = $rolId;
         unset($user->roles);
         return response()->json([

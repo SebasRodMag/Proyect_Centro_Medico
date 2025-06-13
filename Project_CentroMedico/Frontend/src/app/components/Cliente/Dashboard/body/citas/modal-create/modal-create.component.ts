@@ -51,11 +51,6 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
         '2025-12-25'  // Navidad
     ];
 
-    /**
-     * Implementar restricción para que el cliente no pueda crear una cita en una fecha fuera a la de su contrato
-     * o cuando no tienes mas citas disponibles.
-     * 
-     */
     constructor() {
         const today = new Date();
         const year = today.getFullYear();
@@ -85,7 +80,6 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
             this.citaId = null;
         }
 
-        // Suscripción a los cambios en id_medico y fecha_cita
         this.formulario.get('id_medico')?.valueChanges
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.cargarHorariosDisponibles());
@@ -114,28 +108,20 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
         console.log('Validador: Fecha seleccionada (string):', selectedDate);
 
         if (!selectedDate) {
-            return null; // Si no hay fecha, no hay error de validación (el Validators.required lo maneja)
+            return null;
         }
-
-        // Parsear la fecha como UTC para evitar problemas de zona horaria al obtener el día de la semana
-        // Ojo: new Date('YYYY-MM-DD') puede interpretarse de forma diferente en algunos navegadores.
-        // Lo más seguro es dividir y construir.
         const [year, month, day] = selectedDate.split('-').map(Number);
-        // month - 1 porque los meses en Date son 0-indexados (0=enero)
         const date = new Date(Date.UTC(year, month - 1, day));
         console.log('Validador: Fecha parseada (UTC Date obj):', date);
 
         const dayOfWeek = date.getUTCDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
         console.log('Validador: Día de la semana (0=Dom, 6=Sab):', dayOfWeek);
 
-        // 1. Validar fines de semana
         if (dayOfWeek === 0 || dayOfWeek === 6) { // Domingo o Sábado
             console.log('Validador: Es fin de semana.');
             return { finDeSemana: true };
         }
 
-        // 2. Validar días específicos no laborables
-        // Formatear la fecha de forma consistente para la comparación con diasNoLaborables
         const formattedDate = `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1).toString().padStart(2, '0')}-${date.getUTCDate().toString().padStart(2, '0')}`;
         console.log('Validador: Fecha formateada para comparación:', formattedDate);
 
@@ -145,7 +131,7 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
         }
 
         console.log('Validador: Fecha es válida.');
-        return null; // La fecha es válida
+        return null;
     }
 
     initForm(): void {
@@ -158,19 +144,16 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     private resetAndInitForm(): void {
-        // Asegurarse de que el formulario se haya creado antes de intentar resetear
         if (this.formulario) {
             this.formulario.reset();
         }
         this.horariosDisponibles = [];
         this.isEditMode = false;
         this.citaId = null;
-        this.cita = null; // Limpiar la cita del input
+        this.cita = null;
 
-        this.initForm(); // Re-inicializa el formulario
+        this.initForm();
 
-        // Si usas *ngIf, la lógica de ngOnInit ya manejará esto al abrir el modal
-        // Este bloque solo sería necesario si el componente no se destruye con *ngIf
         if (this.cita) {
             this.isEditMode = true;
             this.citaId = this.cita.id;
@@ -178,7 +161,6 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
                 id_paciente: this.cita.paciente_id,
                 id_medico: this.cita.medico_id,
                 fecha_cita: this.cita.fecha,
-                // No parchear hora_cita aquí.
             });
             this.cargarHorariosDisponibles().then(() => {
                 if (this.cita.hora && this.horariosDisponibles.includes(this.cita.hora)) {
@@ -233,15 +215,13 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
             const fechaCitaControl = this.formulario.get('fecha_cita');
             const fechaCita = fechaCitaControl?.value;
 
-            // **IMPORTANTE: Forzar revalidación de la fecha antes de comprobar errores**
-            // Esto asegura que si el usuario selecciona una fecha, los errores se calculen inmediatamente.
-            fechaCitaControl?.updateValueAndValidity({ emitEvent: false }); // No emite evento para evitar bucles
+            fechaCitaControl?.updateValueAndValidity({ emitEvent: false });
 
             if (fechaCitaControl?.errors && (fechaCitaControl.errors['finDeSemana'] || fechaCitaControl.errors['diaNoLaborable'])) {
                 this.horariosDisponibles = [];
                 this.formulario.get('hora_cita')?.setValue(null);
                 console.warn('Fecha seleccionada es un día no laborable o fin de semana. No se cargarán horarios.');
-                resolve(); // Resuelve la promesa aunque no haya horarios cargados
+                resolve();
                 return;
             }
 
@@ -251,13 +231,11 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
                         this.horariosDisponibles = response.horas_disponibles;
                         const currentHoraFormValue = this.formulario.get('hora_cita')?.value;
 
-                        // Si estamos en modo edición y la hora original no está en los disponibles, añadirla
                         if (this.isEditMode && this.cita?.hora && !this.horariosDisponibles.includes(this.cita.hora)) {
                             this.horariosDisponibles.push(this.cita.hora);
                             this.horariosDisponibles.sort();
                         }
 
-                        // Si la hora actualmente seleccionada en el formulario no está en los disponibles, limpiarla
                         if (currentHoraFormValue && !this.horariosDisponibles.includes(currentHoraFormValue)) {
                             this.formulario.get('hora_cita')?.setValue(null);
                         }
@@ -281,9 +259,8 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
 
     onSubmit(): void {
         console.log('--- Intentando onSubmit ---');
-        // Forzar revalidación de todo el formulario para capturar cualquier cambio pendiente
-        this.formulario.markAllAsTouched(); // Asegura que todos los campos sean tocados para mostrar errores
-        this.formulario.updateValueAndValidity(); // Recalcula la validez del formulario
+        this.formulario.markAllAsTouched();
+        this.formulario.updateValueAndValidity();
 
         console.log('Formulario válido?', this.formulario.valid);
         console.log('Errores generales del formulario:', this.formulario.errors);
@@ -380,7 +357,6 @@ export class ModalCreateComponent implements OnInit, OnDestroy, OnChanges {
         this.isEditMode = false;
         this.citaId = null;
         this.cita = null;
-        // Limpiar touched y pristine para que el formulario se vea limpio al reabrir
         Object.keys(this.formulario.controls).forEach(key => {
             this.formulario.get(key)?.markAsUntouched();
             this.formulario.get(key)?.markAsPristine();

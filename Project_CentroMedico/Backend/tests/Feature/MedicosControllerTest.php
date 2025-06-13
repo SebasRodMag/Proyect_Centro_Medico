@@ -30,7 +30,6 @@ class MedicosControllerTest extends TestCase
     #[\PHPUnit\Framework\Attributes\Group('medicos')]
     public function test_crear_medico_con_exito_con_rol_administrador()
     {
-        $user = User::factory()->create();
         $adminUser = User::factory()->create();
         $adminUser->assignRole('Administrador');
         $this->actingAs($adminUser, 'sanctum');
@@ -39,7 +38,8 @@ class MedicosControllerTest extends TestCase
             'nombre' => $this->faker->firstName,
             'apellidos' => $this->faker->lastName,
             'dni' => strtoupper($this->faker->unique()->bothify('#########')),
-            'email' => $user->email,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => 'password123',
         ];
 
         $response = $this->postJson('/api/medicos', $data);
@@ -51,7 +51,6 @@ class MedicosControllerTest extends TestCase
             'nombre' => $data['nombre'],
             'apellidos' => $data['apellidos'],
             'dni' => $data['dni'],
-            'id_usuario' => $user->id,
         ]);
     }
 

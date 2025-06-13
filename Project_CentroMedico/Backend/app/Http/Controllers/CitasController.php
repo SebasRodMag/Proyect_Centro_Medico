@@ -407,39 +407,24 @@ class CitasController extends Controller
             return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
-        // Obtener las citas asociadas a este cliente a través de sus contratos
-        // y cargar eager load las relaciones 'paciente' y 'medico'.
-        // Asegúrate de que la relación 'citas' en el modelo Cliente está bien definida
-        // (ya la compartiste y parece correcta: HasManyThrough a Cita a través de Contrato).
         $citas = $cliente->citas()
-            ->with(['paciente', 'medico']) // <--- CLAVE: Cargar las relaciones aquí
+            ->with(['paciente', 'medico'])
             ->get();
 
-        // Filtrar las citas para mostrar solo las 'pendientes' y que la fecha/hora sea en el futuro.
         $citasPendientesYFuturas = $citas->filter(function ($cita) {
-            // Verifica que 'fecha_hora_cita' esté presente y no sea nula.
-            // Si está ausente o es nula en la DB, esto evitará errores y las excluirá.
             if (!isset($cita->fecha_hora_cita) || is_null($cita->fecha_hora_cita)) {
-                // Puedes añadir un log aquí para depuración en Laravel si ves que faltan fechas
-                // \Log::warning("Cita ID {$cita->id} no tiene 'fecha_hora_cita' definida o es nula.");
-                return false; // Excluye la cita si la fecha es inválida
+                return false;
             }
 
             try {
                 $citaDateTime = Carbon::parse($cita->fecha_hora_cita);
-                // Retorna true si el estado es 'pendiente' Y la fecha/hora es en el futuro.
                 return $cita->estado === 'pendiente' && $citaDateTime->isFuture();
             } catch (\Exception $e) {
-                // Captura errores si el formato de fecha_hora_cita es inesperado
-                // \Log::error("Error al parsear fecha_hora_cita para Cita ID {$cita->id}: " . $e->getMessage());
-                return false; // Excluye la cita si la fecha no se puede parsear
+                return false;
             }
-        })->values(); // Reindexar el array para evitar índices no consecutivos después del filtro
+        })->values();
 
-        // Devuelve solo el array de citas filtrado
-        return response()->json([
-            'citas' => $citasPendientesYFuturas->toArray() // Convertir la colección a un array PHP
-        ], 200);
+        return response()->json(['citas' => $citasPendientesYFuturas->toArray()], 200);
     }
 
 

@@ -10,7 +10,7 @@ import { AuthService } from '../../auth/auth.service';
 export class CitaService {
     private apiUrl = 'http://127.0.0.1:8000/api';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     private getAuthHeaders(): HttpHeaders {
         const token = sessionStorage.getItem('token');
@@ -104,8 +104,9 @@ export class CitaService {
     getHorariosDisponibles(id_medico: number, fecha: string): Observable<any> {
         return this.http.get<{ horas_disponibles: string[] }>(
             `${this.apiUrl}/horariosdisponibles/medico/${id_medico}/${fecha}`,
-            { headers: this.getAuthHeaders() 
-        });
+            {
+                headers: this.getAuthHeaders()
+            });
     }
 
     actualizarCita(id: number, datos: any): Observable<any> {
@@ -127,8 +128,8 @@ export class CitaService {
     }
 
     getCitasPorRolId(id: number): Observable<any> {
-    // Si id es el id_cliente:
-    return this.http.get(`${this.apiUrl}/citas/cliente/${id}`);
-    // Si en otros lugares lo usas para médico, paciente, etc., considera un nuevo método.
+        return this.http.get(`${this.apiUrl}/citas/cliente/${id}`, {
+            headers: this.getAuthHeaders(),
+        });
     }
 }

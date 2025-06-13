@@ -1,4 +1,4 @@
-.container-citas {
+.container-pacientes {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -12,7 +12,7 @@
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.header-citas {
+.header-pacientes {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -34,7 +34,7 @@
     align-items: center;
 }
 
-.header-citas button {
+.header-pacientes button {
     background-color: #009975;
     color: white;
     border-radius: 10px;
@@ -185,4 +185,26 @@ mat-paginator button {
 
 mat-paginator button:hover {
     background-color: #45a049;
+}
+
+button mat-icon[color="primary"] {
+    color: #009975 !important;
+}
+
+button mat-icon[color="warn"] {
+    color: #DC3545 !important;
+}
+
+button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+mat-paginator {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border-radius: 0 0 15px 15px;
+    padding: 10px 0;
 }
