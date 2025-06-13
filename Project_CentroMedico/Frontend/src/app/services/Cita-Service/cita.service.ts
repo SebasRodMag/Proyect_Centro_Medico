@@ -125,4 +125,10 @@ export class CitaService {
             headers: this.getAuthHeaders(),
         });
     }
+
+    getCitasPorRolId(id: number): Observable<any> {
+    // Si id es el id_cliente:
+    return this.http.get(`${this.apiUrl}/citas/cliente/${id}`);
+    // Si en otros lugares lo usas para médico, paciente, etc., considera un nuevo método.
+    }
 }

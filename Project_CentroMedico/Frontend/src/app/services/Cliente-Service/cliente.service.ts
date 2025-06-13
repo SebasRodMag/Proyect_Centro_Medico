@@ -9,7 +9,7 @@ export class ClienteService {
     [x: string]: any;
     private apiUrl = 'http://127.0.0.1:8000/api/clientes';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     private getAuthHeaders(): HttpHeaders {
         const token = sessionStorage.getItem('token');
@@ -57,13 +57,13 @@ export class ClienteService {
         });
     }
 
-    getPacientesPorClienteId(id_cliente: number): Observable<any>{
+    getPacientesPorClienteId(id_cliente: number): Observable<any> {
         return this.http.get(`${this.apiUrl}/pacientes/id/${id_cliente}`, {
             headers: this.getAuthHeaders(),
         });
     }
 
-    getListarClientesPorRazonSocial(): Observable<any>{
+    getListarClientesPorRazonSocial(): Observable<any> {
         return this.http.get(`${this.apiUrl}/razon_social/listar`, {
             headers: this.getAuthHeaders(),
         });
@@ -84,6 +84,14 @@ export class ClienteService {
     updateCliente(id: number, datos: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}`, datos,
             {
+                headers: this.getAuthHeaders(),
+            }
+        );
+    }
+
+    getContratoYReconocimientos(idCliente: number): Observable<any> {
+        return this.http.get(`${this.apiUrl}/${idCliente}/contrato-info`,
+        {
                 headers: this.getAuthHeaders(),
             }
         );

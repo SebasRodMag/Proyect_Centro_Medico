@@ -88,7 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::get('clientes/{cliente}', [ClientesController::class, 'show']);
         Route::get('clientes/{cliente}/contratos', [ContratosController::class, 'contratosPorCliente']);
         // Route::get('clientes/{cliente}/pacientes', [ClientesController::class, 'pacientes']);
-
+        Route::get('citas/cliente/{id_cliente}', [CitasController::class, 'getCitasByClienteId']);
         Route::get('clientes/listarpacientes', [PacientesController::class, 'pacientesPorCliente']);//Listar los pacientes de un Cliente
         Route::get('clientes/{cliente}/contratos/contrato-vigente', [ContratosController::class, 'contratoVigente']);
         // Route::get('clientes/{cliente}/contratos/contrato-vigente/reconocimientos-restantes', [ClientesController::class, 'reconocimientosRestantes']);
@@ -96,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('contratos/{contrato}/citas', [ContratosController::class, 'citas']);
         Route::get('clientes/{cliente}/citas', [ClientesController::class, 'citas']);
         Route::post('clientes/{cliente}/pacientes', [PacientesController::class, 'store']);
+        Route::get('/clientes/{id_cliente}/contrato-info', [ClientesController::class, 'getContratoInfo']);
         // Route::get('clientes/{cliente}/pacientes', [PacientesController::class, 'pacientesPorCliente']);
         Route::get('buscarcontrato/cliente', [ContratosController::class, 'buscarContratoCliente']);
         /* Route::get('horariosdisponibles/medico/{$id_medico}/{$fecha}', [CitasController::class, 'horariosDisponibles']); */
